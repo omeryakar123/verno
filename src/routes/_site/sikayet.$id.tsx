@@ -1,0 +1,550 @@
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { ArrowUp, ArrowDown, Calendar, ImageIcon, MessageSquare, Pin, Share2, Tag, Star, Copy, Sparkles, AlertOctagon, Clock } from "lucide-react";
+import { ReportButton } from "@/components/report-button";
+import { ComplaintCard } from "@/components/cards";
+import { ComplaintTimeline } from "@/components/complaint-timeline";
+import { ResolutionTunnel } from "@/components/resolution-tunnel";
+import { ComplaintRating } from "@/components/complaint-rating";
+import { ComplaintSupportButton } from "@/components/complaint-support-button";
+import { statusClasses, statusLabel, type Complaint } from "@/lib/mock-data";
+import { fetchComplaintsList, fetchComments, fetchComplaintResolution, formatAgo, loadComplaintById, type ComplaintLoadState, type DbComment, type ResolutionRow } from "@/lib/data";
+import { complaintPath } from "@/lib/complaint-link";
+import { useAuth } from "@/hooks/use-auth";
+import { toast } from "sonner";
+import { seoHead, jsonLd, breadcrumbLd, clamp, absUrl, SITE_NAME } from "@/lib/seo";
+import { UserBadgeRow } from "@/components/user-badges";
+
+type ThreadReply = { id: string; body: string; is_brand: boolean; author: string; created_at: string };
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export const Route = createFileRoute("/_site/sikayet/$id")({
+  // SSR: içerik sunucuda yüklenir, böylece arama motorları gerçek şikayeti görür.
+  loader: async ({ params }) => {
+    const result = await loadComplaintById(params.id).catch(
+      (): ComplaintLoadState => ({ kind: "not_found" }),
+    );
+    return { result };
+  },
+  head: ({ loaderData, params }) => {
+    const c = loaderData?.result?.kind === "ok" ? loaderData.result.complaint : null;
+    if (!c) {
+      return {
+        ...seoHead({
+          title: `Жалбата не е намерена — ${SITE_NAME}`,
+          description: "Търсената жалба не е публикувана или е премахната.",
+          path: `/sikayet/${params.id}`,
+          noindex: true,
+        }),
+      };
+    }
+    const code = c.publicId ?? params.id;
+    const title = `${c.title} — жалба срещу ${c.companyName} | ${SITE_NAME}`;
+    const description = clamp(c.body, 155);
+    const path = `/sikayet/${code}`;
+
+    return {
+      ...seoHead({ title, description, path, type: "article" }),
+      scripts: [
+        jsonLd({
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline: c.title,
+          articleBody: clamp(c.body, 500),
+          url: absUrl(path),
+          inLanguage: "bg-BG",
+          author: { "@type": "Person", name: c.userName },
+          about: { "@type": "Organization", name: c.companyName },
+          interactionStatistic: [
+            {
+              "@type": "InteractionCounter",
+              interactionType: "https://schema.org/ViewAction",
+              userInteractionCount: c.views,
+            },
+          ],
+        }),
+        breadcrumbLd([
+          { name: "Начало", path: "/" },
+          { name: "Жалби", path: "/sikayetler" },
+          { name: c.companyName, path: `/firma/${c.companySlug}` },
+        ]),
+      ],
+    };
+  },
+  component: ComplaintPage,
+});
+
+
+function ComplaintPage() {
+  const { id } = Route.useParams();
+  const navigate = useNavigate();
+  const { result: initialResult } = Route.useLoaderData();
+  const { user, roles } = useAuth();
+  const [loadState, setLoadState] = useState<ComplaintLoadState>(
+    initialResult ?? { kind: "not_found" },
+  );
+  const complaint = loadState.kind === "ok" ? loadState.complaint : null;
+  const [similar, setSimilar] = useState<Complaint[]>([]);
+  const [comments, setComments] = useState<DbComment[]>([]);
+  const [resolution, setResolution] = useState<ResolutionRow | null>(null);
+  const [replies, setReplies] = useState<ThreadReply[]>([]);
+  const [replyBody, setReplyBody] = useState("");
+  const [body, setBody] = useState("");
+  const [replyTo, setReplyTo] = useState<string | null>(null);
+  const [resolveOpen, setResolveOpen] = useState(false);
+  const isAdmin = roles.includes("admin") || roles.includes("super_admin");
+
+  async function loadReplies(cid: string) {
+    const r = await fetch(`/api/complaint-replies?complaintId=${cid}`).then((x) => (x.ok ? x.json() : []));
+    setReplies(r as ThreadReply[]);
+  }
+
+  async function load() {
+    const result = await loadComplaintById(id);
+    setLoadState(result);
+    if (result.kind !== "ok") return;
+    const c = result.complaint;
+    setSimilar((await fetchComplaintsList({ brandSlug: c.companySlug, limit: 4 })).filter((x) => x.id !== c.id).slice(0, 3));
+    setComments(await fetchComments(c.id));
+    setResolution(await fetchComplaintResolution(c.id));
+    loadReplies(c.id);
+  }
+  useEffect(() => { load(); /* eslint-disable-next-line */ }, [id]);
+
+  useEffect(() => {
+    if (loadState.kind !== "ok") return;
+    const { complaint: c } = loadState;
+    if (c.publicId && UUID_RE.test(id)) {
+      navigate({ to: "/sikayet/$id", params: { id: c.publicId }, replace: true });
+    }
+  }, [id, loadState, navigate]);
+
+
+  // Canlı güncelleme (SSE). Sunucu yalnızca "değişiklik oldu" sinyali yollar;
+  // veriyi normal API'den çekeriz, böylece yetki kuralları tek yerde kalır.
+  useEffect(() => {
+    if (!complaint?.id) return;
+    const es = new EventSource(`/api/events/${complaint.id}`);
+    const onComment = () => { fetchComments(complaint.id).then(setComments).catch(() => {}); };
+    const onComplaint = () => { load(); };
+    es.addEventListener("comment", onComment);
+    es.addEventListener("vote", onComment);
+    es.addEventListener("complaint-support", onComplaint);
+    es.addEventListener("complaint", onComplaint);
+    return () => es.close();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [complaint?.id]);
+
+  // Topluluk yorumları şikayetten saatler/günler sonra kademeli gelir — ara sıra yenile.
+  useEffect(() => {
+    if (!complaint?.id) return;
+    const t = setInterval(() => {
+      fetchComments(complaint.id).then(setComments).catch(() => {});
+    }, 15 * 60_000);
+    return () => clearInterval(t);
+  }, [complaint?.id]);
+
+  async function sendReply() {
+    if (!replyBody.trim() || !complaint) return;
+    const ok = await postJson("/api/complaint-replies", { complaintId: complaint.id, body: replyBody.trim() });
+    if (ok) { setReplyBody(""); loadReplies(complaint.id); }
+  }
+
+  async function postJson(url: string, payload: unknown): Promise<boolean> {
+    const res = await fetch(url, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const j = (await res.json().catch(() => ({}))) as { error?: string };
+      toast.error(j.error ?? "Операцията не бе успешна");
+      return false;
+    }
+    return true;
+  }
+
+  async function sendComment(e: React.FormEvent) {
+    e.preventDefault();
+    if (!user) { toast.error("Влезте, за да коментирате"); return; }
+    if (!body.trim()) return;
+    const ok = await postJson("/api/comments", { complaintId: id, body: body.trim(), parentId: replyTo });
+    if (ok) {
+      setBody(""); setReplyTo(null);
+      setComments(await fetchComments(id));
+    }
+  }
+
+  async function vote(commentId: string, value: 1 | -1) {
+    if (!user) { toast.error("Влезте, за да гласувате"); return; }
+    const ok = await postJson("/api/comments/vote", { commentId, vote: value });
+    if (ok) setComments(await fetchComments(id));
+  }
+
+  async function togglePin(commentId: string, pinned: boolean) {
+    const ok = await postJson("/api/comments/pin", { commentId, pinned: !pinned });
+    if (ok) setComments(await fetchComments(id));
+  }
+
+  if (loadState.kind === "not_public") {
+    return (
+      <div className="mx-auto max-w-5xl px-4 py-20 text-center">
+        <h1 className="font-display text-2xl font-black text-ink">Жалбата все още не е публикувана</h1>
+        <p className="mt-3 text-[14px] text-navy-mid max-w-md mx-auto">
+          Тази жалба чака одобрение от модерация или е видима само за автора.
+        </p>
+        <Link to="/sikayetler" className="mt-6 inline-flex text-brand font-semibold hover:underline">Обратно към жалбите</Link>
+      </div>
+    );
+  }
+
+  if (loadState.kind === "not_found" || !complaint) {
+    return (
+      <div className="mx-auto max-w-5xl px-4 py-20 text-center">
+        <h1 className="font-display text-2xl font-black text-ink">Жалбата не е намерена</h1>
+        <p className="mt-3 text-[14px] text-navy-mid max-w-md mx-auto">
+          Търсената жалба е премахната, отхвърлена или връзката е грешна.
+        </p>
+        <Link to="/sikayetler" className="mt-6 inline-flex text-brand font-semibold hover:underline">Обратно към жалбите</Link>
+      </div>
+    );
+  }
+
+  const topLevel = comments.filter((c) => !c.parent_id);
+  const childrenOf = (pid: string) => comments.filter((c) => c.parent_id === pid);
+  const realCommentCount = comments.filter((c) => !c.is_preview).length;
+
+  return (
+    <div>
+
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 py-8 pb-24">
+        <div className="flex items-center gap-2 text-xs text-navy-mid mb-4">
+          <Link to="/" className="hover:text-brand">Начало</Link><span>/</span>
+          <Link to="/firma/$slug" params={{ slug: complaint.companySlug }} className="hover:text-brand">{complaint.companyName}</Link>
+          <span>/</span>
+          {complaint.publicId ? (
+            <button onClick={() => { navigator.clipboard.writeText(complaint.publicId!); toast.success("ID е копирано"); }} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-brand/10 text-brand font-mono font-semibold hover:bg-brand/20">
+              <Copy className="size-3" /> {complaint.publicId}
+            </button>
+          ) : (
+            <span className="text-navy-mid truncate">#{complaint.id.slice(0, 6)}</span>
+          )}
+          {complaint.isHighPriority && (
+            <span className="ml-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-danger-soft text-danger text-[10px] font-bold uppercase ring-1 ring-danger-soft">
+              <AlertOctagon className="size-3" /> Висок приоритет
+            </span>
+          )}
+          {typeof complaint.firstResponseMinutes === "number" && complaint.firstResponseMinutes <= 120 && (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-warning-soft text-warning text-[10px] font-bold uppercase ring-1 ring-warning/30">
+              <Sparkles className="size-3" /> Мълния
+            </span>
+          )}
+          {typeof complaint.firstResponseMinutes === "number" && (
+            <span className="inline-flex items-center gap-1 text-[10px] text-navy-mid"><Clock className="size-3" /> {complaint.firstResponseMinutes} мин. отговор</span>
+          )}
+        </div>
+
+
+        <article className="bg-card rounded-2xl ring-1 ring-rule p-6 sm:p-8">
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center gap-3">
+              <span className="size-10 rounded-full bg-surface flex items-center justify-center text-sm font-bold text-navy-mid">{complaint.userInitials}</span>
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="text-sm font-medium">{complaint.userName}</p>
+                  {complaint.userBadges && complaint.userBadges.length > 0 && (
+                    <UserBadgeRow badges={complaint.userBadges} limit={2} />
+                  )}
+                </div>
+                <p className="text-xs text-navy-mid flex items-center gap-1"><Calendar className="size-3" /> {complaint.createdAgo}</p>
+              </div>
+            </div>
+            <span className={`px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase ring-1 ring-inset ${statusClasses(complaint.status)}`}>{statusLabel[complaint.status]}</span>
+          </div>
+
+          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight leading-tight mb-4 text-balance">{complaint.title}</h1>
+
+          {(complaint.platformUsername || complaint.contactPhoneDisplay) && (
+            <div className="mb-5 rounded-xl bg-surface ring-1 ring-rule px-4 py-3 text-[13px] text-navy">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-navy-mid mb-2">Данни за контакт</p>
+              {complaint.platformUsername ? (
+                <p><span className="text-navy-mid">Потребителско име в платформата:</span> <b className="text-ink">{complaint.platformUsername}</b></p>
+              ) : null}
+              {complaint.contactPhoneDisplay ? (
+                <p className={complaint.platformUsername ? "mt-1" : ""}>
+                  <span className="text-navy-mid">Телефон:</span> <b className="text-ink font-mono">{complaint.contactPhoneDisplay}</b>
+                  <span className="ml-2 text-[11px] text-navy-mid">(другите виждат маскиран номер)</span>
+                </p>
+              ) : null}
+            </div>
+          )}
+
+          {complaint.rating ? (
+            <div className="mb-5 inline-flex items-center gap-1.5 text-sm text-navy">
+              {[1, 2, 3, 4, 5].map((n) => (
+                <Star
+                  key={n}
+                  className={`size-4 ${n <= (complaint.rating ?? 0) ? "fill-amber-400 text-amber-400" : "text-navy-mid"}`}
+                />
+              ))}
+              <span className="ml-1 text-xs text-navy-mid">Оценка от автора на жалбата</span>
+            </div>
+          ) : null}
+
+          <div className="flex items-center gap-2 mb-6 flex-wrap">
+            <Link to="/firma/$slug" params={{ slug: complaint.companySlug }} className="inline-flex items-center gap-1 text-xs px-2.5 py-1 bg-surface text-navy rounded-md font-medium hover:bg-rule">
+              <Tag className="size-3" /> {complaint.companyName}
+            </Link>
+            <Link to="/kategori/$slug" params={{ slug: complaint.category }} className="inline-flex items-center gap-1 text-xs px-2.5 py-1 bg-surface text-navy rounded-md font-medium hover:bg-rule">
+              {complaint.categoryName}
+            </Link>
+          </div>
+
+          <div className="prose prose-sm max-w-none text-navy leading-relaxed whitespace-pre-line">{complaint.body}</div>
+
+          {complaint.attachments && complaint.attachments.length > 0 && (
+            <div className="mt-6 rounded-xl ring-1 ring-rule bg-surface/60 p-4 sm:p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <ImageIcon className="size-4 text-brand" />
+                <h2 className="text-[13px] font-bold uppercase tracking-wide text-navy-mid">
+                  Доказателства ({complaint.attachments.length})
+                </h2>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {complaint.attachments.map((a) => {
+                  const isVideo = (a.file_type ?? "").startsWith("video/");
+                  return (
+                    <a
+                      key={a.id}
+                      href={a.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group block rounded-xl overflow-hidden ring-1 ring-rule bg-card aspect-[4/3] relative"
+                    >
+                      {isVideo ? (
+                        <video src={a.url} className="size-full object-cover" muted playsInline />
+                      ) : (
+                        <img
+                          src={a.url}
+                          alt="Доказателство към жалбата"
+                          className={`size-full object-cover transition ${a.sensitive ? "blur-xl scale-105" : "group-hover:scale-[1.02]"}`}
+                          loading="lazy"
+                        />
+                      )}
+                      {a.sensitive && (
+                        <span className="absolute inset-x-2 bottom-2 rounded-md bg-black/60 text-white text-[10px] font-semibold px-2 py-1 text-center">
+                          Чувствителна информация е скрита
+                        </span>
+                      )}
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          <div className="mt-6 pt-6 border-t border-rule flex flex-wrap items-center gap-3 text-sm">
+            {complaint && (
+              <ComplaintSupportButton
+                complaintId={complaint.id}
+                initialVotes={complaint.votes}
+                initialSupported={complaint.supported}
+                onChange={(votes, supported) =>
+                  setLoadState((prev) =>
+                    prev.kind === "ok"
+                      ? { kind: "ok", complaint: { ...prev.complaint, votes, supported } }
+                      : prev,
+                  )
+                }
+              />
+            )}
+            <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg ring-1 ring-rule hover:bg-surface text-navy"><MessageSquare className="size-4" /> {realCommentCount || comments.length} коментара</button>
+            <button onClick={() => { navigator.clipboard.writeText(typeof window !== "undefined" ? `${window.location.origin}${complaintPath(complaint)}` : absUrl(complaintPath(complaint))); toast.success("Връзката е копирана"); }} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg ring-1 ring-rule hover:bg-surface text-navy"><Share2 className="size-4" /> Сподели</button>
+            <div className="ml-auto"><ReportButton targetType="complaint" targetId={id} /></div>
+          </div>
+        </article>
+
+        {/* Yazışma thread'i: marka yanıtları + şikayet sahibinin takip cevapları */}
+        {(replies.length > 0 || complaint.companyReply) && (
+          <div className="mt-6 space-y-3">
+            <h3 className="text-[13px] font-bold uppercase tracking-wider text-navy-mid">Кореспонденция</h3>
+            {replies.length === 0 && complaint.companyReply ? (
+              <ThreadBubble isBrand author={complaint.companyName} agoLabel={complaint.companyReply.agoLabel} body={complaint.companyReply.body} />
+            ) : (
+              replies.map((r) => (
+                <ThreadBubble
+                  key={r.id}
+                  isBrand={r.is_brand}
+                  author={r.author}
+                  agoLabel={new Date(r.created_at).toLocaleDateString("bg-BG")}
+                  body={r.body}
+                />
+              ))
+            )}
+          </div>
+        )}
+
+        {/* Şikayet sahibi takip cevabı (sunucu sahiplik doğrular) */}
+        {user && (
+          <div className="mt-4 bg-card rounded-2xl ring-1 ring-rule p-4">
+            <label className="text-[12px] font-medium text-navy-mid">Ако сте автор на жалбата, можете да отговорите</label>
+            <textarea value={replyBody} onChange={(e) => setReplyBody(e.target.value)} rows={3} placeholder="Добавете последния статус на процеса…" className="mt-1 w-full rounded-lg ring-1 ring-rule p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40" />
+            <div className="mt-2 flex justify-end">
+              <button onClick={sendReply} disabled={!replyBody.trim()} className="rounded-full bg-brand text-brand-foreground px-5 h-9 text-[13px] font-semibold disabled:opacity-50">Изпрати отговор</button>
+            </div>
+          </div>
+        )}
+
+        {/* Şikayet sahibinin memnuniyet oyu — marka ortalamasını besler.
+            Kutu yalnızca sahibine görünür (karar sunucuda verilir). */}
+        <ComplaintRating complaintId={complaint.id} onChange={() => load()} />
+
+        {/* Resolution stories / mark resolved */}
+        {resolution ? (
+          <div className="mt-6 bg-gradient-to-br from-success-soft to-white rounded-2xl ring-1 ring-success/30 p-6">
+            <div className="flex items-center gap-2 mb-2">
+              <Star className="size-4 text-amber-500 fill-amber-500" />
+              <span className="text-[11px] font-bold uppercase tracking-wider text-success">История на решението · {resolution.resolution_rating}/5</span>
+            </div>
+            <p className="text-sm text-navy italic">"{resolution.thanks_message ?? "Благодаря."}"</p>
+          </div>
+        ) : user && complaint.status !== "cozuldu" && (
+          <div className="mt-6 flex items-center justify-between bg-card rounded-2xl ring-1 ring-rule p-5">
+            <div>
+              <p className="text-sm font-semibold text-ink">Проблемът решен ли е?</p>
+              <p className="text-xs text-navy-mid">Оценете марката и споделете благодарствено съобщение.</p>
+            </div>
+            <button onClick={() => setResolveOpen(true)} className="rounded-full bg-emerald-600 text-white px-4 h-9 text-[13px] font-semibold hover:brightness-110">Маркирай като решена</button>
+          </div>
+        )}
+
+        {/* Timeline */}
+        <section className="mt-8">
+          <h2 className="text-lg font-semibold tracking-tight mb-4">Хронология</h2>
+          <div className="bg-card rounded-2xl ring-1 ring-rule p-6">
+            <ComplaintTimeline complaintId={complaint.id} />
+          </div>
+        </section>
+
+        <ResolutionTunnel
+          open={resolveOpen}
+          onClose={() => setResolveOpen(false)}
+          complaintId={complaint.id}
+          brandName={complaint.companyName}
+          onDone={() => load()}
+        />
+
+
+        {/* Comments */}
+        <section className="mt-10">
+          <h2 className="text-lg font-semibold tracking-tight mb-4">Коментари ({comments.length})</h2>
+
+          <form onSubmit={sendComment} className="bg-card rounded-2xl ring-1 ring-rule p-4 mb-4">
+            <textarea value={body} onChange={(e) => setBody(e.target.value)}
+              placeholder={user ? (replyTo ? "Напишете отговора си…" : "Напишете коментара си…") : "Влезте, за да коментирате"}
+              disabled={!user}
+              className="w-full min-h-[80px] text-sm bg-transparent focus:outline-none resize-y" />
+            <div className="mt-2 flex items-center justify-between">
+              {replyTo ? <button type="button" onClick={() => setReplyTo(null)} className="text-[12px] text-navy-mid hover:text-ink">Отказ от отговора</button> : <span />}
+              <button disabled={!user || !body.trim()} className="ml-auto rounded-full bg-brand text-brand-foreground px-4 h-9 text-[13px] font-semibold disabled:opacity-50 hover:brightness-105">Изпрати</button>
+            </div>
+          </form>
+
+          {topLevel.length === 0 && (
+            <div className="bg-card rounded-2xl ring-1 ring-rule p-8 text-center text-sm text-navy-mid">
+              Все още няма коментари. Бъдете първи.
+            </div>
+          )}
+
+          <div className="space-y-3">
+            {topLevel.map((c) => (
+              <CommentNode key={c.id} c={c} replies={childrenOf(c.id)} onReply={setReplyTo} onVote={vote} onPin={isAdmin ? togglePin : undefined} />
+            ))}
+          </div>
+        </section>
+
+        {similar.length > 0 && (
+          <div className="mt-12">
+            <h2 className="text-lg font-semibold tracking-tight mb-4">Подобни жалби</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {similar.map((c) => <ComplaintCard key={c.id} complaint={c} />)}
+            </div>
+          </div>
+        )}
+      </div>
+
+    </div>
+  );
+}
+
+function ThreadBubble({ isBrand, author, agoLabel, body }: { isBrand: boolean; author: string; agoLabel: string; body: string }) {
+  return (
+    <div className={`rounded-2xl p-5 ring-1 ${isBrand ? "bg-card ring-brand/20" : "bg-surface ring-rule"}`}>
+      <div className="flex items-center gap-2 mb-2">
+        <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${isBrand ? "bg-brand text-brand-foreground" : "bg-ink text-paper"}`}>
+          {isBrand ? "Марка" : "Потребител"}
+        </span>
+        <span className="text-sm font-medium text-ink">{author}</span>
+        <span className="text-xs text-navy-mid">· {agoLabel}</span>
+      </div>
+      <p className="text-sm text-navy leading-relaxed whitespace-pre-line">{body}</p>
+    </div>
+  );
+}
+
+function CommentNode({ c, replies, onReply, onVote, onPin }: {
+  c: DbComment; replies: DbComment[];
+  onReply: (id: string) => void;
+  onVote: (id: string, v: 1 | -1) => void;
+  onPin?: (id: string, pinned: boolean) => void;
+}) {
+  const name = c.profiles?.full_name ?? c.profiles?.username ?? "Потребител";
+  const initials = name.split(/\s+/).map((p) => p[0]).slice(0, 2).join("").toUpperCase();
+  return (
+    <div className={`bg-card rounded-2xl ring-1 ring-rule p-4 ${c.pinned ? "ring-brand/40 bg-brand-soft/20" : ""}`}>
+      <div className="flex items-start gap-3">
+        <div className="size-9 shrink-0 rounded-full bg-surface grid place-items-center text-xs font-bold text-navy-mid">{initials}</div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 text-[12px] text-navy-mid mb-1">
+            <span className="font-semibold text-ink">{name}</span>
+            <span>·</span>
+            <span>{formatAgo(c.created_at)}</span>
+            {c.pinned && <span className="inline-flex items-center gap-1 text-brand"><Pin className="size-3" /> Закачен</span>}
+          </div>
+          <p className="text-sm text-ink whitespace-pre-line">{c.body}</p>
+          {!c.is_preview && (
+            <div className="mt-2 flex items-center gap-3 text-[12px] text-navy-mid">
+              <button onClick={() => onVote(c.id, 1)} className="inline-flex items-center gap-1 hover:text-brand"><ArrowUp className="size-3.5" /> {c.upvotes}</button>
+              <button onClick={() => onVote(c.id, -1)} className="inline-flex items-center gap-1 hover:text-danger"><ArrowDown className="size-3.5" /> {c.downvotes}</button>
+              <button onClick={() => onReply(c.id)} className="hover:text-ink">Отговори</button>
+              {onPin && <button onClick={() => onPin(c.id, c.pinned)} className="hover:text-brand">{c.pinned ? "Премахни закачване" : "Закачи"}</button>}
+            </div>
+          )}
+          {replies.length > 0 && (
+            <div className="mt-3 space-y-2 pl-4 border-l-2 border-rule">
+              {replies.map((r) => (
+                <div key={r.id} className="bg-surface/60 rounded-xl p-3">
+                  <div className="text-[12px] text-navy-mid mb-1 flex items-center gap-2">
+                    <span className="font-semibold text-ink">{r.profiles?.full_name ?? r.profiles?.username ?? "Потребител"}</span>
+                    <span>·</span>
+                    <span>{formatAgo(r.created_at)}</span>
+                  </div>
+                  <p className="text-sm text-ink">{r.body}</p>
+                  <div className="mt-1 flex items-center gap-3 text-[12px] text-navy-mid">
+                    <button onClick={() => onVote(r.id, 1)} className="inline-flex items-center gap-1 hover:text-brand"><ArrowUp className="size-3" /> {r.upvotes}</button>
+                    <button onClick={() => onVote(r.id, -1)} className="inline-flex items-center gap-1 hover:text-danger"><ArrowDown className="size-3" /> {r.downvotes}</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Unused star icon import guard
+void Star;

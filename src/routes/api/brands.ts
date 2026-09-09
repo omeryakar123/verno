@@ -1,0 +1,106 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { and, asc, desc, eq, gt, ilike, sql, type SQL } from "drizzle-orm";
+import { db, schema } from "@/db";
+import { toDbBrand } from "@/lib/db-shapes";
+import { PRIORITY_BRAND_SLUGS } from "@/lib/featured-brands";
+import { applyLiveMetricsToBrand, fetchLiveBrandMetrics } from "@/lib/server/brand-stats";
+
+function brandPriorityOrder() {
+  const cases = PRIORITY_BRAND_SLUGS.map(
+    (slug, i) => `WHEN '${slug.replace(/'/g, "''")}' THEN ${i}`,
+  ).join(" ");
+  return sql.raw(`CASE "brands"."slug" ${cases} ELSE ${PRIORITY_BRAND_SLUGS.length} END`);
+}
+
+// Public: firma listesi.
+export const Route = createFileRoute("/api/brands")({
+  server: {
+    handlers: {
+      GET: async ({ request }) => {
+        const url = new URL(request.url);
+        const p = url.searchParams;
+        const categorySlug = p.get("categorySlug") ?? undefined;
+        const categoryIdParam = p.get("categoryId") ?? undefined;
+        const search = p.get("search") ?? undefined;
+        const slugParam = p.get("slug") ?? undefined;
+        const sortBy = p.get("sortBy") ?? undefined;
+        const limitParam = p.get("limit");
+        const pageParam = p.get("page");
+        const pageSize = Number(p.get("pageSize")) || 12;
+
+        const conditions: SQL[] = [eq(schema.brands.isActive, true)];
+
+        let categoryId = categoryIdParam;
+        if (!categoryId && categorySlug) {
+          const [cat] = await db
+            .select({ id: schema.categories.id })
+            .from(schema.categories)
+            .where(eq(schema.categories.slug, categorySlug))
+            .limit(1);
+          categoryId = cat?.id;
+          if (!categoryId) return Response.json({ items: [], total: 0 });
+        }
+        if (categoryId) conditions.push(eq(schema.brands.categoryId, categoryId));
+        if (slugParam) conditions.push(eq(schema.brands.slug, slugParam));
+        if (search) conditions.push(ilike(schema.brands.name, `%${search}%`));
+        if (sortBy === "resolution") conditions.push(gt(schema.brands.totalComplaints, 0));
+        // Footer/filtre linkleri için: yalnızca doğrulanmış ya da premium markalar.
+        if (p.get("verified") === "1") conditions.push(eq(schema.brands.verified, true));
+        if (p.get("premium") === "1") conditions.push(eq(schema.brands.premium, true));
+
+        const where = and(...conditions);
+        const secondaryOrder =
+          sortBy === "rating"
+            ? desc(schema.brands.rating)
+            : sortBy === "resolution"
+              ? desc(schema.brands.resolutionRate)
+              : sortBy === "complaints"
+                ? desc(schema.brands.totalComplaints)
+                : desc(schema.brands.createdAt);
+
+        const base = db
+          .select()
+          .from(schema.brands)
+          .where(where)
+          .orderBy(...(search ? [secondaryOrder] : [asc(brandPriorityOrder()), secondaryOrder]))
+          .$dynamic();
+
+        let rows: (typeof schema.brands.$inferSelect)[];
+        let total = 0;
+
+        if (limitParam) {
+          rows = await base.limit(Number(limitParam));
+          total = rows.length;
+        } else if (pageParam) {
+          const page = Math.max(1, Number(pageParam));
+          rows = await base.limit(pageSize).offset((page - 1) * pageSize);
+          const [{ count }] = await db
+            .select({ count: sql<number>`count(*)` })
+            .from(schema.brands)
+            .where(where);
+          total = Number(count);
+        } else {
+          rows = await base;
+          total = rows.length;
+        }
+
+        const liveMetrics = await fetchLiveBrandMetrics(rows.map((r) => r.id));
+
+        let items = rows.map((r) => {
+          const live = liveMetrics.get(r.id);
+          return toDbBrand(applyLiveMetricsToBrand(r, live));
+        });
+
+        if (sortBy === "resolution") {
+          items.sort((a, b) => (b.resolution_rate ?? 0) - (a.resolution_rate ?? 0));
+        } else if (sortBy === "complaints") {
+          items.sort((a, b) => (b.total_complaints ?? 0) - (a.total_complaints ?? 0));
+        } else if (sortBy === "rating") {
+          items.sort((a, b) => Number(b.rating ?? 0) - Number(a.rating ?? 0));
+        }
+
+        return Response.json({ items, total });
+      },
+    },
+  },
+});

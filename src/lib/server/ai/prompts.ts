@@ -1,0 +1,1124 @@
+/**
+ * Prompt & senaryo katmanı.
+ *
+ * Promptlar iş mantığının içine gömülmesin diye tüm metinler burada durur:
+ * senaryo kataloğu, ton/dil sözlükleri, prompt kurucular ve AI anahtarı
+ * olmadığında kullanılan ŞABLON YEDEĞİ.
+ *
+ * Şablon yedeği neden var: özellik bir SaaS'a ekleniyor ve sağlayıcı anahtarı
+ * girilmemiş bir kurulumda botun sessizce hiçbir şey üretmemesi (ya da hata
+ * kusması) kabul edilemez. Yedek, token'lı çerçevelerden kombinatoryal metin
+ * üretir; benzerlik kontrolü zaten kopyaları eler.
+ */
+
+export const SCENARIO_KEYS = [
+  "deposit",
+  "withdrawal",
+  "bonus",
+  "free_spin",
+  "casino_game",
+  "sports_betting",
+  "verification",
+  "customer_support",
+  "technical",
+  "account",
+  "payment",
+] as const;
+
+export type ScenarioKey = (typeof SCENARIO_KEYS)[number];
+
+export const COMPLAINT_TONES = ["natural", "angry", "disappointed", "neutral", "formal"] as const;
+export type ComplaintTone = (typeof COMPLAINT_TONES)[number];
+
+export const RESPONSE_TONES = ["professional", "friendly", "formal", "short", "empathetic"] as const;
+export type ResponseTone = (typeof RESPONSE_TONES)[number];
+
+export const LANGUAGES = ["bg", "tr", "en", "de", "es", "ru"] as const;
+export type LanguageCode = (typeof LANGUAGES)[number];
+
+const LANGUAGE_NAMES: Record<string, string> = {
+  bg: "Bulgarian",
+  tr: "Turkish",
+  en: "English",
+  de: "German",
+  es: "Spanish",
+  ru: "Russian",
+};
+
+const COMPLAINT_TONE_HINTS: Record<ComplaintTone, string> = {
+  natural: "the everyday tone of a real customer: mildly irritated but coherent",
+  angry: "clearly angry and impatient, but without profanity or insults",
+  disappointed: "let down and discouraged, more sad than aggressive",
+  neutral: "matter-of-fact, reporting the issue without emotion",
+  formal: "polite and formal, like a written petition",
+};
+
+const RESPONSE_TONE_HINTS: Record<ResponseTone, string> = {
+  professional: "professional, calm and solution-focused",
+  friendly: "warm and approachable while still professional",
+  formal: "formal and corporate, using courteous phrasing",
+  short: "very concise — at most three sentences, no filler",
+  empathetic: "empathetic, acknowledging the frustration before the solution",
+};
+
+type ScenarioLocale = { label: string; titles: string[]; details: string[] };
+
+type Scenario = {
+  key: ScenarioKey;
+  /** Modele verilen varyasyon ipucu (İngilizce; model çıktıyı hedef dilde üretir). */
+  hint: string;
+  tr: ScenarioLocale;
+  en: ScenarioLocale;
+};
+
+/**
+ * 11 senaryo. `titles`/`details` yalnızca şablon yedeği içindir; AI aktifse
+ * model bunları görmez, sadece `hint` ile yönlendirilir (aksi halde çıktılar
+ * şablonlara benzeşip tekrara düşer).
+ */
+export const SCENARIOS: Scenario[] = [
+  {
+    key: "deposit",
+    hint: "a deposit that never arrived, was credited to the wrong account, got stuck as pending, or was debited twice",
+    tr: {
+      label: "Para yatırma",
+      titles: [
+        "Yatırdığım para hesabıma geçmedi",
+        "Yatırım işlemi askıda kaldı",
+        "Aynı yatırım iki kez çekildi",
+        "{amount} TL yatırım bakiyeme yansımadı",
+        "Havale yaptım site hâlâ bekliyor diyor",
+        "Kripto yatırımım onaylandı bakiye sıfır",
+      ],
+      details: [
+        "{method} ile {amount} TL yatırım yaptım, tutar bankadan çıktı ama hesabıma tanımlanmadı.",
+        "{amount} TL yatırımım {days} gündür 'beklemede' görünüyor, dekontu da ilettim.",
+        "Tek yatırım yaptım fakat kartımdan {amount} TL iki kez çekilmiş, fazlası iade edilmedi.",
+        "Referans {ref} ile {amount} TL gönderdim; finans ekibi kayıt bulamadığını söylüyor.",
+        "Canlı destek 48 saat bekleyin dedi, {days} gün geçti durum aynı.",
+        "Mobil ve web bakiyesi tutmuyor; yatırdığım {amount} TL sadece webte görünüyor.",
+      ],
+    },
+    en: {
+      label: "Deposit",
+      titles: ["My deposit never reached my account", "Deposit stuck as pending", "I was charged twice for one deposit"],
+      details: [
+        "I deposited {amount} via {method}; the money left my bank but was never credited.",
+        "My {amount} deposit has been 'pending' for {days} days even though I sent the receipt.",
+        "I made a single deposit but {amount} was charged twice and the extra was never refunded.",
+      ],
+    },
+  },
+  {
+    key: "withdrawal",
+    hint: "a withdrawal that is delayed far beyond the promised window, silently cancelled, or repeatedly reset to pending",
+    tr: {
+      label: "Para çekme",
+      titles: [
+        "Çekim talebim {days} gündür onaylanmadı",
+        "Çekim talebim sebepsiz iptal edildi",
+        "Para çekme sürekli beklemede",
+        "{amount} TL çekimim hâlâ hesaba geçmedi",
+        "Çekim limiti düşürüldü gerekçe verilmedi",
+        "Onaylanan çekim bankaya ulaşmadı",
+      ],
+      details: [
+        "{amount} TL çekim talebim {days} gündür işleme alınmadı, açıklama da yapılmıyor.",
+        "Çekim talebim hiçbir gerekçe gösterilmeden iptal edildi, bakiyem geri döndü ama sorunum sürüyor.",
+        "{method} ile {amount} TL çekmek istedim; talep her seferinde tekrar 'beklemede' durumuna düşüyor.",
+        "Doğrulama tamamlandı denmesine rağmen {amount} TL çekimim {days} gündür bekliyor.",
+        "Günde bir kez çekim hakkım varken sistem {amount} TL talebimi reddediyor.",
+        "Çekim 'tamamlandı' görünüyor ama {amount} TL banka hesabıma {days} gündür yatmamış.",
+      ],
+    },
+    en: {
+      label: "Withdrawal",
+      titles: ["My withdrawal has been pending for {days} days", "Withdrawal cancelled without reason", "Withdrawal keeps resetting to pending"],
+      details: [
+        "My {amount} withdrawal has not been processed for {days} days and nobody explains why.",
+        "My withdrawal was cancelled without any justification; the balance came back but the issue remains.",
+        "I requested {amount} via {method} and the request keeps falling back to 'pending'.",
+      ],
+    },
+  },
+  {
+    key: "bonus",
+    hint: "a bonus that was not credited, was removed mid-play, or had wagering terms that were changed or hidden",
+    tr: {
+      label: "Bonus",
+      titles: [
+        "Bonusum tanımlanmadı",
+        "Bonusum oyun sırasında silindi",
+        "Çevrim şartları sonradan değişti",
+        "{amount} TL hoş geldin bonusu gelmedi",
+        "Kayıp bonusu hesaba yansımadı",
+        "Freespin bonusu çevrimde kayboldu",
+      ],
+      details: [
+        "Kampanya koşullarını sağladım ama {amount} TL bonus hesabıma tanımlanmadı.",
+        "Çevrimi sürerken bonusum ve kazancım tek seferde silindi, gerekçe iletilmedi.",
+        "Bonusu alırken belirtilen çevrim şartı sonradan değiştirildi, kazancım geçersiz sayıldı.",
+        "{amount} TL yatırım bonusu için gereken tutarı yatırdım, promosyon kodu geçersiz denildi.",
+        "Haftalık kayıp iadesi {amount} TL olması gerekirken 0 TL yazıyor.",
+        "Canlı destek bonusu manuel tanımlayacağını söyledi, {days} gün geçti hâlâ yok.",
+      ],
+    },
+    en: {
+      label: "Bonus",
+      titles: ["My bonus was never credited", "My bonus was removed mid-play", "Wagering terms changed after the fact"],
+      details: [
+        "I met every campaign condition but the {amount} bonus was never added to my account.",
+        "My bonus and winnings were wiped out mid-wagering with no explanation.",
+        "The wagering requirement was changed after I claimed the bonus and my winnings were voided.",
+      ],
+    },
+  },
+  {
+    key: "free_spin",
+    hint: "free spins that never appeared, expired early, or paid nothing due to an apparent error",
+    tr: {
+      label: "Free spin",
+      titles: [
+        "Free spin haklarım yüklenmedi",
+        "Free spinlerim süresi dolmadan kayboldu",
+        "Free spin kazancı hesaba geçmedi",
+        "Promosyon spinleri hesabımda görünmüyor",
+        "Spin kazancım çevrimde silindi",
+        "Günlük free spin hakkım tanımlanmadı",
+      ],
+      details: [
+        "Kampanyadan hak ettiğim free spinler {days} gündür hesabıma yüklenmedi.",
+        "Kullanmadığım free spinler süresi bitmeden hesabımdan kaldırıldı.",
+        "Free spinlerden kazandığım {amount} TL bakiyeme yansımadı.",
+        "Doğum günü promosyonundan {amount} TL değerinde spin gelmesi gerekirken hiç yüklenmedi.",
+        "Spinlerden {amount} TL kazandım; çevrim tamamlanmadan bakiye sıfırlandı.",
+        "VIP seviyeme göre günlük spin hakkım var ama {days} gündür panelde görünmüyor.",
+      ],
+    },
+    en: {
+      label: "Free spins",
+      titles: ["My free spins were never added", "Free spins disappeared before expiry", "Free spin winnings never credited"],
+      details: [
+        "The free spins I earned from the campaign have not been added for {days} days.",
+        "My unused free spins were removed from the account before their expiry date.",
+        "The {amount} I won from free spins was never reflected in my balance.",
+      ],
+    },
+  },
+  {
+    key: "casino_game",
+    hint: "a casino game that froze mid-round, lost a winning round after a disconnect, or settled a round incorrectly",
+    tr: {
+      label: "Casino oyunu",
+      titles: [
+        "Oyun ortasında donma yaşadım",
+        "Bağlantı koptu kazancım silindi",
+        "Tur yanlış sonuçlandı",
+        "{game} oyununda bakiye düştü tur bitmedi",
+        "Jackpot düştü hesaba yansımadı",
+        "Canlı masada kart dağıtılmadan bahis alındı",
+      ],
+      details: [
+        "{game} oyununda tur ortasında ekran dondu, bahsim düştü ama sonuç işlenmedi.",
+        "Kazandığım turda bağlantı koptu ve dönüşte {amount} TL kazanç hesabımda yoktu.",
+        "{game} oyununda tur yanlış sonuçlandırıldı, oyun geçmişi ile bakiyem uyuşmuyor.",
+        "{amount} TL bahis koydum; oyun kapandı, ne kazanç ne iade var.",
+        "Jackpot {amount} TL göründü, birkaç saniye sonra ekrandan silindi.",
+        "Canlı {game} masasında kartlar gelmeden {amount} TL eksildi, kayıt tutulmuyor denildi.",
+      ],
+    },
+    en: {
+      label: "Casino game",
+      titles: ["The game froze mid-round", "Lost my winnings after a disconnect", "A round was settled incorrectly"],
+      details: [
+        "{game} froze in the middle of a round; my stake was taken but the round never settled.",
+        "I disconnected during a winning round and the {amount} win was gone when I returned.",
+        "A {game} round settled incorrectly — my game history does not match my balance.",
+      ],
+    },
+  },
+  {
+    key: "sports_betting",
+    hint: "a sports bet voided after placement, settled against the official result, or with odds changed at the last second",
+    tr: {
+      label: "Spor bahis",
+      titles: [
+        "Kuponum haksız şekilde iptal edildi",
+        "Maç sonucu yanlış işlendi",
+        "Oran son saniyede değişti",
+        "Kazanan kuponum ödenmedi",
+        "Canlı bahiste gol sonrası kupon iptal edildi",
+        "Kombine kuponum tek maçtan elendi",
+      ],
+      details: [
+        "Kazanan kuponum maç bitiminden sonra 'iptal' olarak işaretlendi.",
+        "Resmî sonuç farklı olmasına rağmen kuponum kaybetti olarak sonuçlandırıldı.",
+        "Bahsi onayladığım anda oran düşürüldü ve {amount} TL kazancım eksik ödendi.",
+        "{amount} TL tutarındaki kuponum kazandı ama bakiyeye sadece küçük bir kısmı yattı.",
+        "Canlı bahiste gol oldu, kuponum anında iptal edildi; gerekçe verilmedi.",
+        "Dört maçlık kuponumda üç maç tuttu, son maç oynanmadan kupon kaybetti sayıldı.",
+      ],
+    },
+    en: {
+      label: "Sports betting",
+      titles: ["My winning slip was voided unfairly", "Match result settled incorrectly", "Odds dropped at the last second"],
+      details: [
+        "My winning slip was marked as 'void' after the match had already ended.",
+        "My slip was settled as a loss even though the official result says otherwise.",
+        "The odds were cut the moment I confirmed the bet and I was paid {amount} less than shown.",
+      ],
+    },
+  },
+  {
+    key: "verification",
+    hint: "KYC documents rejected without a reason, verification stuck for days, or the same document requested repeatedly",
+    tr: {
+      label: "Hesap doğrulama",
+      titles: [
+        "Belgelerim sebepsiz reddedildi",
+        "Doğrulama {days} gündür bitmedi",
+        "Aynı belge tekrar tekrar isteniyor",
+        "KYC onaylandı çekim yine engellendi",
+        "Kimlik belgem kabul edilmedi gerekçe yok",
+        "Adres doğrulaması süresiz bekliyor",
+      ],
+      details: [
+        "Kimlik ve adres belgemi yükledim, gerekçe belirtilmeden reddedildi.",
+        "Doğrulama sürecim {days} gündür sonuçlanmadı, bu yüzden {amount} TL çekim yapamıyorum.",
+        "Aynı belgeyi {days} kez yükledim, her seferinde yeniden talep ediliyor.",
+        "Hesabım doğrulandı yazıyor ama çekim ekranı hâlâ KYC istiyor.",
+        "Pasaport ve ikamet belgesi net; sistem bulanık fotoğraf diyerek reddediyor.",
+        "Doğrulama için {amount} TL tutarındaki işlem geçmişim de istendi, belgeler yetmiyor denildi.",
+      ],
+    },
+    en: {
+      label: "Verification",
+      titles: ["My documents were rejected without reason", "Verification unfinished for {days} days", "The same document is requested again and again"],
+      details: [
+        "I uploaded my ID and address proof and both were rejected with no reason given.",
+        "My verification has been unresolved for {days} days, so I cannot withdraw.",
+        "I have uploaded the same document {days} times and it keeps being requested again.",
+      ],
+    },
+  },
+  {
+    key: "customer_support",
+    hint: "support that never replies, closes the chat without solving, or gives contradictory answers between agents",
+    tr: {
+      label: "Müşteri hizmetleri",
+      titles: [
+        "Canlı destek yanıt vermiyor",
+        "Talebim çözülmeden kapatıldı",
+        "Her temsilci farklı şey söylüyor",
+        "Destek hattı saatlerce bekletiyor",
+        "Yazdığım mesajlar okunmadan kapanıyor",
+        "Telefonla ulaşamıyorum mail de yok",
+      ],
+      details: [
+        "Canlı desteğe {days} gündür yazıyorum, tek bir yanıt alamadım.",
+        "Destek talebim çözüm üretilmeden 'kapatıldı' olarak işaretlendi.",
+        "Görüştüğüm her temsilci farklı bir açıklama yapıyor, süreç ilerlemiyor.",
+        "{amount} TL'lik çekim sorunum için {hours} saat kuyrukta bekledim, bağlantı koptu.",
+        "WhatsApp hattına yazdım, okundu işareti var ama {days} gündür dönüş yok.",
+        "Mail attım, otomatik '24 saat içinde dönüş' denildi; {days} gün geçti.",
+      ],
+    },
+    en: {
+      label: "Customer support",
+      titles: ["Live support never answers", "My ticket was closed without a solution", "Every agent tells me something different"],
+      details: [
+        "I have been writing to live support for {days} days without a single reply.",
+        "My support ticket was marked as 'closed' without any solution.",
+        "Every agent gives me a different explanation and nothing moves forward.",
+      ],
+    },
+  },
+  {
+    key: "technical",
+    hint: "a technical fault: app crashes, login loops, pages not loading, or balance shown incorrectly",
+    tr: {
+      label: "Teknik sorun",
+      titles: [
+        "Uygulama sürekli çöküyor",
+        "Giriş ekranı döngüye giriyor",
+        "Bakiyem hatalı görünüyor",
+        "Site açılmıyor DNS hatası veriyor",
+        "Oyun yüklenmiyor sürekli hata",
+        "İki cihazda farklı bakiye görüyorum",
+      ],
+      details: [
+        "Mobil uygulama açılışta kapanıyor, {days} gündür işlem yapamıyorum.",
+        "Giriş yaptıktan sonra sürekli oturum düşüyor ve tekrar giriş ekranına dönüyorum.",
+        "Bakiyem sitede {amount} TL, uygulamada farklı görünüyor; hangisi doğru bilmiyorum.",
+        "Canlı casino masaları yüklenmiyor; {amount} TL bakiyem varken oyun açılmıyor.",
+        "Tarayıcıda site donuyor, {hours} saattir çekim bile yapamıyorum.",
+        "Gece {amount} TL kazanç gördüm, sabah bakiye eski haline dönmüş.",
+      ],
+    },
+    en: {
+      label: "Technical issue",
+      titles: ["The app keeps crashing", "Login screen loops endlessly", "My balance is displayed incorrectly"],
+      details: [
+        "The mobile app closes on launch and I have not been able to do anything for {days} days.",
+        "My session drops right after login and I am sent back to the login screen.",
+        "My balance shows {amount} on the website but something else in the app.",
+      ],
+    },
+  },
+  {
+    key: "account",
+    hint: "an account locked or self-excluded by mistake, closed without notice, or duplicated",
+    tr: {
+      label: "Hesap işlemleri",
+      titles: [
+        "Hesabım habersiz kapatıldı",
+        "Hesabım hatalı şekilde kilitlendi",
+        "Hesabıma erişemiyorum",
+        "İçeride {amount} TL bakiyem kaldı",
+        "Hesap birleştirme talebim reddedildi",
+        "Yanlışlıkla kendi hesabımı kapattım geri açılmıyor",
+      ],
+      details: [
+        "Hesabım hiçbir bildirim yapılmadan kapatıldı, {amount} TL bakiyem içeride kaldı.",
+        "Hesabım güvenlik gerekçesiyle kilitlendi ama hangi kural ihlal edilmiş açıklanmıyor.",
+        "E-posta ve şifrem doğru olmasına rağmen {days} gündür hesabıma giriş yapamıyorum.",
+        "Kendi isteğimle mola verdim, süre bitince hesap açılmadı; {amount} TL içeride.",
+        "Eski hesabımla yeni hesabımı birleştirmek istedim, {amount} TL bakiye kayboldu denildi.",
+        "Telefon numaram değişti, SMS gelmiyor; {amount} TL bakiyeye ulaşamıyorum.",
+      ],
+    },
+    en: {
+      label: "Account",
+      titles: ["My account was closed without notice", "My account was locked by mistake", "I cannot access my account"],
+      details: [
+        "My account was closed without any notification and my balance is stuck inside.",
+        "My account was locked for 'security reasons' but nobody says which rule I broke.",
+        "My email and password are correct yet I have been locked out for {days} days.",
+      ],
+    },
+  },
+  {
+    key: "payment",
+    hint: "a payment method failing, a refund never issued, or an unexplained fee deducted from a transaction",
+    tr: {
+      label: "Ödeme",
+      titles: [
+        "Ödeme yöntemi çalışmıyor",
+        "İade tutarı hiç yatmadı",
+        "İşlemden açıklanmayan kesinti yapıldı",
+        "Kartımdan çekildi site reddediyor",
+        "Papara/havale limiti aniden düştü",
+        "Çift provizyon alındı iade yok",
+      ],
+      details: [
+        "{method} ile ödeme her denemede hata veriyor, başka yöntem de sunulmuyor.",
+        "İade edileceği söylenen {amount} TL {days} gündür hesabıma geçmedi.",
+        "{amount} TL işlemimden açıklanmayan bir kesinti yapıldı, faturası da yok.",
+        "Bankadan {amount} TL çıktı, site 'işlem başarısız' diyor; para iade edilmedi.",
+        "{amount} TL yatırım denedim, 3D Secure geçti ama bakiye gelmedi.",
+        "Aynı gün iki kez {amount} TL çekildi; biri iade edilmedi, destek kayıt görmüyor.",
+      ],
+    },
+    en: {
+      label: "Payment",
+      titles: ["Payment method does not work", "My refund never arrived", "An unexplained fee was deducted"],
+      details: [
+        "Paying with {method} fails on every attempt and no alternative is offered.",
+        "The {amount} refund I was promised has not arrived for {days} days.",
+        "An unexplained fee was deducted from my {amount} transaction and there is no invoice.",
+      ],
+    },
+  },
+];
+
+export function scenarioByKey(key: string): Scenario | undefined {
+  return SCENARIOS.find((s) => s.key === key);
+}
+
+export function scenarioLabel(key: string, language: string): string {
+  const s = scenarioByKey(key);
+  if (!s) return key;
+  return language === "tr" ? s.tr.label : s.en.label;
+}
+
+export function languageName(code: string): string {
+  return LANGUAGE_NAMES[code] ?? "English";
+}
+
+/* -------------------------------------------------------------------------- */
+/*                              Prompt kurucular                              */
+/* -------------------------------------------------------------------------- */
+
+export type ComplaintPromptInput = {
+  brandName: string;
+  scenario: ScenarioKey;
+  language: string;
+  tone: ComplaintTone;
+  rating: number;
+  customInstructions?: string | null;
+  /** Modelin tekrara düşmemesi için son üretilen başlıklar. */
+  avoidTitles: string[];
+  /** Son gövdelerin kısa özeti — aynı cümle kalıplarını engeller. */
+  avoidBodies?: string[];
+  /** Her üretimde farklı açı — tekrarı kırar. */
+  variationAngle?: string;
+  /** Yazım personas — ses tonu çeşitliliği. */
+  writingPersona?: string;
+};
+
+const COMPLAINT_SYSTEM = [
+  "You generate SYNTHETIC test data for a consumer complaint platform.",
+  "The output is stored as clearly flagged synthetic content for QA, demo and staging environments.",
+  "Write like a single real customer describing one concrete incident.",
+  "Hard rules:",
+  "- Never invent real people's names, phone numbers, e-mails, IBANs, card numbers or ID numbers.",
+  "- No profanity, no insults, no threats, no accusations of crime.",
+  "- One incident only. No marketing language, no meta commentary, no emojis.",
+  "- For Turkish complaints: use realistic transaction amounts between 20.000 TL and 1.000.000 TL. Never 100, 500, 1000 or similarly trivial figures.",
+  "- Every complaint MUST be structurally different: vary opening sentence, specific detail (amount OR days OR method OR game), and closing demand.",
+  "- Do NOT reuse stock phrases like 'talep ediyorum', 'bilgilendirilmeyi', 'ivedilikle' in the same form across outputs.",
+  "- Avoid formulaic openings: do not start multiple texts with 'Merhaba', 'Yaklaşık', 'Geçen hafta' or 'Canlı destek'.",
+  "- Vary sentence length: mix short punchy lines with longer explanations.",
+  "- Return ONLY a JSON object with keys: title, body.",
+].join("\n");
+
+/** Her üretimde modele verilen farklı odak — tekrarı kırar. */
+export const COMPLAINT_VARIATION_ANGLES = [
+  "Focus on how many days passed without any update from support.",
+  "Focus on a specific payment method and transaction reference.",
+  "Focus on money leaving the bank but never appearing in the account.",
+  "Focus on contradictory answers from different support agents.",
+  "Focus on being asked to upload the same document repeatedly.",
+  "Focus on a game round that froze or disconnected mid-win.",
+  "Focus on bonus terms changing after the user already met them.",
+  "Focus on withdrawal stuck in pending with no explanation.",
+  "Focus on the mobile app crashing while the website shows different balance.",
+  "Focus on a sports bet settled against the official match result.",
+  "Focus on account access blocked without clear reason.",
+  "Focus on an unexplained fee deducted from a transaction.",
+  "Focus on a large withdrawal (50.000+ TL) stuck for many days.",
+  "Focus on a high-stakes casino round where winnings vanished after reconnect.",
+  "Focus on a sports coupon worth tens of thousands of TL settled incorrectly.",
+  "Focus on waiting on hold in live chat for over an hour.",
+  "Focus on a deposit that shows completed on the provider side but not in the wallet.",
+  "Focus on VIP status being ignored when asking for priority.",
+  "Focus on a weekend/holiday delay with no communication.",
+  "Focus on screenshots and receipts already sent but ignored.",
+  "Focus on a partial payout where only a fraction arrived.",
+  "Focus on limits suddenly lowered without notice before a big withdrawal.",
+  "Focus on a promo code that worked at signup but bonus never credited.",
+  "Focus on two-factor or SMS verification blocking login.",
+  "Focus on a live casino dealer mistake or missing cards on screen.",
+  "Focus on cash-out on a live bet voided after the event ended.",
+  "Focus on being told to use a different payment method then that one fails too.",
+  "Focus on tax/fee deducted that was never mentioned in terms.",
+  "Focus on account closure with balance still inside.",
+  "Focus on a friend having the same issue with this brand last month.",
+] as const;
+
+/** Yazım personas — aynı senaryoda bile farklı ses tonu. */
+export const WRITING_PERSONAS = [
+  "A regular player who writes casually, uses short sentences, occasional 'yani' or 'hani' but stays readable.",
+  "Someone who kept notes: mentions dates, amounts and support ticket ids like a careful customer.",
+  "A frustrated but polite person who has already tried chat, e-mail and phone.",
+  "A first-time complainer, slightly confused by betting jargon, explains step by step.",
+  "A long-time member (years on the site) disappointed because it never happened before.",
+  "Direct and blunt — minimal filler, gets to the point in the first sentence.",
+  "Writes like a formal e-mail: numbered steps or clear paragraphs.",
+  "Emotional but not insulting — emphasizes stress and lost trust.",
+  "Technical-minded user who mentions app version, browser or connection drops.",
+  "Compares what the site promised in FAQ vs what actually happened.",
+] as const;
+
+export function pickVariationAngle(): string {
+  return COMPLAINT_VARIATION_ANGLES[Math.floor(Math.random() * COMPLAINT_VARIATION_ANGLES.length)];
+}
+
+export function pickWritingPersona(): string {
+  return WRITING_PERSONAS[Math.floor(Math.random() * WRITING_PERSONAS.length)];
+}
+
+export function buildComplaintMessages(input: ComplaintPromptInput) {
+  const scenario = scenarioByKey(input.scenario);
+  const avoidTitles = input.avoidTitles.slice(0, 20);
+  const avoidBodies = (input.avoidBodies ?? []).slice(0, 8).map((b) => b.slice(0, 120));
+
+  const user = [
+    `Brand: ${input.brandName}`,
+    `Scenario: ${input.scenario} — ${scenario?.hint ?? ""}`,
+    `Language: ${languageName(input.language)} (write everything in this language)`,
+    `Customer tone: ${COMPLAINT_TONE_HINTS[input.tone]}`,
+    `Satisfaction the customer would give afterwards: ${input.rating}/5 — the severity of the text must match this score (1 = severe unresolved problem, 5 = minor issue that was handled well).`,
+    input.variationAngle ? `Unique angle for THIS complaint: ${input.variationAngle}` : "",
+    input.writingPersona ? `Writing persona: ${input.writingPersona}` : "",
+    "",
+    "Constraints:",
+    "- title: 4-12 words, no quotes, no brand slogan, must NOT start the same way as recent titles.",
+    "- body: 70-150 words, first person, includes TWO concrete details (amount, duration, method, reference number, or product name).",
+    "- For Turkish: amounts must be realistic for online betting/casino (20.000–1.000.000 TL). NEVER use trivial amounts like 100, 500, 1000 or 1500 TL.",
+    "- Vary narrative structure every time: different opening, different complaint angle, different closing request.",
+    "- Do NOT include a signature name or nickname in the body — the display name is assigned separately.",
+    "- Never use fake usernames like KayıtlıKullanıcı, User123, testuser, player1 in the body.",
+    "- Use a different narrative structure than a generic 'I did X and Y happened' template.",
+    avoidTitles.length ? `- Must NOT resemble these existing titles: ${avoidTitles.map((t) => `"${t}"`).join(", ")}` : "",
+    avoidBodies.length ? `- Avoid similar story openings or endings to: ${avoidBodies.map((b) => `"${b}…"`).join("; ")}` : "",
+    input.customInstructions ? `\nBrand-specific instructions: ${input.customInstructions}` : "",
+    "",
+    'Respond as: {"title": "...", "body": "..."}',
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  return [
+    { role: "system" as const, content: COMPLAINT_SYSTEM },
+    { role: "user" as const, content: user },
+  ];
+}
+
+export type ResponsePromptInput = {
+  brandName: string;
+  complaintTitle: string;
+  complaintBody: string;
+  scenario: string;
+  language: string;
+  tone: ResponseTone;
+  rating: number;
+  customInstructions?: string | null;
+};
+
+const RESPONSE_SYSTEM = [
+  "You are the customer support team of the brand, replying publicly to one complaint.",
+  "Hard rules:",
+  "- Reply in the SAME language as the complaint.",
+  "- Address the SPECIFIC issue described; quote or reference at least one concrete detail from the complaint (amount, days, method, product).",
+  "- Structure the reply in 3 clear parts:",
+  "  1) Acknowledge the problem and apologize if the customer is dissatisfied.",
+  "  2) Explain what you checked or will check, with a concrete next step (not vague promises).",
+  "  3) Tell them how and when they will hear back (e.g. via this thread, e-mail, or account notification).",
+  "- Be solution-oriented: offer a practical resolution path, not deflection.",
+  "- Max 120 words. No emojis, no signature block, no links.",
+  "- Never promise a specific payout amount or exact date you cannot know.",
+  "- Never ask for card numbers, passwords or full ID numbers in public.",
+  "- Do NOT use empty phrases like 'we are looking into it' without specifics.",
+  "- Return ONLY a JSON object with key: response.",
+].join("\n");
+
+export function buildResponseMessages(input: ResponsePromptInput) {
+  const user = [
+    `Brand: ${input.brandName}`,
+    `Language: ${languageName(input.language)}`,
+    `Support tone: ${RESPONSE_TONE_HINTS[input.tone]}`,
+    `Scenario: ${input.scenario}`,
+    `Customer satisfaction score: ${input.rating}/5 — a low score means the reply must acknowledge the failure more directly and offer a stronger recovery step.`,
+    "",
+    "The response must feel written by a human agent who read the full complaint, not a template.",
+    `Complaint title: ${input.complaintTitle}`,
+    `Complaint body: ${input.complaintBody}`,
+    input.customInstructions ? `\nBrand-specific instructions: ${input.customInstructions}` : "",
+    "",
+    'Respond as: {"response": "..."}',
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  return [
+    { role: "system" as const, content: RESPONSE_SYSTEM },
+    { role: "user" as const, content: user },
+  ];
+}
+
+/* -------------------------------------------------------------------------- */
+/*                              Şablon yedeği                                 */
+/* -------------------------------------------------------------------------- */
+
+const pick = <T>(arr: readonly T[]): T => arr[Math.floor(Math.random() * arr.length)];
+const int = (min: number, max: number) => min + Math.floor(Math.random() * (max - min + 1));
+
+/** Bahis/casino şikayetlerinde gerçekçi tutarlar — 100/500 TL gibi komik rakamlar kullanılmaz. */
+function pickAmount(lang: "tr" | "en"): string {
+  if (lang === "tr") {
+    const amounts = [
+      20_000, 25_000, 30_000, 35_000, 40_000, 50_000, 60_000, 75_000, 80_000,
+      100_000, 120_000, 150_000, 180_000, 200_000, 250_000, 300_000, 400_000,
+      500_000, 750_000, 1_000_000,
+    ];
+    return pick(amounts).toLocaleString("tr-TR");
+  }
+  const amounts = [500, 1_000, 2_500, 5_000, 10_000, 25_000, 50_000];
+  return pick(amounts).toLocaleString("en-US");
+}
+
+const TOKEN_POOLS = {
+  tr: {
+    method: ["havale/EFT", "kredi kartı", "banka kartı", "mobil ödeme", "kripto (USDT)"],
+    game: ["slot", "canlı casino", "rulet", "blackjack", "çark oyunu"],
+  },
+  en: {
+    method: ["bank transfer", "credit card", "debit card", "mobile payment", "crypto (USDT)"],
+    game: ["a slot", "live casino", "roulette", "blackjack", "a wheel game"],
+  },
+} as const;
+
+const DEMANDS = {
+  tr: [
+    "Konunun ivedilikle çözülmesini ve bilgilendirilmeyi talep ediyorum.",
+    "Somut bir açıklama ve işlem tarihi bekliyorum.",
+    "Mağduriyetimin giderilmesini istiyorum, aksi halde şikayetimi yetkili mercilere de ileteceğim.",
+    "Bu süreçle ilgili yazılı bir dönüş yapılmasını rica ediyorum.",
+    "Kayıtlarınızda işlem numaramı bulup sonucu paylaşmanızı bekliyorum.",
+    "Aynı sorunu tekrar yaşamamak için kalıcı bir çözüm istiyorum.",
+    "Hesabımdaki bakiyemin güvenli şekilde iade edilmesini talep ediyorum.",
+    "Canlı destek yerine bu şikayet üzerinden resmi dönüş almak istiyorum.",
+    "En geç 48 saat içinde net bir çözüm planı paylaşılmasını istiyorum.",
+    "İşlem tutarımın eksiksiz hesabıma geçmesini talep ediyorum.",
+    "Hatalı kesinti veya eksik ödemenin düzeltilmesini bekliyorum.",
+    "Sürecin hangi aşamada olduğunu şeffaf şekilde açıklamanızı rica ediyorum.",
+  ],
+  en: [
+    "I expect this to be resolved urgently and to be informed about it.",
+    "I would like a concrete explanation and a processing date.",
+    "I want this resolved; otherwise I will escalate the complaint further.",
+    "Please get back to me in writing about this process.",
+    "Please locate my transaction id in your records and share the outcome.",
+    "I need a permanent fix so this does not happen again.",
+    "I expect my balance to be returned safely to my account.",
+    "I prefer an official reply on this complaint instead of live chat.",
+  ],
+} as const;
+
+const CONTEXT = {
+  tr: [
+    "Destek ekibiyle {days} kez yazıştım, sonuç alamadım.",
+    "Tüm belgeleri ve işlem numarasını ({ref}) paylaştım.",
+    "Aynı sorunu daha önce de yaşadım ama bu kez hiç dönüş olmadı.",
+    "Referans numaram {ref}; kayıtlarda görünüyor olmalı.",
+    "Ekran görüntüsü ve banka dekontunu da yükledim, inceleme yapılmadı.",
+    "Canlı destek oturumu {hours} dakika açık kaldıktan sonra kapatıldı.",
+    "Mobil uygulama üzerinden de aynı hatayı alıyorum.",
+    "İşlem saati ve tutarı banka ekstremde görünüyor.",
+    "VIP müşteri olduğum halde öncelik verilmedi.",
+    "Finans birimi incelemeye aldı denildi, {days} gündür haber yok.",
+    "Telegram kanalından yazdım, buraya yönlendirdiler.",
+    "Hesap geçmişimde işlem görünüyor ama bakiye güncellenmedi.",
+  ],
+  en: [
+    "I have contacted support {days} times with no result.",
+    "I shared every document and the transaction id ({ref}).",
+    "I had the same problem before, but this time nobody replied at all.",
+    "My reference number is {ref}; it should be visible in your records.",
+    "I uploaded screenshots and a bank receipt but nothing was reviewed.",
+    "The live chat session was closed after {days} minutes without an answer.",
+    "I get the same error on the mobile app as well.",
+    "The transaction time and amount appear on my bank statement.",
+  ],
+} as const;
+
+/** Bot şikayetlerinde görünen rastgele български имена (gerçek kullanıcı gibi). */
+const BG_FIRST_NAMES = [
+  "Ivan", "Georgi", "Dimitar", "Nikolay", "Petar", "Stoyan", "Hristo", "Todor", "Vasil", "Krasimir",
+  "Martin", "Aleksandar", "Boris", "Emil", "Plamen", "Radoslav", "Stanislav", "Yordan", "Atanas", "Lyubomir",
+  "Maria", "Elena", "Ivanka", "Desislava", "Petya", "Radka", "Silvia", "Tanya", "Violeta", "Yoana",
+  "Kristina", "Monika", "Nadezhda", "Ralitsa", "Svetlana", "Teodora", "Viktoria", "Zornitsa", "Anelia", "Daniela",
+] as const;
+
+const BG_LAST_NAMES = [
+  "Ivanov", "Georgiev", "Dimitrov", "Petrov", "Nikolov", "Stoyanov", "Todorov", "Hristov", "Vasilev", "Kolev",
+  "Atanasov", "Yordanov", "Marinov", "Popov", "Angelov", "Stefanov", "Mihaylov", "Iliev", "Kostov", "Filipov",
+] as const;
+
+const BG_LAST_INITIALS = ["I", "G", "D", "P", "N", "S", "T", "H", "V", "K", "A", "M"] as const;
+
+/** Bot şikayetlerinde görünen rastgele Türkçe isimler (gerçek kullanıcı gibi). */
+const TR_FIRST_NAMES = [
+  "Ahmet", "Mehmet", "Mustafa", "Ali", "Hakan", "Burak", "Emre", "Can", "Oğuz", "Serkan",
+  "Kerem", "Tolga", "Murat", "Cem", "Barış", "Volkan", "Kaan", "Onur", "Yusuf", "Enes",
+  "Halil", "İbrahim", "Osman", "Ramazan", "Süleyman", "Fatih", "Erhan", "Umut", "Berk", "Eren",
+  "Ayşe", "Fatma", "Elif", "Zeynep", "Selin", "Deniz", "Merve", "Esra", "Gamze", "Buse",
+  "Seda", "Pınar", "Derya", "Gizem", "Cansu", "Tuğba", "Hande", "Melis", "İrem", "Yasemin",
+  "Sevgi", "Nur", "Emine", "Hatice", "Zehra", "Berna", "Ceren", "Damla", "Ebru", "Filiz",
+] as const;
+
+const TR_LAST_NAMES = [
+  "Yılmaz", "Kaya", "Demir", "Çelik", "Şahin", "Yıldız", "Aydın", "Öztürk", "Arslan", "Doğan",
+  "Kılıç", "Aslan", "Çetin", "Koç", "Kurt", "Özkan", "Polat", "Güneş", "Aksoy", "Erdoğan",
+  "Taş", "Tekin", "Bulut", "Karaca", "Korkmaz", "Acar", "Yavuz", "Tunç", "Güler", "Bozkurt",
+] as const;
+
+const TR_LAST_INITIALS = [
+  "A", "B", "C", "D", "E", "F", "G", "H", "K", "M", "S", "T", "Y", "Ö", "Ü", "Ş",
+] as const;
+
+const BOT_NAME_BLOCKLIST = new Set(
+  [
+    "şikayet botu", "sikayet botu", "sikayet-botu", "complaint bot", "bot",
+    "kullanici", "kullanıcı", "anonim", "mağdur müşteri", "magdur musteri",
+    "kayıtlı kullanıcı", "kayitli kullanici", "registered user", "test kullanıcı",
+  ].map((s) => s.toLowerCase()),
+);
+
+/** Bahis/casino sitelerinde görülen gerçekçi kullanıcı adı parçaları. */
+const PLATFORM_USER_STEMS = [
+  "murat", "ahmet", "mehmet", "can", "emre", "burak", "serkan", "kadir", "oguz", "mert",
+  "selin", "ayse", "elif", "zeynep", "deniz", "buse", "gizem", "pinar", "cem", "baris",
+  "onur", "tolga", "hakan", "volkan", "yusuf", "fatih", "kerem", "berk", "umut", "salih",
+  "kaan", "eren", "alp", "sinan", "tugce", "seda", "merve", "gamze", "hande", "yasin",
+] as const;
+
+const PLATFORM_USER_SUFFIXES = [
+  "kaya", "demir", "yilmaz", "celik", "arslan", "polat", "sahin", "ozturk", "koc", "kurt",
+] as const;
+
+function asciiUsername(s: string): string {
+  return s
+    .toLowerCase()
+    .replace(/ğ/g, "g")
+    .replace(/ü/g, "u")
+    .replace(/ş/g, "s")
+    .replace(/ı/g, "i")
+    .replace(/ö/g, "o")
+    .replace(/ç/g, "c")
+    .replace(/[^a-z0-9._-]/g, "");
+}
+
+/** Sahte / şablon platform kullanıcı adı mı? */
+export function looksLikeFakePlatformUsername(raw: string): boolean {
+  const s = raw.trim();
+  if (!s || s.length < 2) return true;
+  const lower = s.toLowerCase();
+  if (
+    /kay[iı]tl[iı]|registered|kullan[iı]c[iı]|user\d|player|test|demo|fake|oyuncu|magdur|guest|member|hesap|üye\b|uye\b|account|nickname|rumuz/.test(
+      lower,
+    )
+  ) {
+    return true;
+  }
+  if (/^(user|test|demo|player|member|guest|admin|support)\d*$/i.test(s)) return true;
+  if (/^[A-ZÇĞİÖŞÜ][a-zçğıöşü]+Kullan/i.test(s)) return true;
+  if (/kullanici\d+|kullanıcı\d+/i.test(s)) return true;
+  return false;
+}
+
+/** Sentetik / bot şikayetlerinde site kullanıcı adı — gerçekçi rumuz. */
+export function pickRealisticPlatformUsername(avoid: string[] = []): string {
+  const avoidSet = new Set(avoid.map((a) => a.trim().toLowerCase()).filter(Boolean));
+  for (let attempt = 0; attempt < 50; attempt++) {
+    const stem = pick(PLATFORM_USER_STEMS);
+    const roll = Math.random();
+    let username: string;
+    if (roll < 0.4) {
+      username = `${stem}${int(10, 99)}${pick(PLATFORM_USER_SUFFIXES).slice(0, 4)}`;
+    } else if (roll < 0.7) {
+      username = `${stem}_${pick(PLATFORM_USER_SUFFIXES)}${int(1, 99)}`;
+    } else if (roll < 0.88) {
+      username = `${stem.charAt(0)}${pick(PLATFORM_USER_SUFFIXES)}${int(10, 999)}`;
+    } else {
+      username = `${stem}${int(1986, 2003) % 100}${int(1, 9)}`;
+    }
+    username = asciiUsername(username).slice(0, 24);
+    if (username.length >= 4 && !avoidSet.has(username) && !looksLikeFakePlatformUsername(username)) {
+      return username;
+    }
+  }
+  return `${pick(PLATFORM_USER_STEMS)}${int(1000, 9999)}`;
+}
+
+export function normalizePlatformUsername(raw: string | undefined | null, avoid: string[] = []): string {
+  const s = (raw ?? "").trim();
+  if (!s || looksLikeFakePlatformUsername(s)) return pickRealisticPlatformUsername(avoid);
+  if (avoid.some((a) => a.trim().toLowerCase() === s.toLowerCase())) {
+    return pickRealisticPlatformUsername(avoid);
+  }
+  return asciiUsername(s).slice(0, 80) || pickRealisticPlatformUsername(avoid);
+}
+
+/** Rumuz / İngilizce takma ad değil, gerçek Türk ismi formatı mı? */
+function looksLikeTurkishPersonName(name: string): boolean {
+  const s = name.trim();
+  if (/kay[iı]tl[iı]|kullan[iı]c[iı]|registered|user\d|player|test|oyuncu|magdur|mağdur|guest|member/i.test(s)) {
+    return false;
+  }
+  if (/[_@]|player|user|oyuncu|magdur|kullan/i.test(s)) return false;
+  return /^[A-ZÇĞİÖŞÜ][a-zçğıöşü]+(\s+[A-ZÇĞİÖŞÜ][a-zçğıöşü]+|\s+[A-ZÇĞİÖŞÜ]\.)?$/.test(s);
+}
+
+/** Sentetik şikayet yazar adı — her seferinde farklı българско име. */
+export function pickBulgarianDisplayName(avoid: string[] = []): string {
+  const avoidSet = new Set([
+    ...avoid.map((a) => a.trim().toLowerCase()).filter(Boolean),
+    ...BOT_NAME_BLOCKLIST,
+  ]);
+  const avoidFirst = new Set(
+    avoid.map((a) => a.trim().split(/\s+/)[0]?.toLowerCase()).filter(Boolean) as string[],
+  );
+
+  for (let attempt = 0; attempt < 60; attempt++) {
+    const first = pick(BG_FIRST_NAMES);
+    if (avoidFirst.has(first.toLowerCase()) && attempt < 40) continue;
+
+    const roll = Math.random();
+    let name: string;
+    if (roll < 0.45) {
+      name = `${first} ${pick(BG_LAST_NAMES)}`;
+    } else if (roll < 0.7) {
+      name = `${first} ${pick(BG_LAST_INITIALS)}.`;
+    } else if (roll < 0.85) {
+      name = `${first.charAt(0)}. ${pick(BG_LAST_NAMES)}`;
+    } else {
+      name = first;
+    }
+
+    if (!avoidSet.has(name.toLowerCase())) return name;
+  }
+  return `${pick(BG_FIRST_NAMES)} ${pick(BG_LAST_NAMES)}`;
+}
+
+/** @deprecated Use pickBulgarianDisplayName for verno */
+export const pickTurkishDisplayName = pickBulgarianDisplayName;
+
+/** Bot şikayetlerinde yalnızca geçerli isim kabul edilir; aksi halde yenisi üretilir. */
+export function normalizeBotDisplayName(raw: string | undefined | null, avoid: string[] = []): string {
+  const s = (raw ?? "").trim();
+  if (!s || BOT_NAME_BLOCKLIST.has(s.toLowerCase()) || /bot|sikayet|şikayet|kullanici|jalba/i.test(s)) {
+    return pickBulgarianDisplayName(avoid);
+  }
+  if (s.length < 2 || s.length > 40) {
+    return pickBulgarianDisplayName(avoid);
+  }
+  if (avoid.some((a) => a.trim().toLowerCase() === s.toLowerCase())) {
+    return pickBulgarianDisplayName(avoid);
+  }
+  return s;
+}
+
+/** Şikayet gövdesi için farklı giriş cümleleri — aynı kalıptan kaçınır. */
+const BODY_OPENERS = {
+  tr: [
+    "Yaklaşık {months} aydır bu sitede oynuyorum;",
+    "Geçen hafta başlayan sorunum hâlâ devam ediyor:",
+    "İlk defa böyle bir mağduriyet yaşıyorum —",
+    "Canlı destekle görüşmem sonuçsuz kaldı;",
+    "Banka ekstremde işlem görünmesine rağmen",
+    "Kampanyadan yararlanıp işlem yaptıktan sonra",
+    "Dün akşam yaşanan olayla ilgili",
+    "Uzun süredir beklediğim işlem için",
+    "Defalarca yazmama rağmen dönüş alamadım;",
+    "Siteye giriş yapıp kontrol ettiğimde gördüm ki",
+    "Telefonla da aradım, e-posta da attım —",
+    "Arkadaşımın yaşadığına benzer bir durumla karşılaştım:",
+    "Kuponu/oyunu kapattığımda fark ettim:",
+    "Sabah bakiyeye baktığımda şok oldum;",
+    "Resmi sitedeki SSS'te yazandan farklı bir süreç yaşadım;",
+  ],
+  en: [
+    "I have been playing on this site for about {months} months;",
+    "The issue that started last week is still ongoing:",
+    "This is the first time I have faced such a problem —",
+    "My live chat session ended without a solution;",
+    "Even though the transaction appears on my bank statement",
+    "After taking part in a promotion and placing a transaction",
+    "Regarding what happened yesterday evening",
+    "For a transaction I have been waiting on for a long time",
+    "Despite messaging several times I got no reply;",
+    "When I logged in and checked I noticed that",
+    "I called and e-mailed as well —",
+    "I ran into something similar to what a friend experienced:",
+    "When I closed the bet/game I realized:",
+    "I was shocked when I checked my balance this morning;",
+    "The process I went through differs from what the FAQ says;",
+  ],
+} as const;
+
+/** Ek paragraf cümleleri — gövdeyi uzatır ve çeşitlendirir. */
+const MID_DETAILS = {
+  tr: [
+    "Dekontu ve ekran görüntüsünü ekledim, yine de inceleme yapılmadığını söylüyorlar.",
+    "Finans birimi 24-48 saat dedi; {days} gün oldu hâlâ aynı ekran.",
+    "Mobil uygulamada farklı, webde farklı bilgi görüyorum; hangisine güveneceğimi bilmiyorum.",
+    "Canlı destek temsilcisi önce onaylandı dedi, sonra sistem hatası var dedi.",
+    "Aynı gün içinde üç farklı gerekçe duydum; tutarlı bir açıklama yok.",
+    "İşlem numaram {ref} — kayıtlarınızda mutlaka görünüyor olmalı.",
+    "Bu tutar benim için küçük değil; {amount} TL bekliyorum.",
+    "Daha önce sorunsuz çekim/yatırım yaptım, son bir haftadır sistem bozuk gibi.",
+    "Telegram/WhatsApp hattına yönlendirdiler, oradan da cevap gelmedi.",
+    "Hesabım doğrulandı yazıyor ama işlem ekranı hâlâ engelli.",
+  ],
+  en: [
+    "I attached the receipt and screenshots but they still say nothing was reviewed.",
+    "Finance said 24-48 hours; {days} days passed and the screen is unchanged.",
+    "The app and website show different information and I do not know which to trust.",
+    "Live support first said it was approved, then blamed a system error.",
+    "I heard three different excuses the same day with no consistent explanation.",
+    "My transaction id is {ref} — it must appear in your records.",
+    "This is not a small amount for me; I am waiting for {amount}.",
+    "I had no issues before; the system feels broken for the past week.",
+    "They redirected me to Telegram/WhatsApp and nobody answered there either.",
+    "My account shows verified but the transaction screen is still blocked.",
+  ],
+} as const;
+
+/** Tek seferde tutarlı token seti — aynı şikayette farklı tutarlar çıkmasın. */
+function fillComplaintTokens(parts: string[], lang: "tr" | "en"): string[] {
+  const amount = pickAmount(lang);
+  const days = String(int(2, 28));
+  const hours = String(int(6, 72));
+  const months = String(int(3, 36));
+  const method = pick(TOKEN_POOLS[lang].method);
+  const game = pick(TOKEN_POOLS[lang].game);
+  const ref = `#${int(100000, 999999)}`;
+
+  const replace = (text: string) =>
+    text
+      .replace(/\{days\}/g, days)
+      .replace(/\{hours\}/g, hours)
+      .replace(/\{months\}/g, months)
+      .replace(/\{amount\}/g, amount)
+      .replace(/\{method\}/g, method)
+      .replace(/\{game\}/g, game)
+      .replace(/\{ref\}/g, ref);
+
+  return parts.map(replace);
+}
+
+/** Şablon yedeği yalnızca tr/en biliyor; diğer diller en'e düşer. */
+function baseLang(language: string): "tr" | "en" {
+  return language === "tr" ? "tr" : "en";
+}
+
+export function fallbackComplaint(input: {
+  scenario: ScenarioKey;
+  language: string;
+}): { title: string; body: string; nickname: string } {
+  const lang = baseLang(input.language);
+  const scenario = scenarioByKey(input.scenario) ?? SCENARIOS[0];
+  const locale = scenario[lang];
+
+  const titleTpl = pick(locale.titles);
+  const detailTpl = pick(locale.details);
+  const contextTpl = Math.random() > 0.2 ? pick(CONTEXT[lang]) : "";
+  const demandTpl = pick(DEMANDS[lang]);
+  const openerTpl = Math.random() > 0.25 ? pick(BODY_OPENERS[lang]) : "";
+  const midTpl = Math.random() > 0.35 ? pick(MID_DETAILS[lang]) : "";
+
+  const [title, detail, context, demand, opener, mid] = fillComplaintTokens(
+    [titleTpl, detailTpl, contextTpl, demandTpl, openerTpl, midTpl],
+    lang,
+  );
+
+  const segments: string[] = [];
+  const structure = int(0, 7);
+  switch (structure) {
+    case 0:
+      if (opener) segments.push(opener);
+      segments.push(detail, mid, context, demand);
+      break;
+    case 1:
+      segments.push(detail, context, mid, demand);
+      break;
+    case 2:
+      if (context) segments.push(context);
+      segments.push(detail, mid, demand);
+      break;
+    case 3:
+      if (opener) segments.push(opener);
+      segments.push(detail, demand);
+      break;
+    case 4:
+      segments.push(detail, demand, context, mid);
+      break;
+    case 5:
+      if (mid) segments.push(mid);
+      segments.push(detail, context, demand);
+      break;
+    case 6:
+      segments.push(demand, detail, context);
+      break;
+    default:
+      if (opener) segments.push(opener);
+      segments.push(context, detail, mid, demand);
+      break;
+  }
+
+  let body = segments.filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
+  if (body.length < 120 && mid && !segments.includes(mid)) {
+    body = `${body} ${mid}`.replace(/\s+/g, " ").trim();
+  }
+
+  return { title, body, nickname: pickTurkishDisplayName() };
+}
+
+const RESPONSE_OPENERS: Record<ResponseTone, { tr: string; en: string }> = {
+  professional: {
+    tr: "Merhaba, yaşadığınız aksaklığı incelemeye aldık.",
+    en: "Hello, we have taken your issue into review.",
+  },
+  friendly: {
+    tr: "Merhaba, bu durumu bize bildirdiğiniz için teşekkür ederiz.",
+    en: "Hi there, thank you for letting us know about this.",
+  },
+  formal: {
+    tr: "Sayın kullanıcımız, bildiriminiz tarafımıza ulaşmıştır.",
+    en: "Dear customer, your notification has reached our team.",
+  },
+  short: { tr: "Merhaba, konuyu inceliyoruz.", en: "Hello, we are looking into this." },
+  empathetic: {
+    tr: "Merhaba, yaşadığınız bu deneyim için gerçekten üzgünüz.",
+    en: "Hello, we are truly sorry about the experience you had.",
+  },
+};
+
+const RESPONSE_ACTIONS = {
+  tr: [
+    "İlgili birim {scenario} kaydınızı işlem numarasıyla birlikte kontrol ediyor.",
+    "{scenario} talebiniz öncelikli kuyruğa alındı ve teknik ekibe iletildi.",
+    "Kaydınızı açtık; {scenario} sürecindeki adımlar baştan doğrulanıyor.",
+    "Finans ekibimiz {scenario} işleminizi ödeme sağlayıcı kayıtlarıyla karşılaştırıyor.",
+    "Hesabınızdaki {scenario} geçmişi ve destek yazışmaları birlikte inceleniyor.",
+    "Teknik loglarda {scenario} kaydınızı arıyoruz; eşleşen oturum bulunursa düzeltme uygulanacak.",
+  ],
+  en: [
+    "The relevant team is checking your {scenario} record together with the transaction id.",
+    "Your {scenario} request has been moved to the priority queue and shared with the technical team.",
+    "We opened a case and are re-verifying every step of the {scenario} process.",
+    "Our finance team is comparing your {scenario} transaction against the payment provider records.",
+    "We are reviewing your account {scenario} history together with prior support messages.",
+    "We are searching technical logs for your {scenario} session; if a match is found, a correction will be applied.",
+  ],
+} as const;
+
+const RESPONSE_CLOSERS = {
+  tr: [
+    "Sonucu en kısa sürede hesabınızdaki iletişim adresinden paylaşacağız.",
+    "Gelişmeleri sizinle bu şikayet üzerinden paylaşacağız; ek belge gerekirse yazacağız.",
+    "İnceleme tamamlandığında size dönüş yapılacaktır, anlayışınız için teşekkür ederiz.",
+    "24 saat içinde bu şikayet altında güncelleme paylaşmayı hedefliyoruz.",
+    "Ek bilgi gerekiyorsa sizi hesabınızdaki kayıtlı numaradan arayacağız.",
+    "Çözüm adımlarını tamamladığımızda buradan yazılı olarak bilgilendireceğiz.",
+  ],
+  en: [
+    "We will share the outcome via the contact details on your account as soon as possible.",
+    "We will post updates on this complaint and write to you if further documents are needed.",
+    "You will hear back from us once the review is complete — thank you for your patience.",
+    "We aim to post an update on this complaint within 24 hours.",
+    "If we need more information, we will call the number registered on your account.",
+    "Once the resolution steps are complete, we will confirm it here in writing.",
+  ],
+} as const;
+
+export function fallbackResponse(input: {
+  scenario: string;
+  language: string;
+  tone: ResponseTone;
+}): string {
+  const lang = baseLang(input.language);
+  const label = scenarioLabel(input.scenario, lang).toLowerCase();
+  const opener = RESPONSE_OPENERS[input.tone][lang];
+
+  if (input.tone === "short") {
+    return `${opener} ${pick(RESPONSE_CLOSERS[lang])}`;
+  }
+  return [
+    opener,
+    pick(RESPONSE_ACTIONS[lang]).replace("{scenario}", label),
+    pick(RESPONSE_CLOSERS[lang]),
+  ].join(" ");
+}

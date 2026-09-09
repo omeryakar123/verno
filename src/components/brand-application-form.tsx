@@ -1,0 +1,245 @@
+import { useState, useRef, useEffect } from "react";
+import { Link } from "@tanstack/react-router";
+import { Loader2, Mail, Lock, User as UserIcon, Building2, MapPin, Camera, Upload } from "lucide-react";
+import { authClient, useSession } from "@/lib/auth-client";
+import { PhoneInput } from "@/components/phone-input";
+import { toE164Tr } from "@/lib/phone";
+import { SITE_CONTACT_EMAIL } from "@/lib/contact";
+import { SiteLogoHeader } from "@/components/site-logo-mark";
+
+export function BrandApplicationForm() {
+  const { data: session } = useSession();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [password2, setPassword2] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [brandName, setBrandName] = useState("");
+  const [address, setAddress] = useState("");
+  const [website, setWebsite] = useState("");
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [msg, setMsg] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const loggedIn = Boolean(session?.user);
+
+  useEffect(() => {
+    if (!session?.user) return;
+    if (session.user.email) setEmail(session.user.email);
+    if (session.user.name) setFullName(session.user.name);
+  }, [session?.user]);
+
+  function onPhotoChange(file: File | null) {
+    setPhotoFile(file);
+    if (photoPreview) URL.revokeObjectURL(photoPreview);
+    setPhotoPreview(file ? URL.createObjectURL(file) : null);
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setErr(null);
+    setMsg(null);
+
+    if (!fullName.trim()) return setErr("Full name is required.");
+    if (!loggedIn && !email.trim()) return setErr("Email is required.");
+    if (!toE164Tr(phone)) return setErr("Enter a valid phone number.");
+    if (!loggedIn) {
+      if (password.length < 6) return setErr("Password must be at least 6 characters.");
+      if (password !== password2) return setErr("Passwords do not match.");
+    }
+    if (!brandName.trim()) return setErr("Brand name is required.");
+    if (!address.trim() || address.trim().length < 10) return setErr("Current address must be at least 10 characters.");
+    if (!photoFile) return setErr("Upload a phone / ID verification photo.");
+
+    setLoading(true);
+    try {
+      const e164 = toE164Tr(phone)!;
+      const normalizedEmail = (loggedIn ? session!.user.email : email).toLowerCase();
+
+      if (!session?.user) {
+        const { error } = await authClient.signUp.email({
+          email: normalizedEmail,
+          password,
+          name: fullName,
+          phone: e164,
+        });
+        if (error) {
+          const msg = error.message ?? "";
+          if (/already|exists|kayıtlı|mevcut/i.test(msg)) {
+            throw new Error("This email is already registered. Sign in and try again.");
+          }
+          throw new Error(msg || "Could not create account");
+        }
+      }
+
+      const uploadForm = new FormData();
+      uploadForm.append("file", photoFile);
+      uploadForm.append("folder", "brand-application-photos");
+      const upRes = await fetch("/api/upload", {
+        method: "POST",
+        credentials: "include",
+        body: uploadForm,
+      });
+      if (!upRes.ok) {
+        const j = (await upRes.json().catch(() => ({}))) as { error?: string };
+        throw new Error(j.error ?? "Photo upload failed");
+      }
+      const { url: photoUrl } = (await upRes.json()) as { url: string };
+
+      const appRes = await fetch("/api/brand-application", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          brandName: brandName.trim(),
+          contactName: fullName.trim(),
+          email: normalizedEmail,
+          phone: e164,
+          address: address.trim(),
+          photoUrl,
+          website: website.trim() || null,
+        }),
+      });
+      if (!appRes.ok) {
+        const j = (await appRes.json().catch(() => ({}))) as { error?: string };
+        throw new Error(j.error ?? "Application could not be submitted");
+      }
+
+      setMsg(
+        "Application received. After admin approval, login credentials will be sent to your email.",
+      );
+    } catch (e2: unknown) {
+      setErr(e2 instanceof Error ? e2.message : "Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-canvas grid place-items-center px-4 py-12">
+      <div className="w-full max-w-lg">
+        <SiteLogoHeader />
+
+        <div className="bg-card rounded-2xl ring-1 ring-rule p-7">
+          <h1 className="text-xl font-semibold tracking-tight text-ink">Brand Application</h1>
+          <p className="text-[13px] text-navy-mid mt-1">
+            Apply for access to the brand management panel. After approval, login details will be
+            emailed to you. Contact: {SITE_CONTACT_EMAIL}
+          </p>
+
+          {err && <div className="mt-4 text-[13px] text-danger bg-danger-soft border border-danger-soft rounded-lg px-3 py-2">{err}</div>}
+          {msg && <div className="mt-4 text-[13px] text-brand bg-brand-soft rounded-lg px-3 py-2">{msg}</div>}
+
+          {!msg && (
+            <form className="mt-5 space-y-3" onSubmit={handleSubmit}>
+              <div className="text-[11px] font-bold uppercase tracking-wider text-navy-mid pt-1">Account details</div>
+              <Field icon={UserIcon} type="text" placeholder="Full name *" value={fullName} onChange={setFullName} required />
+              <Field
+                icon={Mail}
+                type="email"
+                placeholder="Email (used for login) *"
+                value={email}
+                onChange={setEmail}
+                required
+                readOnly={loggedIn}
+              />
+              <PhoneInput value={phone} onChange={setPhone} required />
+              {!loggedIn && (
+                <>
+                  <Field icon={Lock} type="password" placeholder="Password *" value={password} onChange={setPassword} required minLength={6} />
+                  <Field icon={Lock} type="password" placeholder="Confirm password *" value={password2} onChange={setPassword2} required minLength={6} />
+                </>
+              )}
+
+              <div className="text-[11px] font-bold uppercase tracking-wider text-navy-mid pt-2">Brand details</div>
+              <Field icon={Building2} type="text" placeholder="Brand name *" value={brandName} onChange={setBrandName} required />
+              <Field icon={Building2} type="text" placeholder="Website (optional)" value={website} onChange={setWebsite} />
+              <div className="relative">
+                <MapPin className="absolute left-3 top-3 size-4 text-navy-mid" />
+                <textarea
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder="Current business address *"
+                  rows={3}
+                  required
+                  className="w-full rounded-lg ring-1 ring-rule bg-card pl-10 pr-3 py-2.5 text-sm placeholder:text-navy-mid focus:outline-none focus:ring-2 focus:ring-brand/40 resize-none"
+                />
+              </div>
+
+              <div>
+                <label className="text-[12px] font-medium text-navy-mid">Phone / ID verification photo *</label>
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className="hidden"
+                  onChange={(e) => onPhotoChange(e.target.files?.[0] ?? null)}
+                />
+                <button
+                  type="button"
+                  onClick={() => fileRef.current?.click()}
+                  className="mt-1.5 w-full flex items-center gap-3 rounded-lg ring-1 ring-rule bg-surface/50 px-4 py-3 text-left hover:bg-surface transition"
+                >
+                  {photoPreview ? (
+                    <img src={photoPreview} alt="" className="size-12 rounded-lg object-cover" />
+                  ) : (
+                    <span className="size-12 rounded-lg bg-surface grid place-items-center text-navy-mid">
+                      <Camera className="size-5" />
+                    </span>
+                  )}
+                  <span className="flex-1 min-w-0">
+                    <span className="block text-[13px] font-medium text-ink truncate">
+                      {photoFile?.name ?? "Choose photo"}
+                    </span>
+                    <span className="text-[11px] text-navy-mid">JPG, PNG or WebP — up to 10 MB</span>
+                  </span>
+                  <Upload className="size-4 text-brand shrink-0" />
+                </button>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-brand text-brand-foreground font-medium h-11 text-sm hover:brightness-110 transition disabled:opacity-60 mt-2"
+              >
+                {loading && <Loader2 className="size-4 animate-spin" />}
+                Submit application
+              </button>
+            </form>
+          )}
+
+          <div className="mt-6 text-[13px] text-navy-mid text-center">
+            Already have an account?{" "}
+            <Link to="/login" className="text-brand font-medium hover:underline">Sign in</Link>
+            {" · "}
+            <Link to="/register" className="text-brand font-medium hover:underline">Individual signup</Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Field({
+  icon: Icon, type, placeholder, value, onChange, required, minLength, readOnly,
+}: {
+  icon: typeof Mail; type: string; placeholder: string; value: string; onChange: (v: string) => void; required?: boolean; minLength?: number; readOnly?: boolean;
+}) {
+  return (
+    <div className="relative">
+      <Icon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-navy-mid" />
+      <input
+        type={type}
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        required={required}
+        minLength={minLength}
+        readOnly={readOnly}
+        className={`w-full h-11 rounded-lg ring-1 ring-rule bg-card pl-10 pr-3 text-sm placeholder:text-navy-mid focus:outline-none focus:ring-2 focus:ring-brand/40 transition ${readOnly ? "opacity-70 cursor-default" : ""}`}
+      />
+    </div>
+  );
+}

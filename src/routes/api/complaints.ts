@@ -1,0 +1,289 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { and, eq, ilike, inArray, notInArray, or, sql, type SQL } from "drizzle-orm";
+import { db, schema } from "@/db";
+import { toDbComplaint, type BrandNested, type DbComplaintShape } from "@/lib/db-shapes";
+import { HttpError, errorResponse, optionalUser, rateLimit, requireUser, requireVerifiedUser } from "@/lib/server/guard";
+import { recordStatusChange } from "@/lib/server/history";
+import { refreshBrandAggregates } from "@/lib/server/brand-stats";
+import { ensureDbPatches } from "@/lib/server/ensure-db-patches";
+import { moderateAndScore } from "@/lib/server/moderation";
+import { looksLikeFakePlatformUsername } from "@/lib/platform-username";
+import { complaintRankOrder, complaintRecentOrder, complaintTrendingOrder } from "@/lib/server/complaint-sort";
+import { supportedComplaintIds } from "@/lib/server/complaint-support";
+import { loadAuthorProfiles } from "@/lib/server/author-profile";
+import { linkComplaintEvidence } from "@/lib/server/complaint-evidence";
+import { UI_DURUM_TO_DB } from "@/lib/complaint-status";
+
+import { isValidPhone } from "@/lib/phone";
+
+const HIDDEN_STATUSES = ["pending", "rejected", "spam"] as const;
+
+export const Route = createFileRoute("/api/complaints")({
+  server: {
+    handlers: {
+      GET: async ({ request }) => {
+        const url = new URL(request.url);
+        const p = url.searchParams;
+        const brandSlug = p.get("brandSlug") ?? undefined;
+        const categorySlug = p.get("categorySlug") ?? undefined;
+        const categoryIdParam = p.get("categoryId") ?? undefined;
+        const search = p.get("search") ?? undefined;
+        const sortBy = p.get("sortBy") ?? undefined;
+        const durum = p.get("durum") ?? undefined;
+        const limitParam = p.get("limit");
+        const pageParam = p.get("page");
+        const pageSize = Number(p.get("pageSize")) || 12;
+
+        // AUTHZ: yayında olan + (marka profili için) bot üretimi şikayetler.
+        const conditions: SQL[] = [
+          notInArray(schema.complaints.status, [...HIDDEN_STATUSES]),
+          eq(schema.complaints.hidden, false),
+        ];
+
+        if (brandSlug) {
+          // Firma sayfası: is_public=true VEYA sentetik (bot) şikayetler görünür.
+          conditions.push(
+            or(
+              eq(schema.complaints.isPublic, true),
+              eq(schema.complaints.isSynthetic, true),
+            ) as SQL,
+          );
+          conditions.push(eq(schema.brands.slug, brandSlug));
+        } else {
+          conditions.push(
+            or(
+              eq(schema.complaints.isPublic, true),
+              eq(schema.complaints.isSynthetic, true),
+            ) as SQL,
+          );
+        }
+
+        if (categoryIdParam) conditions.push(eq(schema.complaints.categoryId, categoryIdParam));
+        else if (categorySlug) {
+          const [cat] = await db
+            .select({ id: schema.categories.id })
+            .from(schema.categories)
+            .where(eq(schema.categories.slug, categorySlug))
+            .limit(1);
+          if (!cat?.id) return Response.json({ items: [], total: 0 });
+          conditions.push(eq(schema.complaints.categoryId, cat.id));
+        }
+
+        if (search) conditions.push(ilike(schema.complaints.title, `%${search}%`));
+
+        if (durum && UI_DURUM_TO_DB[durum]) {
+          conditions.push(inArray(schema.complaints.status, UI_DURUM_TO_DB[durum] as never));
+        }
+
+        const where = and(...conditions);
+        const base = db
+          .select({ c: schema.complaints, b: schema.brands })
+          .from(schema.complaints)
+          .innerJoin(schema.brands, eq(schema.complaints.brandId, schema.brands.id))
+          .where(where)
+          .$dynamic();
+
+        const ordered =
+          sortBy === "trending"
+            ? base.orderBy(...complaintTrendingOrder())
+            : sortBy === "supported"
+              ? base.orderBy(...complaintRankOrder())
+              : base.orderBy(...complaintRecentOrder());
+
+        let total = 0;
+        let rows: { c: typeof schema.complaints.$inferSelect; b: typeof schema.brands.$inferSelect }[];
+
+        if (limitParam) {
+          rows = await ordered.limit(Number(limitParam));
+          total = rows.length;
+        } else if (pageParam) {
+          const page = Math.max(1, Number(pageParam));
+          rows = await ordered.limit(pageSize).offset((page - 1) * pageSize);
+          const [{ count }] = await db
+            .select({ count: sql<number>`count(*)` })
+            .from(schema.complaints)
+            .innerJoin(schema.brands, eq(schema.complaints.brandId, schema.brands.id))
+            .where(where);
+          total = Number(count);
+        } else {
+          rows = await ordered;
+          total = rows.length;
+        }
+
+        const items: DbComplaintShape[] = rows.map((r) => {
+          const brand: BrandNested = {
+            name: r.b.name,
+            slug: r.b.slug,
+            logo_url: r.b.logoUrl,
+            verified: r.b.verified,
+          };
+          const dc = toDbComplaint(r.c, brand);
+          return dc;
+        });
+
+        const ids = Array.from(
+          new Set(items.map((i) => i.user_id).filter(Boolean) as string[]),
+        );
+        if (ids.length > 0) {
+          const profileMap = await loadAuthorProfiles(ids);
+          for (const it of items) {
+            if (it.is_anonymous) {
+              it.user_id = null;
+              it.profiles = null;
+              continue;
+            }
+            if (it.user_id) {
+              it.profiles = profileMap.get(it.user_id) ?? null;
+            }
+          }
+        }
+
+        const cids = items.map((i) => i.id);
+        if (cids.length > 0) {
+          const counts = await db
+            .select({
+              complaintId: schema.comments.complaintId,
+              n: sql<number>`count(*)::int`,
+            })
+            .from(schema.comments)
+            .where(inArray(schema.comments.complaintId, cids))
+            .groupBy(schema.comments.complaintId);
+          const countMap = new Map(counts.map((c) => [c.complaintId, Number(c.n)]));
+          for (const it of items) {
+            (it as DbComplaintShape & { comment_count?: number }).comment_count = countMap.get(it.id) ?? 0;
+          }
+
+          const viewer = await optionalUser(request);
+          if (viewer) {
+            const supported = await supportedComplaintIds(viewer.id, cids);
+            for (const it of items) {
+              (it as DbComplaintShape & { user_supported?: boolean }).user_supported = supported.has(it.id);
+            }
+          }
+        }
+
+        return Response.json({ items, total });
+      },
+
+      // Şikayet oluştur. GÜVENLİK: status/sayaçlar/marka yanıtı istemciden
+      // ALINMAZ; user_id oturumdan gelir. (Eski RLS guard trigger'ının karşılığı.)
+      POST: async ({ request }) => {
+        try {
+          const user = await requireVerifiedUser(request);
+          await ensureDbPatches();
+          // Spam koruması: saatte 5 şikayet.
+          rateLimit(`complaint:${user.id}`, 5, 60 * 60_000);
+
+          const b = (await request.json()) as {
+            title?: string;
+            body?: string;
+            brandId?: string;
+            categoryId?: string | null;
+            contactPhone?: string | null;
+            platformUsername?: string;
+            rating?: number;
+            attachmentIds?: string[];
+          };
+
+          const title = (b.title ?? "").trim();
+          const body = (b.body ?? "").trim();
+          const platformUsername = (b.platformUsername ?? "").trim();
+          if (title.length < 6) throw new HttpError(400, "Başlık en az 6 karakter olmalı");
+          if (body.length < 20) throw new HttpError(400, "Şikayet detayı en az 20 karakter olmalı");
+          if (!platformUsername || platformUsername.length < 2)
+            throw new HttpError(400, "Platform kullanıcı adı zorunludur");
+          if (looksLikeFakePlatformUsername(platformUsername))
+            throw new HttpError(400, "Lütfen sitedeki gerçek kullanıcı adınızı girin (KayıtlıKullanıcı gibi örnekler kabul edilmez)");
+          if (!b.brandId) throw new HttpError(400, "Firma seçilmeli");
+          const rating =
+            Number(b.rating) >= 1 && Number(b.rating) <= 5 ? Math.round(Number(b.rating)) : null;
+          if (!rating) throw new HttpError(400, "Lütfen 1–5 arası puan verin");
+          const contactPhone =
+            b.contactPhone?.trim() && isValidPhone(b.contactPhone) ? b.contactPhone.trim() : null;
+
+          const attachmentIds = Array.isArray(b.attachmentIds) ? b.attachmentIds : [];
+          if (attachmentIds.length === 0) {
+            throw new HttpError(400, "En az bir ekran görüntüsü veya video kanıtı zorunludur");
+          }
+
+          const [brand] = await db
+            .select({ id: schema.brands.id })
+            .from(schema.brands)
+            .where(eq(schema.brands.id, b.brandId))
+            .limit(1);
+          if (!brand) throw new HttpError(400, "Geçersiz firma");
+
+          // Tüm şikayetler moderasyon onayından geçer; firma paneline yansımaz.
+          const mod = moderateAndScore(`${title}\n${body}`);
+          const status = "pending" as const;
+
+          const code = `SK-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+          const [created] = await db
+            .insert(schema.complaints)
+            .values({
+              userId: user.id,
+              brandId: b.brandId,
+              categoryId: b.categoryId || null,
+              title: title.slice(0, 200),
+              body: body.slice(0, 5000),
+              contactPhone,
+              platformUsername: platformUsername.slice(0, 80),
+              isAnonymous: false,
+              anonName: null,
+              rating,
+              status,
+              isPublic: false,
+              views: 0,
+              votes: 0,
+              priority: mod.isHighPriority ? 1 : 0,
+              isHighPriority: mod.isHighPriority,
+              sentimentScore: mod.sentiment,
+              sentimentConfidence: String(mod.confidence),
+              publicId: code,
+              shortId: code.toLowerCase(),
+            })
+            .returning({ id: schema.complaints.id, publicId: schema.complaints.publicId });
+
+          try {
+            await linkComplaintEvidence(user.id, created.id, attachmentIds);
+          } catch (linkErr) {
+            await db.delete(schema.complaints).where(eq(schema.complaints.id, created.id));
+            throw linkErr;
+          }
+
+          await recordStatusChange({
+            complaintId: created.id,
+            fromStatus: null,
+            toStatus: status,
+            changedBy: user.id,
+            actorRole: "user",
+            note: "Moderasyon onayı bekliyor",
+          });
+
+          await refreshBrandAggregates(b.brandId);
+
+          await db.insert(schema.moderationQueue).values({
+            kind: mod.ok ? "other" : "sensitive",
+            state: "open",
+            priority: mod.isHighPriority ? 2 : 1,
+            summary: mod.ok
+              ? `Yeni şikayet: ${title.slice(0, 80)}`
+              : (mod.issues[0] ?? "Ön kontrol uyarısı"),
+            payload: { issues: mod.issues, sentiment: mod.sentiment, platformUsername },
+            targetType: "complaint",
+            targetId: created.id,
+            relatedTable: "complaints",
+            relatedId: created.id,
+          });
+
+          return Response.json(
+            { id: created.id, publicId: created.publicId, status, issues: mod.issues },
+            { status: 201 },
+          );
+        } catch (e) {
+          return errorResponse(e);
+        }
+      },
+    },
+  },
+});

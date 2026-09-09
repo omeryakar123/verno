@@ -1,0 +1,340 @@
+/**
+ * Sağlayıcıdan bağımsız AI istemcisi (SUNUCU TARAFI).
+ *
+ * Desteklenen sağlayıcılar (`AI_PROVIDER`):
+ *   - fal         → fal.ai OpenRouter proxy (Authorization: Key …)
+ *   - openrouter  → openrouter.ai (Bearer sk-or-v1-…)
+ *   - openai      → api.openai.com (Bearer sk-…)
+ *
+ * ANAHTAR YOKSA: bot şablon tabanlı yerel üretime düşer (bkz. prompts.ts).
+ */
+
+export type AiRole = "system" | "user" | "assistant";
+export type AiMessage = { role: AiRole; content: string };
+
+export type AiProvider = "fal" | "openrouter" | "openai" | "custom";
+
+export class AiError extends Error {
+  retryable: boolean;
+  status?: number;
+
+  constructor(message: string, opts: { retryable?: boolean; status?: number } = {}) {
+    super(message);
+    this.name = "AiError";
+    this.retryable = opts.retryable ?? false;
+    this.status = opts.status;
+  }
+}
+
+type AiConfig = {
+  provider: AiProvider;
+  baseUrl: string;
+  apiKey: string;
+  model: string;
+  timeoutMs: number;
+  maxRetries: number;
+  jsonMode: boolean;
+  /** fal: `Key`, diğerleri: `Bearer` */
+  authScheme: "key" | "bearer";
+  extraHeaders: Record<string, string>;
+};
+
+const PROVIDER_PRESETS: Record<
+  Exclude<AiProvider, "custom">,
+  { baseUrl: string; model: string; authScheme: "key" | "bearer" }
+> = {
+  fal: {
+    baseUrl: "https://fal.run/openrouter/router/openai/v1",
+    model: "openai/gpt-4o-mini",
+    authScheme: "key",
+  },
+  openrouter: {
+    baseUrl: "https://openrouter.ai/api/v1",
+    model: "openai/gpt-4o-mini",
+    authScheme: "bearer",
+  },
+  openai: {
+    baseUrl: "https://api.openai.com/v1",
+    model: "gpt-4o-mini",
+    authScheme: "bearer",
+  },
+};
+
+const FAL_KEY_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}:[0-9a-f]+$/i;
+
+function env(key: string): string {
+  return (process.env[key] ?? "").trim();
+}
+
+function num(key: string, fallback: number): number {
+  const v = Number(env(key));
+  return Number.isFinite(v) && v > 0 ? v : fallback;
+}
+
+function looksLikeFalKey(key: string): boolean {
+  return FAL_KEY_RE.test(key);
+}
+
+function looksLikeOpenRouterKey(key: string): boolean {
+  return key.startsWith("sk-or-v1-") || key.startsWith("sk-or-");
+}
+
+function resolveApiKey(): string {
+  return env("AI_API_KEY") || env("OPENAI_API_KEY") || env("FAL_KEY");
+}
+
+function resolveProvider(apiKey: string): AiProvider {
+  const raw = env("AI_PROVIDER").toLowerCase();
+  if (raw === "fal" || raw === "openai" || raw === "openrouter" || raw === "custom") {
+    // Fal anahtarı yanlışlıkla openrouter seçilmişse düzelt (401'in sık nedeni).
+    if (raw === "openrouter" && looksLikeFalKey(apiKey)) return "fal";
+    return raw;
+  }
+
+  if (looksLikeFalKey(apiKey)) return "fal";
+  if (looksLikeOpenRouterKey(apiKey)) return "openrouter";
+  if (apiKey.startsWith("sk-")) return "openai";
+
+  const base = env("AI_BASE_URL").toLowerCase();
+  if (base.includes("fal.run")) return "fal";
+  if (base.includes("openrouter.ai")) return "openrouter";
+  if (base.includes("api.openai.com")) return "openai";
+  return "fal";
+}
+
+function readConfig(): AiConfig | null {
+  const apiKey = resolveApiKey();
+  if (!apiKey) return null;
+
+  const provider = resolveProvider(apiKey);
+  const preset = provider !== "custom" ? PROVIDER_PRESETS[provider] : null;
+
+  const baseUrl = (
+    env("AI_BASE_URL") || preset?.baseUrl || PROVIDER_PRESETS.fal.baseUrl
+  ).replace(/\/+$/, "");
+
+  const model = env("AI_MODEL") || preset?.model || PROVIDER_PRESETS.fal.model;
+
+  const authScheme =
+    provider === "fal" || baseUrl.includes("fal.run")
+      ? "key"
+      : preset?.authScheme ?? "bearer";
+
+  const extraHeaders: Record<string, string> = {};
+  if (provider === "openrouter" || baseUrl.includes("openrouter.ai")) {
+    extraHeaders["HTTP-Referer"] =
+      env("AI_HTTP_REFERER") || env("SITE_URL") || "https://tepkimvar.com";
+    extraHeaders["X-Title"] = env("AI_APP_TITLE") || "tepkimvar";
+  }
+
+  return {
+    provider,
+    baseUrl,
+    apiKey,
+    model,
+    timeoutMs: num("AI_TIMEOUT_MS", 30_000),
+    maxRetries: Math.min(5, num("AI_MAX_RETRIES", 2)),
+    jsonMode: env("AI_JSON_MODE") !== "false",
+    authScheme,
+    extraHeaders,
+  };
+}
+
+function authHeader(cfg: AiConfig): string {
+  return cfg.authScheme === "key" ? `Key ${cfg.apiKey}` : `Bearer ${cfg.apiKey}`;
+}
+
+export function isAiConfigured(): boolean {
+  return readConfig() !== null;
+}
+
+export function aiProviderLabel(): string {
+  const cfg = readConfig();
+  if (!cfg) return "template-fallback";
+  return `${cfg.provider}/${cfg.model}`;
+}
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+function providerName(provider: AiProvider): string {
+  if (provider === "fal") return "fal.ai";
+  if (provider === "openrouter") return "OpenRouter";
+  if (provider === "openai") return "OpenAI";
+  return "AI sağlayıcı";
+}
+
+function classifyHttpError(
+  provider: AiProvider,
+  status: number,
+  detail: string,
+): { message: string; retryable: boolean } {
+  let type = "";
+  let apiMessage = "";
+  try {
+    const parsed = JSON.parse(detail) as {
+      error?: { type?: string; code?: string; message?: string };
+    };
+    type = (parsed.error?.type ?? parsed.error?.code ?? "").toLowerCase();
+    apiMessage = (parsed.error?.message ?? "").trim();
+  } catch {
+    /* ham metin */
+  }
+
+  const blob = `${type} ${apiMessage} ${detail}`.toLowerCase();
+  const quota =
+    type === "insufficient_quota" ||
+    blob.includes("insufficient_quota") ||
+    blob.includes("exceeded your current quota");
+
+  if (quota) {
+    const hint =
+      provider === "fal"
+        ? "fal.ai/dashboard → billing/credits kontrol edin."
+        : provider === "openrouter"
+          ? "openrouter.ai/credits sayfasından bakiye ekleyin."
+          : "platform.openai.com → Billing’de API kredisi ekleyin.";
+    return {
+      message: `${providerName(provider)} kotası / kredisi yok. ${hint}`,
+      retryable: false,
+    };
+  }
+
+  if (status === 401 || status === 403) {
+    const keyHint =
+      provider === "fal"
+        ? "fal.ai/dashboard/keys anahtarı uuid:secret formatındadır; AI_PROVIDER=fal olmalı (Bearer değil Key auth)."
+        : provider === "openrouter"
+          ? "OpenRouter anahtarı sk-or-v1-... (openrouter.ai/keys). Fal anahtarı burada çalışmaz — AI_PROVIDER=fal kullanın."
+          : "OpenAI anahtarı sk-... veya sk-proj-... formatında olmalı.";
+    return {
+      message: `${providerName(provider)} API anahtarı reddedildi (${status}). ${keyHint}`,
+      retryable: false,
+    };
+  }
+
+  const retryable = status === 408 || status === 429 || status >= 500;
+  const short = apiMessage || detail.slice(0, 240);
+  return {
+    message: `${providerName(provider)} isteği başarısız (${status}): ${short}`,
+    retryable,
+  };
+}
+
+function backoffMs(attempt: number, retryAfter: string | null): number {
+  if (retryAfter) {
+    const secs = Number(retryAfter);
+    if (Number.isFinite(secs) && secs > 0) return Math.min(30_000, secs * 1000);
+  }
+  return Math.min(8_000, 2 ** attempt * 500) + Math.floor(Math.random() * 400);
+}
+
+type ChatOptions = {
+  messages: AiMessage[];
+  temperature?: number;
+  maxTokens?: number;
+  json?: boolean;
+};
+
+type ChatCompletionResponse = {
+  choices?: { message?: { content?: string | null } }[];
+  error?: { message?: string };
+};
+
+export async function chatComplete(opts: ChatOptions): Promise<string> {
+  const cfg = readConfig();
+  if (!cfg) throw new AiError("AI yapılandırılmadı (AI_API_KEY / FAL_KEY yok)");
+
+  let useJsonMode = cfg.jsonMode && opts.json === true;
+  let lastError: AiError | null = null;
+
+  for (let attempt = 0; attempt <= cfg.maxRetries; attempt++) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), cfg.timeoutMs);
+
+    try {
+      const res = await fetch(`${cfg.baseUrl}/chat/completions`, {
+        method: "POST",
+        signal: controller.signal,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: authHeader(cfg),
+          ...cfg.extraHeaders,
+        },
+        body: JSON.stringify({
+          model: cfg.model,
+          messages: opts.messages,
+          temperature: opts.temperature ?? 0.8,
+          max_tokens: opts.maxTokens ?? 700,
+          ...(useJsonMode ? { response_format: { type: "json_object" } } : {}),
+        }),
+      });
+
+      if (!res.ok) {
+        const detail = (await res.text().catch(() => "")).slice(0, 300);
+
+        if (res.status === 400 && useJsonMode) {
+          useJsonMode = false;
+          attempt--;
+          continue;
+        }
+
+        const classified = classifyHttpError(cfg.provider, res.status, detail);
+        lastError = new AiError(classified.message, {
+          retryable: classified.retryable,
+          status: res.status,
+        });
+        if (!classified.retryable || attempt === cfg.maxRetries) throw lastError;
+        await sleep(backoffMs(attempt, res.headers.get("retry-after")));
+        continue;
+      }
+
+      const data = (await res.json()) as ChatCompletionResponse;
+      const content = data.choices?.[0]?.message?.content?.trim();
+      if (!content) {
+        lastError = new AiError(
+          data.error?.message ?? "AI boş yanıt döndürdü",
+          { retryable: true },
+        );
+        if (attempt === cfg.maxRetries) throw lastError;
+        await sleep(backoffMs(attempt, null));
+        continue;
+      }
+      return content;
+    } catch (e) {
+      if (e instanceof AiError) {
+        if (!e.retryable || attempt === cfg.maxRetries) throw e;
+        lastError = e;
+      } else {
+        const aborted = e instanceof Error && e.name === "AbortError";
+        lastError = new AiError(
+          aborted ? `AI isteği ${cfg.timeoutMs}ms içinde yanıt vermedi` : String(e),
+          { retryable: true },
+        );
+        if (attempt === cfg.maxRetries) throw lastError;
+      }
+      await sleep(backoffMs(attempt, null));
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  throw lastError ?? new AiError("AI isteği başarısız");
+}
+
+export function parseJsonLoose<T>(raw: string): T {
+  const cleaned = raw.replace(/^\s*```(?:json)?/i, "").replace(/```\s*$/, "").trim();
+  const start = cleaned.indexOf("{");
+  const end = cleaned.lastIndexOf("}");
+  const candidate = start >= 0 && end > start ? cleaned.slice(start, end + 1) : cleaned;
+  try {
+    return JSON.parse(candidate) as T;
+  } catch {
+    throw new AiError("AI yanıtı JSON olarak ayrıştırılamadı", { retryable: true });
+  }
+}
+
+export async function chatCompleteJson<T>(opts: ChatOptions): Promise<T> {
+  const raw = await chatComplete({ ...opts, json: true });
+  return parseJsonLoose<T>(raw);
+}
