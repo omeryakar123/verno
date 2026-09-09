@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { PenLine, User, Menu, X, LogOut, LayoutDashboard, Building2, BadgeCheck } from "lucide-react";
+import { PenLine, Menu, X, LogOut, LayoutDashboard, Building2 } from "lucide-react";
 import { useAuth, highestRoleRedirect } from "@/hooks/use-auth";
 import { GlobalSearchTrigger } from "@/components/global-search";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -25,30 +25,31 @@ export function SiteNav() {
   }
 
   const navLinks = [
-    { to: "/sikayetler" as const, label: "Жалби", short: "Жалби" },
-    { to: "/markalar" as const, label: "Марки", short: "Марки" },
+    { to: "/sikayetler" as const, label: "Şikayetler", short: "Şikayetler" },
     { to: "/trendler" as const, label: "Trend 100", short: "Trend", badge: "100" },
-    { to: "/tepkimvar-seal" as const, label: "Seal", short: "Seal", seal: true },
+    { to: "/#video" as const, label: "Video", short: "Video", hash: true },
   ] as const;
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-paper/90 backdrop-blur border-b border-rule overflow-x-clip">
-        <div className="mx-auto max-w-7xl px-3 sm:px-6 h-16 flex items-center gap-2 sm:gap-3 min-w-0">
-          <SiteLogoNav size={34} />
+      <header className="sticky top-0 z-40 bg-[#f8f9fb]/95 backdrop-blur border-b border-rule overflow-x-clip">
+        <div className="mx-auto max-w-7xl px-3 sm:px-6 h-[4.25rem] flex items-center gap-3 sm:gap-4 min-w-0">
+          <SiteLogoNav size={52} />
 
-          <nav className="hidden xl:flex items-center gap-3 2xl:gap-5 shrink-0 text-[13px] 2xl:text-[14px] font-medium text-navy whitespace-nowrap">
+          <nav className="hidden lg:flex items-center gap-6 xl:gap-8 shrink-0 text-[15px] font-medium text-[#626692] whitespace-nowrap">
             {navLinks.map((l) => (
-              <Link key={l.to} to={l.to} className="hover:text-brand transition-colors inline-flex items-center gap-1">
-                {"seal" in l && l.seal && <BadgeCheck className="size-3.5 text-brand shrink-0" />}
-                <span className="2xl:hidden">{l.short}</span>
-                <span className="hidden 2xl:inline">{l.label}</span>
-                {"badge" in l && l.badge && (
-                  <span className="ml-0.5 inline-flex items-center justify-center text-[10px] font-bold bg-brand-soft text-brand rounded-full px-1.5 py-px">
-                    {l.badge}
-                  </span>
-                )}
-              </Link>
+              "hash" in l && l.hash ? (
+                <a key={l.to} href={l.to} className="hover:text-[#272635] transition-colors inline-flex items-center gap-1">
+                  {l.label}
+                </a>
+              ) : (
+                <Link key={l.to} to={l.to} className="hover:text-[#272635] transition-colors inline-flex items-center gap-1">
+                  <span>{l.short}</span>
+                  {"badge" in l && l.badge && (
+                    <span className="ml-0.5 font-bold text-[#272635]">{l.badge}</span>
+                  )}
+                </Link>
+              )
             ))}
           </nav>
 
@@ -71,20 +72,20 @@ export function SiteNav() {
               <UserMenuPopover user={user} onSignOut={handleSignOut} />
             </div>
           ) : (
-            <Link to="/login" className="hidden xl:inline-flex items-center gap-1.5 text-[12px] 2xl:text-[13px] font-medium text-navy hover:text-ink whitespace-nowrap shrink-0">
-              <User className="size-4 shrink-0" /> Вход
+            <Link to="/login" className="hidden lg:inline-flex items-center text-[14px] font-medium text-[#626692] hover:text-[#272635] whitespace-nowrap shrink-0">
+              Giriş Yap / Üye Ol
             </Link>
           )}
 
-          <div className="flex xl:hidden items-center gap-1 shrink-0">
+          <div className="flex lg:hidden items-center gap-1 shrink-0">
             <NotificationBell />
             <ThemeToggle compact />
           </div>
 
-          <Link to="/sikayet-yaz" className="inline-flex items-center gap-1.5 rounded-full bg-brand text-brand-foreground px-3 sm:px-4 2xl:px-5 h-9 sm:h-10 text-[12px] sm:text-[13px] font-semibold shadow-soft hover:brightness-105 active:brightness-95 transition shrink-0">
+          <Link to="/sikayet-yaz" className="inline-flex items-center gap-1.5 rounded-full bg-[#695de9] text-white px-3 sm:px-5 h-9 sm:h-10 text-[12px] sm:text-[14px] font-semibold shadow-sm hover:bg-[#6a5de9] active:brightness-95 transition shrink-0">
             <PenLine className="size-4 shrink-0" />
-            <span className="hidden min-[400px]:inline">Напиши жалба</span>
-            <span className="min-[400px]:hidden">Жалба</span>
+            <span className="hidden min-[400px]:inline">+ Şikayet Yaz</span>
+            <span className="min-[400px]:hidden">+ Yaz</span>
           </Link>
 
           <button
@@ -116,20 +117,30 @@ export function SiteNav() {
             </div>
 
             <nav className="flex-1 overflow-y-auto p-4 space-y-1">
-              {navLinks.map((l) => (
-                <Link
-                  key={l.to}
-                  to={l.to}
-                  onClick={closeMenu}
-                  className="flex items-center gap-2 h-11 px-3 rounded-lg text-[14px] font-medium text-ink hover:bg-surface"
-                >
-                  {"seal" in l && l.seal && <BadgeCheck className="size-4 text-brand" />}
-                  {l.label}
-                  {"badge" in l && l.badge && (
-                    <span className="text-[10px] font-bold bg-brand-soft text-brand rounded-full px-1.5 py-px">{l.badge}</span>
-                  )}
-                </Link>
-              ))}
+              {navLinks.map((l) =>
+                "hash" in l && l.hash ? (
+                  <a
+                    key={l.to}
+                    href={l.to}
+                    onClick={closeMenu}
+                    className="flex items-center gap-2 h-11 px-3 rounded-lg text-[14px] font-medium text-ink hover:bg-surface"
+                  >
+                    {l.label}
+                  </a>
+                ) : (
+                  <Link
+                    key={l.to}
+                    to={l.to}
+                    onClick={closeMenu}
+                    className="flex items-center gap-2 h-11 px-3 rounded-lg text-[14px] font-medium text-ink hover:bg-surface"
+                  >
+                    {l.label}
+                    {"badge" in l && l.badge && (
+                      <span className="text-[10px] font-bold bg-brand-soft text-brand rounded-full px-1.5 py-px">{l.badge}</span>
+                    )}
+                  </Link>
+                ),
+              )}
               <Link to="/sikayet-yaz" onClick={closeMenu} className="flex items-center gap-2 h-11 px-3 rounded-lg text-[14px] font-semibold text-brand hover:bg-brand-soft">
                 <PenLine className="size-4" /> Напиши жалба
               </Link>
@@ -227,7 +238,7 @@ export function SiteFooter() {
   ] as const;
   const topLinks = [
     ["Hakkımızda", "/hakkimizda"],
-    ["tepkimvar SEAL", "/tepkimvar-seal"],
+    ["Verno SEAL", "/hakkimizda"],
     ["Markalar İçin", "/reklam-cozumleri"],
     ["Blog", "/blog"],
     ["Şeffaflık Raporu", "/seffaflik-raporu"],

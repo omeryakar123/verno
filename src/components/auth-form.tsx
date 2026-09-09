@@ -20,6 +20,7 @@ import { apiSendSignupOtp } from "@/lib/otp-client";
 import { PhoneInput } from "@/components/phone-input";
 import { toE164Tr } from "@/lib/phone";
 import { SiteLogoMark } from "@/components/site-logo-mark";
+import { SikayetvarAuthShell } from "@/components/auth-form-sikayetvar";
 import { cn } from "@/lib/utils";
 
 type Mode = "login" | "register" | "reset";
@@ -176,6 +177,65 @@ export function AuthForm({
       ? "Dakikalar içinde hesabını oluştur, şikayetini paylaş."
       : t.sub;
   const brandCopy = getAuthBrandCopy(variant, mode, corporate);
+
+  if (variant === "user" && !corporate) {
+    return (
+      <SikayetvarAuthShell
+        mode={isRegister ? "register" : "login"}
+        setMode={(m) => setMode(m)}
+        email={email}
+        setEmail={setEmail}
+        password={password}
+        setPassword={setPassword}
+        rememberMe={rememberMe}
+        setRememberMe={setRememberMe}
+        showPassword={showPassword}
+        setShowPassword={setShowPassword}
+        loading={loading}
+        err={err}
+        msg={msg}
+        oauthProviders={oauthProviders}
+        onSocial={handleSocial}
+        onSubmit={handleSubmit}
+        registerFields={
+          isRegister ? (
+            <>
+              <input
+                type="text"
+                placeholder="Ad Soyad"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                required
+                className="h-[52px] w-full rounded-2xl border border-[#d8dbe8] bg-white px-4 text-[15px] text-[#272635] outline-none transition placeholder:text-[#a0a4b8] focus:border-[#695de9] focus:ring-2 focus:ring-[#695de9]/20"
+              />
+              <div>
+                <PhoneInput value={phone} onChange={setPhone} required />
+              </div>
+              <div className="relative">
+                <input
+                  type={showPassword2 ? "text" : "password"}
+                  placeholder="Şifre tekrar"
+                  value={password2}
+                  onChange={(e) => setPassword2(e.target.value)}
+                  required
+                  minLength={6}
+                  className="h-[52px] w-full rounded-2xl border border-[#d8dbe8] bg-white px-4 pr-12 text-[15px] text-[#272635] outline-none transition placeholder:text-[#a0a4b8] focus:border-[#695de9] focus:ring-2 focus:ring-[#695de9]/20"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword2((v) => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[#a0a4b8]"
+                  aria-label="Şifreyi göster"
+                >
+                  {showPassword2 ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
+                </button>
+              </div>
+            </>
+          ) : undefined
+        }
+      />
+    );
+  }
 
   return (
     <div className="min-h-[100dvh] bg-surface flex flex-col lg:flex-row">

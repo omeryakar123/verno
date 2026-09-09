@@ -61,8 +61,8 @@ export function HeroSection({ search, onSearchChange, onSubmit }: Props) {
       <div className="home-container relative z-10 px-4 lg:max-w-6xl lg:px-0">
         <div className="lg:w-[46.3%] lg:pt-20">
           <h1 className="mb-5 whitespace-pre-line font-normal text-[#383838] text-[43px] leading-tight tracking-[1px] lg:mb-28 lg:text-[61px] lg:leading-[1.12]">
-            <strong className="font-semibold">За решение</strong>
-            {"\n"}verno
+            <strong className="font-semibold">Çözüm İçin</strong>
+            {"\n"}Bekliyoruz
           </h1>
 
           <form onSubmit={onSubmit}>
@@ -71,8 +71,8 @@ export function HeroSection({ search, onSearchChange, onSubmit }: Props) {
                 type="search"
                 value={search}
                 onChange={(e) => onSearchChange(e.target.value)}
-                placeholder="Търси марка, модел, продукт"
-                aria-label="Търси марка, модел, продукт"
+                placeholder="Marka, model, ürün ara"
+                aria-label="Marka, model, ürün ara"
                 className="home-hero-search pr-14 lg:pr-38"
               />
               <button
@@ -83,7 +83,7 @@ export function HeroSection({ search, onSearchChange, onSubmit }: Props) {
                 <Search className="m-auto size-6" aria-hidden />
               </button>
               <button type="submit" className="home-search-btn">
-                Търси
+                Ara
               </button>
             </div>
           </form>

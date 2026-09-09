@@ -1,5 +1,5 @@
 /** Platform genel iletişim e-postası — sitede yalnızca bu adres gösterilir. */
-export const SITE_CONTACT_EMAIL = "info@tepkimvar.com";
+export const SITE_CONTACT_EMAIL = "info@verno.bg";
 
 export function siteContactMailto(subject?: string, body?: string): string {
   const params = new URLSearchParams();

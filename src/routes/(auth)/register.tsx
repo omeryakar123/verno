@@ -7,7 +7,7 @@ import { privateHead } from "@/lib/seo";
  * /register kök yolu doğrudan bireysel kayıt formunu gösterir.
  */
 export const Route = createFileRoute("/(auth)/register")({
-  head: () => privateHead("Üye Ol — tepkimvar", "/register"),
+  head: () => privateHead("Üye Ol — verno", "/register"),
   component: RegisterLayout,
 });
 

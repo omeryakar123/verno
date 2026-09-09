@@ -1,7 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { seoHead, jsonLd, absUrl, SITE_NAME } from "@/lib/seo";
 import { useEffect, useState } from "react";
-import { ArrowRight, Eye, FileText, MessageCircle, Users } from "lucide-react";
+import { ArrowRight, Eye, FileText, MessageCircle, Play, Shield, Sparkles, Users, Zap } from "lucide-react";
+import { complaintLinkId } from "@/lib/complaint-link";
 import { type Company, type Complaint } from "@/lib/mock-data";
 import { formatResolutionRate } from "@/lib/display-brand-metrics";
 import {
@@ -23,6 +24,63 @@ import { AgendaMarquee } from "@/components/home/agenda-marquee";
 import { TalkedCarousel } from "@/components/home/talked-carousel";
 
 const HOME_REFRESH_MS = 30 * 60 * 1000;
+
+const PLACEHOLDER_LATEST: Complaint[] = [
+  {
+    id: "ph-1",
+    title: "Teslimat gecikmesi hakkında şikayet çözüldü",
+    body: "",
+    companySlug: "placeholder",
+    companyName: "Örnek Marka",
+    category: "diger",
+    categoryName: "Genel",
+    userInitials: "AY",
+    userName: "Ayşe Y.",
+    createdAgo: "2 saat önce",
+    status: "cozuldu",
+    views: 120,
+    comments: 3,
+    votes: 8,
+    supported: false,
+    brandId: "",
+  },
+  {
+    id: "ph-2",
+    title: "İade süreci sorunsuz tamamlandı",
+    body: "",
+    companySlug: "placeholder",
+    companyName: "Demo Store",
+    category: "diger",
+    categoryName: "Genel",
+    userInitials: "MK",
+    userName: "Mehmet K.",
+    createdAgo: "5 saat önce",
+    status: "cozuldu",
+    views: 89,
+    comments: 1,
+    votes: 4,
+    supported: false,
+    brandId: "",
+  },
+  {
+    id: "ph-3",
+    title: "Müşteri hizmetleri yanıt verdi",
+    body: "",
+    companySlug: "placeholder",
+    companyName: "Test Bank",
+    category: "diger",
+    categoryName: "Genel",
+    userInitials: "EL",
+    userName: "Elif L.",
+    createdAgo: "1 gün önce",
+    status: "cozuldu",
+    views: 210,
+    comments: 5,
+    votes: 12,
+    supported: false,
+    brandId: "",
+  },
+];
 
 const FALLBACK_STATS = publicPlatformStats({
   totalUsers: 0,
@@ -90,6 +148,7 @@ export const Route = createFileRoute("/_site/")({
 
 function Home() {
   const loaderData = Route.useLoaderData();
+  const [latest, setLatest] = useState<Complaint[]>(loaderData.latest ?? []);
   const [agenda, setAgenda] = useState<Complaint[]>(loaderData.agenda ?? []);
   const [talked, setTalked] = useState<Complaint[]>(loaderData.talked ?? []);
   const [top, setTop] = useState<Company[]>(loaderData.topBrands ?? []);
@@ -104,6 +163,7 @@ function Home() {
 
     async function loadHomeData() {
       const results = await Promise.allSettled([
+        fetchLiveFeed({ limit: 6 }),
         fetchHomeAgenda({ limit: 10 }),
         fetchHomeTalked({ limit: 8 }),
         fetchBrandsList({ limit: 8, sortBy: "resolution" }),
@@ -113,7 +173,8 @@ function Home() {
 
       if (cancelled) return;
 
-      const [agendaR, talkedR, topR, trendR, statsR] = results;
+      const [latestR, agendaR, talkedR, topR, trendR, statsR] = results;
+      if (latestR.status === "fulfilled") setLatest(latestR.value);
       if (agendaR.status === "fulfilled") setAgenda(agendaR.value);
       if (talkedR.status === "fulfilled") {
         setTalked(talkedR.value);
@@ -164,7 +225,7 @@ function Home() {
       {/* Популярни марки */}
       <div className="home-container max-w-6xl px-4 pb-8 lg:pb-12">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-[#626692] lg:text-[13px]">
-          <span className="font-semibold text-[#85878e]">Популярни:</span>
+          <span className="font-semibold text-[#85878e]">Popüler:</span>
           {PRIORITY_BRAND_LINKS.slice(0, 6).map((b) => (
             <Link key={b.slug} to="/firma/$slug" params={{ slug: b.slug }} className="hover:text-brand transition-colors">
               {b.name}
@@ -172,6 +233,38 @@ function Home() {
           ))}
         </div>
       </div>
+
+      {/* Çözülen son şikayetler */}
+      <section className="home-container max-w-6xl px-4 pb-10 lg:pb-16">
+        <h2 className="mb-6 font-semibold text-2xl text-[#85878e] lg:mb-10 lg:text-3xl">
+          Çözülen Son Şikayetler
+        </h2>
+        {latest.length === 0 ? (
+          <p className="text-sm text-[#85878e]">Henüz şikayet yok — placeholder kartlar gösteriliyor.</p>
+        ) : null}
+        <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {(latest.length > 0 ? latest : PLACEHOLDER_LATEST).slice(0, 6).map((c) => (
+            <li key={c.id}>
+              <Link
+                to="/sikayet/$id"
+                params={{ id: complaintLinkId(c) }}
+                className="flex h-full flex-col rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-100 transition hover:shadow-md"
+              >
+                <div className="mb-3 flex items-center gap-2">
+                  <span className="grid size-9 shrink-0 place-items-center rounded-full bg-brand-soft text-[11px] font-bold text-brand">
+                    {c.userInitials}
+                  </span>
+                  <div className="min-w-0">
+                    <div className="truncate text-[13px] font-bold text-[#272635]">{c.userName}</div>
+                    <div className="truncate text-[11px] font-semibold text-brand">{c.companyName}</div>
+                  </div>
+                </div>
+                <p className="line-clamp-3 flex-1 text-[14px] leading-snug text-[#626692]">{c.title}</p>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <AgendaMarquee items={agenda} />
       <TalkedCarousel items={talked} updatedAt={talkedUpdatedAt} />
@@ -221,6 +314,48 @@ function Home() {
         </div>
       </section>
 
+      {/* Video — navbar link hedefi */}
+      <section id="video" className="home-container max-w-6xl scroll-mt-24 px-4 py-12 lg:py-20">
+        <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
+          <div>
+            <h2 className="font-semibold text-2xl text-[#383838] lg:text-4xl">Görüşler</h2>
+            <p className="mt-4 text-[15px] leading-relaxed text-[#85878e] lg:text-base">
+              Kullanıcı deneyimlerini videoda dinleyin. Verno, markalar ve tüketiciler arasında
+              şeffaf bir köprü kurar.
+            </p>
+          </div>
+          <div className="relative aspect-video overflow-hidden rounded-3xl bg-[#272635] shadow-lift">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#695de9]/40 to-[#3ad08f]/30" />
+            <div className="absolute inset-0 grid place-items-center">
+              <span className="grid size-16 place-items-center rounded-full bg-white/95 text-[#695de9] shadow-lg">
+                <Play className="size-7 fill-current ml-1" />
+              </span>
+            </div>
+            <span className="absolute bottom-4 left-4 text-[12px] font-medium text-white/80">Video placeholder</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Özellik ikonları */}
+      <section className="home-container max-w-6xl px-4 pb-12 lg:pb-20">
+        <ul className="grid grid-cols-2 gap-4 lg:grid-cols-5 lg:gap-6">
+          {[
+            { icon: Shield, label: "Güvenli Hizmet" },
+            { icon: Zap, label: "Hızlı Çözüm" },
+            { icon: Sparkles, label: "Şeffaf Süreç" },
+            { icon: MessageCircle, label: "Resmi Yanıt" },
+            { icon: Users, label: "Topluluk" },
+          ].map(({ icon: Icon, label }) => (
+            <li key={label} className="flex flex-col items-center rounded-2xl bg-white px-4 py-6 text-center shadow-sm ring-1 ring-gray-100">
+              <span className="mb-3 grid size-12 place-items-center rounded-xl bg-brand/10 text-brand">
+                <Icon className="size-6" />
+              </span>
+              <span className="text-[13px] font-semibold text-[#383838]">{label}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
       {/* Награди */}
       <section className="relative overflow-hidden bg-white pt-10 lg:pt-[8.25rem] lg:pb-48">
         <div className="relative flex flex-col lg:container lg:z-10 lg:mx-auto lg:max-w-6xl lg:flex-row lg:justify-center lg:gap-10">
@@ -233,8 +368,8 @@ function Home() {
               Всяка година награждаваме марките, които правят разлика в удовлетвореността на клиентите.
               {SITE_NAME} продължава да свързва марки и потребители с фокус върху решенията.
             </p>
-            <Link to="/tepkimvar-seal" className="mt-6 inline-flex items-center gap-2 text-[13px] font-semibold text-brand hover:gap-3 transition-all">
-              SEAL & Верификация <ArrowRight className="size-4" />
+            <Link to="/hakkimizda" className="mt-6 inline-flex items-center gap-2 text-[13px] font-semibold text-brand hover:gap-3 transition-all">
+              Verno SEAL & Верификация <ArrowRight className="size-4" />
             </Link>
           </div>
           <div className="relative mx-auto mt-[4.5rem] w-full max-w-[420px] px-4 lg:mt-0 lg:w-[420px] lg:shrink-0 lg:px-0">

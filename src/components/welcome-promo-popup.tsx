@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, PenLine, X } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
 
-const STORAGE_KEY = "tepkimvar_welcome_promo_v2";
+const STORAGE_KEY = "verno_welcome_promo_v2";
 const SHOW_DELAY_MS = 2600;
 
 /**
@@ -52,7 +52,7 @@ export function WelcomePromoPopup() {
         <div className="overflow-y-auto overscroll-contain flex-1 min-h-0 bg-[#0a1210]">
           <img
             src="/promo/welcome-popup.jpg"
-            alt="Sesini duyur, çözümü takip et — tepkimvar.com"
+            alt="Sesini duyur, çözümü takip et — verno.bg"
             width={1200}
             height={675}
             className="block w-full h-auto max-h-[min(72vh,620px)] object-contain object-center mx-auto"
