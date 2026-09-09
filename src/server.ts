@@ -5,6 +5,7 @@ import "./lib/error-capture";
 
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
+import { applyMobileCors, mobileCorsPreflight } from "./lib/server/mobile-cors";
 import { buildStaticSitemapXml, sitemapResponse } from "./lib/server/sitemap";
 
 type ServerEntry = {
@@ -98,6 +99,8 @@ async function serveSitemap(method: string): Promise<Response> {
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     const path = normalizePath(new URL(request.url).pathname);
+    const preflight = mobileCorsPreflight(request);
+    if (preflight) return preflight;
 
     // Sitemap asla SSR/HTML'e düşmesin — GSC yalnızca XML kabul eder.
     if (isSitemapPath(path) && (request.method === "GET" || request.method === "HEAD")) {
@@ -114,7 +117,9 @@ export default {
     try {
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
-      return await normalizeCatastrophicSsrResponse(response);
+      const normalized = await normalizeCatastrophicSsrResponse(response);
+      if (path.startsWith("/api/")) return applyMobileCors(request, normalized);
+      return normalized;
     } catch (error) {
       console.error(error);
       return new Response(renderErrorPage(), {

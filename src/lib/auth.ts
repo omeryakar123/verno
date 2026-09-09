@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { expo } from "@better-auth/expo";
 import { emailOTP } from "better-auth/plugins";
 import { db, schema } from "@/db";
 import { sendOtpEmail } from "@/lib/server/email";
@@ -11,7 +12,15 @@ export const auth = betterAuth({
   baseURL: resolveAuthBaseUrl(),
   secret: process.env.BETTER_AUTH_SECRET,
 
-  trustedOrigins: [...collectTrustedOrigins(), "https://appleid.apple.com"],
+  trustedOrigins: [
+    ...collectTrustedOrigins(),
+    "https://appleid.apple.com",
+    ...(process.env.MOBILE_APP_SCHEMES ?? "verno,my-expo-app")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .map((scheme) => `${scheme}://`),
+  ],
 
   // Prod'da sign-in varsayılanı 3/10sn — başarısız origin denemeleri hızla 429'a düşer.
   rateLimit: {
@@ -83,6 +92,7 @@ export const auth = betterAuth({
   },
 
   plugins: [
+    expo(),
     emailOTP({
       otpLength: 6,
       expiresIn: 600,
