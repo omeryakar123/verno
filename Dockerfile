@@ -5,8 +5,9 @@
 FROM oven/bun:1 AS builder
 WORKDIR /app
 
-# Önce sadece manifest'ler -> katman cache
+# Önce manifest'ler + workspace paketleri (bun workspaces için zorunlu)
 COPY package.json bun.lock ./
+COPY packages/shared/package.json ./packages/shared/
 RUN bun install --frozen-lockfile
 
 # Kaynak
