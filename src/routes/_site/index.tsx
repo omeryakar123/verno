@@ -28,15 +28,15 @@ const HOME_REFRESH_MS = 30 * 60 * 1000;
 const PLACEHOLDER_LATEST: Complaint[] = [
   {
     id: "ph-1",
-    title: "Teslimat gecikmesi hakkında şikayet çözüldü",
+    title: "Жалба за закъснение на доставката — решена",
     body: "",
     companySlug: "placeholder",
-    companyName: "Örnek Marka",
+    companyName: "Примерна марка",
     category: "diger",
-    categoryName: "Genel",
+    categoryName: "Общо",
     userInitials: "AY",
-    userName: "Ayşe Y.",
-    createdAgo: "2 saat önce",
+    userName: "Анна Y.",
+    createdAgo: "преди 2 часа",
     status: "cozuldu",
     views: 120,
     comments: 3,
@@ -46,15 +46,15 @@ const PLACEHOLDER_LATEST: Complaint[] = [
   },
   {
     id: "ph-2",
-    title: "İade süreci sorunsuz tamamlandı",
+    title: "Процесът по връщане приключи успешно",
     body: "",
     companySlug: "placeholder",
     companyName: "Demo Store",
     category: "diger",
-    categoryName: "Genel",
+    categoryName: "Общо",
     userInitials: "MK",
-    userName: "Mehmet K.",
-    createdAgo: "5 saat önce",
+    userName: "Мартин K.",
+    createdAgo: "преди 5 часа",
     status: "cozuldu",
     views: 89,
     comments: 1,
@@ -64,15 +64,15 @@ const PLACEHOLDER_LATEST: Complaint[] = [
   },
   {
     id: "ph-3",
-    title: "Müşteri hizmetleri yanıt verdi",
+    title: "Обслужването на клиенти отговори",
     body: "",
     companySlug: "placeholder",
     companyName: "Test Bank",
     category: "diger",
-    categoryName: "Genel",
+    categoryName: "Общо",
     userInitials: "EL",
-    userName: "Elif L.",
-    createdAgo: "1 gün önce",
+    userName: "Елена L.",
+    createdAgo: "преди 1 ден",
     status: "cozuldu",
     views: 210,
     comments: 5,
@@ -225,7 +225,7 @@ function Home() {
       {/* Популярни марки */}
       <div className="home-container max-w-6xl px-4 pb-8 lg:pb-12">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-[#626692] lg:text-[13px]">
-          <span className="font-semibold text-[#85878e]">Popüler:</span>
+          <span className="font-semibold text-[#85878e]">Популярни:</span>
           {PRIORITY_BRAND_LINKS.slice(0, 6).map((b) => (
             <Link key={b.slug} to="/firma/$slug" params={{ slug: b.slug }} className="hover:text-brand transition-colors">
               {b.name}
@@ -234,13 +234,13 @@ function Home() {
         </div>
       </div>
 
-      {/* Çözülen son şikayetler */}
+      {/* Последно решени жалби */}
       <section className="home-container max-w-6xl px-4 pb-10 lg:pb-16">
         <h2 className="mb-6 font-semibold text-2xl text-[#85878e] lg:mb-10 lg:text-3xl">
-          Çözülen Son Şikayetler
+          Последно решени жалби
         </h2>
         {latest.length === 0 ? (
-          <p className="text-sm text-[#85878e]">Henüz şikayet yok — placeholder kartlar gösteriliyor.</p>
+          <p className="text-sm text-[#85878e]">Все още няма жалби — показват се примерни карти.</p>
         ) : null}
         <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {(latest.length > 0 ? latest : PLACEHOLDER_LATEST).slice(0, 6).map((c) => (
@@ -318,10 +318,10 @@ function Home() {
       <section id="video" className="home-container max-w-6xl scroll-mt-24 px-4 py-12 lg:py-20">
         <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
           <div>
-            <h2 className="font-semibold text-2xl text-[#383838] lg:text-4xl">Görüşler</h2>
+            <h2 className="font-semibold text-2xl text-[#383838] lg:text-4xl">Мнения</h2>
             <p className="mt-4 text-[15px] leading-relaxed text-[#85878e] lg:text-base">
-              Kullanıcı deneyimlerini videoda dinleyin. Verno, markalar ve tüketiciler arasında
-              şeffaf bir köprü kurar.
+              Гледайте потребителски истории на видео. Verno изгражда прозрачен мост между
+              марки и потребители.
             </p>
           </div>
           <div className="relative aspect-video overflow-hidden rounded-3xl bg-[#272635] shadow-lift">
@@ -331,7 +331,7 @@ function Home() {
                 <Play className="size-7 fill-current ml-1" />
               </span>
             </div>
-            <span className="absolute bottom-4 left-4 text-[12px] font-medium text-white/80">Video placeholder</span>
+            <span className="absolute bottom-4 left-4 text-[12px] font-medium text-white/80">Видео — скоро</span>
           </div>
         </div>
       </section>
@@ -340,11 +340,11 @@ function Home() {
       <section className="home-container max-w-6xl px-4 pb-12 lg:pb-20">
         <ul className="grid grid-cols-2 gap-4 lg:grid-cols-5 lg:gap-6">
           {[
-            { icon: Shield, label: "Güvenli Hizmet" },
-            { icon: Zap, label: "Hızlı Çözüm" },
-            { icon: Sparkles, label: "Şeffaf Süreç" },
-            { icon: MessageCircle, label: "Resmi Yanıt" },
-            { icon: Users, label: "Topluluk" },
+            { icon: Shield, label: "Сигурна услуга" },
+            { icon: Zap, label: "Бързо решение" },
+            { icon: Sparkles, label: "Прозрачен процес" },
+            { icon: MessageCircle, label: "Официален отговор" },
+            { icon: Users, label: "Общност" },
           ].map(({ icon: Icon, label }) => (
             <li key={label} className="flex flex-col items-center rounded-2xl bg-white px-4 py-6 text-center shadow-sm ring-1 ring-gray-100">
               <span className="mb-3 grid size-12 place-items-center rounded-xl bg-brand/10 text-brand">

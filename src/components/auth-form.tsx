@@ -27,9 +27,9 @@ type Mode = "login" | "register" | "reset";
 type Variant = "user" | "admin" | "brand";
 
 const titles: Record<Variant, { login: string; sub: string; brand: string }> = {
-  user: { login: "Giriş Yap", sub: "Şikayetlerini takip et, firmalardan resmi yanıt al.", brand: "" },
-  admin: { login: "Yönetim Paneli", sub: "Sadece yetkili admin hesapları için.", brand: "Admin" },
-  brand: { login: "Firma Paneli", sub: "Firma yetkilisi hesabınla giriş yap.", brand: "Brand" },
+  user: { login: "Вход", sub: "Следете жалбите си и получавайте официални отговори от марките.", brand: "" },
+  admin: { login: "Админ панел", sub: "Само за оторизирани администраторски акаунти.", brand: "Admin" },
+  brand: { login: "Брандов панел", sub: "Влезте с акаунта на представител на марката.", brand: "Brand" },
 };
 
 export function AuthForm({
@@ -70,7 +70,7 @@ export function AuthForm({
     try {
       await authClient.signIn.social({ provider, callbackURL: "/" });
     } catch (e2: unknown) {
-      setErr(e2 instanceof Error ? e2.message : `${provider} ile giriş başarısız.`);
+      setErr(e2 instanceof Error ? e2.message : `Вход с ${provider} неуспешен.`);
       setLoading(false);
     }
   }
@@ -83,7 +83,7 @@ export function AuthForm({
     };
     if (variant !== "user" && !roles.some((r) => allowedRolesForVariant.includes(r))) {
       await authClient.signOut();
-      setErr("Bu giriş sayfası için yetkiniz bulunmuyor.");
+      setErr("Нямате достъп до тази страница за вход.");
       return;
     }
     if (variant === "user" && user && !user.emailVerified) {
@@ -102,7 +102,7 @@ export function AuthForm({
       navigate({ to: "/verify-email", search: { email: normalizedEmail } });
       return;
     }
-    setMsg("Hesabınız oluşturuldu. E-postanıza gönderilen 6 haneli kodu girin.");
+    setMsg("Акаунтът ви е създаден. Въведете 6-цифрения код от имейла си.");
     navigate({ to: "/verify-email", search: { email: normalizedEmail, sent: "1" } });
   }
 
@@ -111,11 +111,11 @@ export function AuthForm({
     setErr(null);
     setMsg(null);
     if (mode === "register") {
-      if (!fullName.trim()) return setErr("Ad Soyad zorunludur.");
-      if (!toE164Tr(phone)) return setErr("Geçerli bir telefon numarası giriniz.");
-      if (password.length < 6) return setErr("Şifre en az 6 karakter olmalı.");
-      if (password !== password2) return setErr("Şifreler eşleşmiyor.");
-      if (corporate && !companyName.trim()) return setErr("Firma adı zorunludur.");
+      if (!fullName.trim()) return setErr("Името и фамилията са задължителни.");
+      if (!toE164Tr(phone)) return setErr("Въведете валиден телефонен номер.");
+      if (password.length < 6) return setErr("Паролата трябва да е поне 6 символа.");
+      if (password !== password2) return setErr("Паролите не съвпадат.");
+      if (corporate && !companyName.trim()) return setErr("Името на фирмата е задължително.");
     }
     setLoading(true);
     try {
@@ -145,7 +145,7 @@ export function AuthForm({
           });
           if (!corpRes.ok) {
             const j = (await corpRes.json().catch(() => ({}))) as { error?: string };
-            throw new Error(j.error ?? "Kurumsal talep gönderilemedi");
+            throw new Error(j.error ?? "Корпоративната заявка не можа да бъде изпратена");
           }
           await finishSignupAndVerify(email.toLowerCase());
           return;
@@ -162,7 +162,7 @@ export function AuthForm({
         await postLoginRedirect();
       }
     } catch (e2: unknown) {
-      setErr(e2 instanceof Error ? e2.message : "Bir hata oluştu.");
+      setErr(e2 instanceof Error ? e2.message : "Възникна грешка.");
     } finally {
       setLoading(false);
     }
@@ -170,11 +170,11 @@ export function AuthForm({
 
   const t = titles[variant];
   const isRegister = mode === "register";
-  const pageTitle = corporate ? "Kurumsal Kayıt" : isRegister ? "Üye Ol" : t.login;
+  const pageTitle = corporate ? "Корпоративна регистрация" : isRegister ? "Регистрация" : t.login;
   const pageSub = corporate
-    ? "Marka yönetimi veya sahiplik talebi için kayıt olun."
+    ? "Регистрирайте се за управление на марка или заявка за собственост."
     : isRegister
-      ? "Dakikalar içinde hesabını oluştur, şikayetini paylaş."
+      ? "Създайте акаунт за минути и споделете жалбата си."
       : t.sub;
   const brandCopy = getAuthBrandCopy(variant, mode, corporate);
 
@@ -202,7 +202,7 @@ export function AuthForm({
             <>
               <input
                 type="text"
-                placeholder="Ad Soyad"
+                placeholder="Име и фамилия"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 required
@@ -214,7 +214,7 @@ export function AuthForm({
               <div className="relative">
                 <input
                   type={showPassword2 ? "text" : "password"}
-                  placeholder="Şifre tekrar"
+                  placeholder="Потвърди парола"
                   value={password2}
                   onChange={(e) => setPassword2(e.target.value)}
                   required
@@ -225,7 +225,7 @@ export function AuthForm({
                   type="button"
                   onClick={() => setShowPassword2((v) => !v)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[#a0a4b8]"
-                  aria-label="Şifreyi göster"
+                  aria-label="Покажи паролата"
                 >
                   {showPassword2 ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
                 </button>
@@ -251,7 +251,7 @@ export function AuthForm({
             className="inline-flex items-center gap-2 text-[13px] font-medium text-navy-mid hover:text-brand transition-colors"
           >
             <ArrowLeft className="size-4" />
-            Ana sayfa
+            Начало
           </Link>
           <div className="w-24" aria-hidden />
         </header>
@@ -262,7 +262,7 @@ export function AuthForm({
               <div
                 className="lg:hidden grid grid-cols-2 gap-1 rounded-xl bg-surface p-1 ring-1 ring-rule mb-6"
                 role="tablist"
-                aria-label="Giriş veya kayıt"
+                aria-label="Вход или регистрация"
               >
                 {(["login", "register"] as const).map((tab) => {
                   const active = mode === tab;
@@ -280,7 +280,7 @@ export function AuthForm({
                           : "text-navy-mid hover:text-ink active:bg-brand/10",
                       )}
                     >
-                      {tab === "login" ? "Giriş Yap" : "Üye Ol"}
+                      {tab === "login" ? "Вход" : "Регистрация"}
                     </button>
                   );
                 })}
@@ -296,16 +296,16 @@ export function AuthForm({
                   <p className="hidden lg:block text-[13px] text-navy-mid">
                     {isRegister ? (
                       <>
-                        Hesabın var mı?{" "}
+                        Вече имате акаунт?{" "}
                         <button type="button" onClick={() => setMode("login")} className="text-brand font-semibold hover:underline">
-                          Giriş yap
+                          Влезте
                         </button>
                       </>
                     ) : (
                       <>
-                        Hesabın yok mu?{" "}
+                        Нямате акаунт?{" "}
                         <button type="button" onClick={() => setMode("register")} className="text-brand font-semibold hover:underline">
-                          Üye ol
+                          Регистрирайте се
                         </button>
                       </>
                     )}
@@ -341,7 +341,7 @@ export function AuthForm({
                 )}
                 <div className="flex items-center gap-3 pt-1 text-[11px] uppercase tracking-wider text-navy-mid font-medium">
                   <div className="h-px bg-rule flex-1" />
-                  <span>e-posta ile</span>
+                  <span>с имейл</span>
                   <div className="h-px bg-rule flex-1" />
                 </div>
               </div>
@@ -351,9 +351,9 @@ export function AuthForm({
               {isRegister && (
                 <Field
                   icon={UserIcon}
-                  label="Ad Soyad"
+                  label="Име и фамилия"
                   type="text"
-                  placeholder="Adınız ve soyadınız"
+                  placeholder="Вашето име и фамилия"
                   value={fullName}
                   onChange={setFullName}
                   required
@@ -371,15 +371,15 @@ export function AuthForm({
               />
               {isRegister && (
                 <div>
-                  <label className="text-[12px] font-semibold text-navy-mid mb-1.5 block">Telefon</label>
+                  <label className="text-[12px] font-semibold text-navy-mid mb-1.5 block">Телефон</label>
                   <PhoneInput value={phone} onChange={setPhone} required />
                 </div>
               )}
               <Field
                 icon={Lock}
-                label="Şifre"
+                label="Парола"
                 type={showPassword ? "text" : "password"}
-                placeholder={isRegister ? "En az 6 karakter" : "Şifreniz"}
+                placeholder={isRegister ? "Поне 6 символа" : "Вашата парола"}
                 value={password}
                 onChange={setPassword}
                 required
@@ -390,7 +390,7 @@ export function AuthForm({
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
                     className="text-navy-mid hover:text-ink transition-colors p-1"
-                    aria-label={showPassword ? "Şifreyi gizle" : "Şifreyi göster"}
+                    aria-label={showPassword ? "Скрий паролата" : "Покажи паролата"}
                   >
                     {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                   </button>
@@ -399,9 +399,9 @@ export function AuthForm({
               {isRegister && (
                 <Field
                   icon={Lock}
-                  label="Şifre tekrar"
+                  label="Потвърди парола"
                   type={showPassword2 ? "text" : "password"}
-                  placeholder="Şifrenizi tekrar girin"
+                  placeholder="Въведете паролата отново"
                   value={password2}
                   onChange={setPassword2}
                   required
@@ -412,7 +412,7 @@ export function AuthForm({
                       type="button"
                       onClick={() => setShowPassword2((v) => !v)}
                       className="text-navy-mid hover:text-ink transition-colors p-1"
-                      aria-label={showPassword2 ? "Şifreyi gizle" : "Şifreyi göster"}
+                      aria-label={showPassword2 ? "Скрий паролата" : "Покажи паролата"}
                     >
                       {showPassword2 ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                     </button>
@@ -423,16 +423,16 @@ export function AuthForm({
                 <div className="space-y-4 pt-1 border-t border-rule/60">
                   <Field
                     icon={Building2}
-                    label="Firma adı"
+                    label="Име на фирмата"
                     type="text"
-                    placeholder="Firma adınız"
+                    placeholder="Име на вашата фирма"
                     value={companyName}
                     onChange={setCompanyName}
                     required
                   />
                   <Field
                     icon={Building2}
-                    label="Web sitesi"
+                    label="Уебсайт"
                     type="text"
                     placeholder="https://"
                     value={companyWebsite}
@@ -440,18 +440,18 @@ export function AuthForm({
                   />
                   <Field
                     icon={Building2}
-                    label="Marka slug (varsa)"
+                    label="Slug на марката (по избор)"
                     type="text"
-                    placeholder="ornek-marka"
+                    placeholder="primer-marka"
                     value={brandSlug}
                     onChange={setBrandSlug}
                   />
                   <div>
-                    <label className="text-[12px] font-semibold text-navy-mid mb-1.5 block">Mesajınız</label>
+                    <label className="text-[12px] font-semibold text-navy-mid mb-1.5 block">Вашето съобщение</label>
                     <textarea
                       value={companyMessage}
                       onChange={(e) => setCompanyMessage(e.target.value)}
-                      placeholder="Yetki talebi veya notunuz"
+                      placeholder="Заявка за упълномощаване или бележка"
                       rows={3}
                       className="w-full rounded-xl ring-1 ring-rule bg-card px-4 py-3 text-sm text-ink placeholder:text-navy-mid focus:outline-none focus:ring-2 focus:ring-brand/40 resize-none transition"
                     />
@@ -468,13 +468,13 @@ export function AuthForm({
                       onChange={(e) => setRememberMe(e.target.checked)}
                       className="size-[18px] rounded border-rule text-brand focus:ring-brand/40"
                     />
-                    <span className="text-[14px] text-navy-mid">Beni hatırla</span>
+                    <span className="text-[14px] text-navy-mid">Запомни ме</span>
                   </label>
                   <Link
                     to="/forgot-password"
                     className="text-[14px] font-medium text-brand hover:underline min-h-11 inline-flex items-center"
                   >
-                    Şifremi unuttum
+                    Забравена парола
                   </Link>
                 </div>
               )}
@@ -485,29 +485,29 @@ export function AuthForm({
                 className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-brand text-brand-foreground font-semibold h-[52px] text-[16px] shadow-sm hover:brightness-105 active:scale-[0.99] transition disabled:opacity-60 mt-2 lg:h-12 lg:text-[15px]"
               >
                 {loading && <Loader2 className="size-4 animate-spin" />}
-                {isRegister ? (corporate ? "Kayıt Ol ve Talep Gönder" : "Üye Ol") : "Giriş Yap"}
+                {isRegister ? (corporate ? "Регистрация и изпращане" : "Регистрация") : "Вход"}
               </button>
             </form>
 
             {variant === "user" && !corporate && isRegister && (
               <p className="mt-6 text-center text-[13px] text-navy-mid">
-                Marka temsilcisi misiniz?{" "}
+                Представител на марка?{" "}
                 <Link to="/register/marka-basvuru" className="text-brand font-semibold hover:underline">
-                  Marka başvurusu
+                  Кандидатствай като марка
                 </Link>
               </p>
             )}
 
             <p className="mt-8 text-center text-[11px] text-navy-mid/80 leading-relaxed">
-              Devam ederek{" "}
+              Продължавайки, приемате{" "}
               <Link to="/kullanim-kosullari" className="underline hover:text-ink">
-                Kullanım Koşulları
+                Условията за ползване
               </Link>{" "}
-              ve{" "}
+              и{" "}
               <Link to="/gizlilik" className="underline hover:text-ink">
-                Gizlilik Politikası
+                Политиката за поверителност
               </Link>
-              &apos;nı kabul etmiş olursunuz.
+              .
             </p>
           </div>
         </main>
@@ -526,33 +526,33 @@ function getAuthBrandCopy(variant: Variant, mode: Mode, corporate: boolean): Aut
   const isRegister = mode === "register";
   const headline =
     variant === "admin"
-      ? "Yönetim merkezi"
+      ? "Административен център"
       : variant === "brand"
-        ? "Firma paneli"
+        ? "Брандов панел"
         : corporate
-          ? "Kurumsal çözüm ortağı"
+          ? "Корпоративен партньор"
           : isRegister
-            ? "Topluluğa katıl"
-            : "Tekrar hoş geldin";
+            ? "Присъединете се"
+            : "Добре дошли отново";
 
   const sub =
     variant === "user" && !corporate
-      ? "Türkiye'nin bağımsız şikayet platformunda markalardan resmi yanıt alın."
+      ? "Независимата българска платформа за жалби — получавайте официални отговори от марките."
       : variant === "brand"
-        ? "Şikayetleri yönetin, müşterilerinize hızlı yanıt verin."
-        : "Güvenli ve şifreli oturum ile devam edin.";
+        ? "Управлявайте жалбите и отговаряйте бързо на клиентите си."
+        : "Продължете със сигурна и криптирана сесия.";
 
   const features =
     variant === "user" && !corporate
       ? [
-          { icon: MessageSquare, text: "Şikayetini yaz, süreci takip et" },
-          { icon: ShieldCheck, text: "Doğrulanmış marka yanıtları" },
-          { icon: TrendingUp, text: "Trend markaları keşfet" },
+          { icon: MessageSquare, text: "Напишете жалба и следете процеса" },
+          { icon: ShieldCheck, text: "Потвърдени отговори от марки" },
+          { icon: TrendingUp, text: "Открийте trending марки" },
         ]
       : variant === "brand"
         ? [
-            { icon: MessageSquare, text: "Şikayetlere hızlı yanıt verin" },
-            { icon: ShieldCheck, text: "Doğrulanmış firma profili" },
+            { icon: MessageSquare, text: "Отговаряйте бързо на жалби" },
+            { icon: ShieldCheck, text: "Верифициран брандов профил" },
           ]
         : [];
 
@@ -575,7 +575,7 @@ function MobileAuthHero({ copy, badge }: { copy: AuthBrandCopy; badge: string })
             className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-2 text-[13px] font-medium text-white/90 ring-1 ring-white/15 active:bg-white/15 transition-colors min-h-10"
           >
             <ArrowLeft className="size-4 shrink-0" />
-            Ana sayfa
+            Начало
           </Link>
           <SiteLogoMark size={30} linked tone="on-dark" />
         </div>
@@ -752,9 +752,9 @@ function SocialButton({
   };
 
   const labels: Record<OAuthProvider, string> = {
-    google: compact ? "Google" : "Google ile devam et",
-    facebook: compact ? "Facebook" : "Facebook ile devam et",
-    apple: "Apple ile devam et",
+    google: compact ? "Google" : "Продължи с Google",
+    facebook: compact ? "Facebook" : "Продължи с Facebook",
+    apple: "Продължи с Apple",
   };
 
   const icons: Record<OAuthProvider, React.ReactNode> = {

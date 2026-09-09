@@ -22,7 +22,7 @@ export function GlobalSearchTrigger({ className }: { className?: string }) {
   return (
     <>
       <button onClick={() => setOpen(true)} className={className ?? "inline-flex items-center gap-2 rounded-full ring-1 ring-rule bg-card/70 backdrop-blur px-3 h-9 text-[13px] text-navy-mid hover:ring-brand/40 transition"}>
-        <Search className="size-4" /> Marka, şikayet veya kod ara…
+        <Search className="size-4" /> Търси марка, жалба или код…
         <kbd className="ml-2 hidden sm:inline-flex items-center gap-1 text-[10px] text-navy-mid bg-surface rounded px-1.5 py-0.5">⌘K</kbd>
       </button>
       <GlobalSearchModal open={open} onClose={() => setOpen(false)} />
@@ -77,16 +77,16 @@ function GlobalSearchModal({ open, onClose }: { open: boolean; onClose: () => vo
     <Modal open={open} onClose={onClose} align="top" className="max-w-2xl bg-card rounded-2xl shadow-2xl overflow-hidden">
       <div className="flex items-center gap-3 px-5 h-14 border-b border-rule">
           <Search className="size-4 text-navy-mid" />
-          <input ref={inputRef} value={q} onChange={(e) => setQ(e.target.value)} placeholder="Marka, şikayet başlığı veya 6 haneli kod (örn. KJ-4M2X)…" className="flex-1 bg-transparent text-[14px] focus:outline-none" />
+          <input ref={inputRef} value={q} onChange={(e) => setQ(e.target.value)} placeholder="Марка, заглавие на жалба или 6-цифрен код (напр. KJ-4M2X)…" className="flex-1 bg-transparent text-[14px] focus:outline-none" />
           {loading && <Loader2 className="size-4 text-navy-mid animate-spin" />}
           <button onClick={onClose} className="text-navy-mid hover:text-ink"><X className="size-4" /></button>
         </div>
         <div className="max-h-[60vh] overflow-y-auto">
-          {!debounced && <div className="p-6 text-center text-[13px] text-navy-mid">Yazmaya başlayın… <kbd className="ml-1 text-[10px] bg-surface rounded px-1.5 py-0.5">⌘K</kbd> ile her yerden açın.</div>}
-          {empty && <div className="p-8 text-center text-[13.5px] text-navy-mid">"{debounced}" için sonuç bulunamadı.</div>}
+          {!debounced && <div className="p-6 text-center text-[13px] text-navy-mid">Започнете да пишете… Отворете отвсякъде с <kbd className="ml-1 text-[10px] bg-surface rounded px-1.5 py-0.5">⌘K</kbd>.</div>}
+          {empty && <div className="p-8 text-center text-[13.5px] text-navy-mid">Няма резултати за „{debounced}“.</div>}
 
           {brands.length > 0 && (
-            <Section icon={Building2} title="Markalar">
+            <Section icon={Building2} title="Марки">
               {brands.map((b) => (
                 <button key={b.id} onClick={() => go(`/firma/${b.slug}`)} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-brand-soft/40 text-left">
                   <BrandAvatar name={b.name} slug={b.slug} logoUrl={b.logo_url} website={b.website} size={32} />
@@ -98,7 +98,7 @@ function GlobalSearchModal({ open, onClose }: { open: boolean; onClose: () => vo
           )}
 
           {complaints.length > 0 && (
-            <Section icon={MessageSquare} title="Şikayetler">
+            <Section icon={MessageSquare} title="Жалби">
               {complaints.map((c) => (
                 <button key={c.id} onClick={() => go(`/sikayet/${complaintLinkId({ id: c.id, public_id: c.public_id })}`)} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-brand-soft/40 text-left">
                   {c.public_id && <span className="font-mono text-[10.5px] bg-surface text-navy rounded px-1.5 py-0.5">{c.public_id}</span>}

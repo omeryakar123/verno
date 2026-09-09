@@ -46,22 +46,20 @@ export function SikayetvarAuthShell({
   const isLogin = mode === "login";
 
   return (
-    <div className="min-h-[100dvh] bg-[#dfe2eb] flex items-center justify-center px-4 py-10">
+    <div className="flex min-h-[100dvh] items-center justify-center bg-[#dfe2eb] px-4 py-10">
       <div className="relative flex w-full max-w-[920px] overflow-hidden rounded-[28px] bg-white shadow-[0_24px_80px_rgba(39,38,53,0.18)]">
         <Link
           to="/"
-          className="absolute right-4 top-4 z-20 grid size-9 place-items-center rounded-full bg-[#eef0f5] text-[#85878e] hover:bg-[#e4e7f3] transition"
-          aria-label="Kapat"
+          className="absolute right-4 top-4 z-20 grid size-9 place-items-center rounded-full bg-[#eef0f5] text-[#85878e] transition hover:bg-[#e4e7f3]"
+          aria-label="Затвори"
         >
           <X className="size-5" />
         </Link>
 
-        {/* Sol — geometrik desen (şikayetvar) */}
         <aside className="relative hidden w-[38%] shrink-0 bg-[#eef0f5] md:block">
           <SikayetvarPattern className="absolute inset-0 m-auto h-[88%] w-[88%]" />
         </aside>
 
-        {/* Sağ — form */}
         <div className="flex flex-1 flex-col px-6 py-8 sm:px-10 sm:py-10">
           <div className="mb-6 flex justify-center">
             <SiteLogoMark size={56} linked tone="on-light" />
@@ -69,21 +67,21 @@ export function SikayetvarAuthShell({
 
           <div className="mb-6 flex flex-wrap items-baseline justify-between gap-2">
             <h1 className="text-[22px] font-bold tracking-tight text-[#272635]">
-              {isLogin ? "Giriş Yap" : "Üye Ol"}
+              {isLogin ? "Вход" : "Регистрация"}
             </h1>
             <p className="text-[13px] text-[#85878e]">
               {isLogin ? (
                 <>
-                  Hesabınız yok mu?{" "}
+                  Нямате акаунт?{" "}
                   <button type="button" onClick={() => setMode("register")} className="font-semibold text-[#272635] underline underline-offset-2">
-                    Üye Ol.
+                    Регистрирайте се.
                   </button>
                 </>
               ) : (
                 <>
-                  Hesabınız var mı?{" "}
+                  Вече имате акаунт?{" "}
                   <button type="button" onClick={() => setMode("login")} className="font-semibold text-[#272635] underline underline-offset-2">
-                    Giriş Yap.
+                    Влезте.
                   </button>
                 </>
               )}
@@ -122,7 +120,7 @@ export function SikayetvarAuthShell({
 
             <input
               type="email"
-              placeholder="E-posta veya GSM No"
+              placeholder="E-mail или телефон"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -133,7 +131,7 @@ export function SikayetvarAuthShell({
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
-                placeholder="Şifre (En az 6 Karakter)"
+                placeholder="Парола (мин. 6 символа)"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -145,7 +143,7 @@ export function SikayetvarAuthShell({
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[#a0a4b8] hover:text-[#626692]"
-                aria-label={showPassword ? "Şifreyi gizle" : "Şifreyi göster"}
+                aria-label={showPassword ? "Скрий паролата" : "Покажи паролата"}
               >
                 {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
               </button>
@@ -160,10 +158,10 @@ export function SikayetvarAuthShell({
                     onChange={(e) => setRememberMe(e.target.checked)}
                     className="size-[18px] rounded border-[#d8dbe8] text-[#3ad08f] focus:ring-[#3ad08f]/30"
                   />
-                  <span className="text-[14px] text-[#626692]">Beni Hatırla</span>
+                  <span className="text-[14px] text-[#626692]">Запомни ме</span>
                 </label>
                 <Link to="/forgot-password" className="text-[14px] text-[#85878e] underline underline-offset-2 hover:text-[#272635]">
-                  Şifremi Unuttum
+                  Забравена парола
                 </Link>
               </div>
             )}
@@ -174,16 +172,20 @@ export function SikayetvarAuthShell({
               className="mt-2 flex h-[52px] w-full items-center justify-center gap-2 rounded-full bg-[#3ad08f] text-[16px] font-bold text-white shadow-sm transition hover:bg-[#42e29d] disabled:opacity-60"
             >
               {loading && <Loader2 className="size-4 animate-spin" />}
-              {isLogin ? "Giriş Yap" : "Üye Ol"}
+              {isLogin ? "Вход" : "Регистрация"}
             </button>
           </form>
 
           <p className="mt-8 text-center text-[11px] leading-relaxed text-[#a0a4b8]">
-            Devam ederek{" "}
-            <Link to="/kullanim-kosullari" className="underline hover:text-[#626692]">Kullanım Koşulları</Link>
-            {" "}ve{" "}
-            <Link to="/gizlilik" className="underline hover:text-[#626692]">Gizlilik Politikası</Link>
-            &apos;nı kabul etmiş olursunuz.
+            Продължавайки, приемате{" "}
+            <Link to="/kullanim-kosullari" className="underline hover:text-[#626692]">
+              Условията за ползване
+            </Link>{" "}
+            и{" "}
+            <Link to="/gizlilik" className="underline hover:text-[#626692]">
+              Политиката за поверителност
+            </Link>
+            .
           </p>
         </div>
       </div>
@@ -204,7 +206,7 @@ function SocialBtn({
 }) {
   const cfg = {
     facebook: {
-      label: "Facebook ile Giriş Yap",
+      label: "Вход с Facebook",
       cls: "bg-[#1877F2] text-white hover:brightness-110",
       icon: (
         <svg className="size-[18px] shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
@@ -213,17 +215,16 @@ function SocialBtn({
       ),
     },
     google: {
-      label: "Google ile Giriş Yap",
+      label: "Вход с Google",
       cls: "bg-[#e04e39] text-white hover:brightness-110",
       icon: (
         <svg className="size-[18px] shrink-0" viewBox="0 0 48 48" aria-hidden>
           <path fill="#fff" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
-          <path fill="#fff" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.56 2.95-2.24 5.45-4.78 7.12l7.73 6c4.51-4.16 7.11-10.28 7.11-17.49z" opacity=".9" />
         </svg>
       ),
     },
     apple: {
-      label: "Apple ile Giriş Yap",
+      label: "Вход с Apple",
       cls: "bg-[#272635] text-white hover:brightness-110",
       icon: (
         <svg className="size-[18px] shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
@@ -250,7 +251,6 @@ function SocialBtn({
   );
 }
 
-/** şikayetvar giriş modalı sol panel deseni */
 export function SikayetvarPattern({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 320 400" preserveAspectRatio="xMidYMid meet" aria-hidden>

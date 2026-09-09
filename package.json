@@ -3,7 +3,11 @@
   "private": true,
   "sideEffects": false,
   "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
+    "dev:mobile": "cd ../my-expo-app && npm run dev:verno",
     "dev": "vite dev",
     "build": "vite build",
     "build:dev": "vite build --mode development",
@@ -16,6 +20,7 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@verno/shared": "workspace:*",
     "@aws-sdk/client-s3": "^3.1106.0",
     "@better-auth/expo": "^1.7.3",
     "@radix-ui/react-dialog": "^1.1.15",

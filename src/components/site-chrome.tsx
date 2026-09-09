@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { PenLine, Menu, X, LogOut, LayoutDashboard, Building2 } from "lucide-react";
+import { PenLine, User, Menu, X, LogOut, LayoutDashboard, Building2 } from "lucide-react";
 import { useAuth, highestRoleRedirect } from "@/hooks/use-auth";
 import { GlobalSearchTrigger } from "@/components/global-search";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -25,67 +25,69 @@ export function SiteNav() {
   }
 
   const navLinks = [
-    { to: "/sikayetler" as const, label: "Şikayetler", short: "Şikayetler" },
-    { to: "/trendler" as const, label: "Trend 100", short: "Trend", badge: "100" },
-    { to: "/#video" as const, label: "Video", short: "Video", hash: true },
+    { to: "/sikayetler" as const, label: "Жалби" },
+    { to: "/trendler" as const, label: "Trend", badge: "100" as const },
+    { to: "/#video" as const, label: "Видео", hash: true as const },
   ] as const;
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-[#f8f9fb]/95 backdrop-blur border-b border-rule overflow-x-clip">
-        <div className="mx-auto max-w-7xl px-3 sm:px-6 h-[4.25rem] flex items-center gap-3 sm:gap-4 min-w-0">
+      <header className="sticky top-0 z-40 border-b border-[#e8eaef] bg-white/98 backdrop-blur-sm">
+        <div className="mx-auto flex h-[4.375rem] max-w-[1200px] items-center gap-0 px-4 sm:px-6">
+          {/* Лого — вляво */}
           <SiteLogoNav size={52} />
 
-          <nav className="hidden lg:flex items-center gap-6 xl:gap-8 shrink-0 text-[15px] font-medium text-[#626692] whitespace-nowrap">
-            {navLinks.map((l) => (
+          {/* Навигация — веднага след логото (като şikayetvar) */}
+          <nav className="ml-6 hidden items-center gap-7 text-[15px] font-medium text-[#626692] md:flex lg:ml-10 lg:gap-9">
+            {navLinks.map((l) =>
               "hash" in l && l.hash ? (
-                <a key={l.to} href={l.to} className="hover:text-[#272635] transition-colors inline-flex items-center gap-1">
+                <a key={l.to} href={l.to} className="transition-colors hover:text-[#272635]">
                   {l.label}
                 </a>
               ) : (
-                <Link key={l.to} to={l.to} className="hover:text-[#272635] transition-colors inline-flex items-center gap-1">
-                  <span>{l.short}</span>
-                  {"badge" in l && l.badge && (
-                    <span className="ml-0.5 font-bold text-[#272635]">{l.badge}</span>
-                  )}
+                <Link key={l.to} to={l.to} className="inline-flex items-center gap-0.5 transition-colors hover:text-[#272635]">
+                  <span>{l.label}</span>
+                  {"badge" in l && l.badge ? (
+                    <span className="font-bold text-[#272635]">{l.badge}</span>
+                  ) : null}
                 </Link>
-              )
-            ))}
+              ),
+            )}
           </nav>
 
-          <div className="flex-1 flex justify-end xl:justify-center min-w-0">
-            <GlobalSearchTrigger className="hidden md:inline-flex items-center gap-2 rounded-full ring-1 ring-rule bg-card/70 backdrop-blur px-3 h-9 text-[13px] text-navy-mid hover:ring-brand/40 transition w-full max-w-[10rem] lg:max-w-[11rem] xl:max-w-[13rem] 2xl:max-w-xs min-w-0" />
-          </div>
+          {/* Разтегател — бутоните отдясно */}
+          <div className="flex-1" />
 
-          <div className="hidden xl:flex items-center gap-1.5 2xl:gap-2 shrink-0">
+          <div className="hidden items-center gap-4 lg:flex">
             <NotificationBell />
             <ThemeToggle compact />
           </div>
 
           {user ? (
-            <div className="hidden xl:flex items-center gap-2 2xl:gap-3 shrink-0">
+            <div className="ml-3 hidden items-center gap-3 lg:flex">
               {panelHref !== "/" && (
-                <Link to={panelHref} className="inline-flex items-center gap-1.5 text-[12px] 2xl:text-[13px] font-medium text-navy hover:text-brand whitespace-nowrap">
-                  <LayoutDashboard className="size-4 shrink-0" /> Панел
+                <Link to={panelHref} className="text-[14px] font-medium text-[#626692] hover:text-[#272635] whitespace-nowrap">
+                  Панел
                 </Link>
               )}
               <UserMenuPopover user={user} onSignOut={handleSignOut} />
             </div>
           ) : (
-            <Link to="/login" className="hidden lg:inline-flex items-center text-[14px] font-medium text-[#626692] hover:text-[#272635] whitespace-nowrap shrink-0">
-              Giriş Yap / Üye Ol
+            <Link
+              to="/login"
+              className="ml-3 hidden whitespace-nowrap text-[14px] font-medium text-[#626692] transition-colors hover:text-[#272635] lg:inline-flex"
+            >
+              Вход / Регистрация
             </Link>
           )}
 
-          <div className="flex lg:hidden items-center gap-1 shrink-0">
-            <NotificationBell />
-            <ThemeToggle compact />
-          </div>
-
-          <Link to="/sikayet-yaz" className="inline-flex items-center gap-1.5 rounded-full bg-[#695de9] text-white px-3 sm:px-5 h-9 sm:h-10 text-[12px] sm:text-[14px] font-semibold shadow-sm hover:bg-[#6a5de9] active:brightness-95 transition shrink-0">
+          <Link
+            to="/sikayet-yaz"
+            className="ml-3 inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full bg-[#695de9] px-4 text-[13px] font-semibold text-white shadow-sm transition hover:bg-[#5a4fd9] sm:px-5 sm:text-[14px]"
+          >
             <PenLine className="size-4 shrink-0" />
-            <span className="hidden min-[400px]:inline">+ Şikayet Yaz</span>
-            <span className="min-[400px]:hidden">+ Yaz</span>
+            <span className="hidden min-[420px]:inline">+ Напиши жалба</span>
+            <span className="min-[420px]:hidden">+ Жалба</span>
           </Link>
 
           <button
@@ -93,7 +95,7 @@ export function SiteNav() {
             aria-label={menuOpen ? "Затвори менюто" : "Отвори менюто"}
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((o) => !o)}
-            className="xl:hidden grid place-items-center size-10 rounded-lg border border-rule shrink-0"
+            className="ml-2 grid size-10 shrink-0 place-items-center rounded-lg border border-[#e8eaef] md:hidden"
           >
             {menuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
@@ -105,25 +107,25 @@ export function SiteNav() {
           <button
             type="button"
             aria-label="Затвори менюто"
-            className="fixed inset-0 z-40 bg-black/40 xl:hidden"
+            className="fixed inset-0 z-40 bg-black/40 md:hidden"
             onClick={closeMenu}
           />
-          <div className="fixed inset-y-0 right-0 z-50 w-[min(100vw-3rem,320px)] bg-paper border-l border-rule shadow-lift xl:hidden flex flex-col">
-            <div className="flex items-center justify-between px-4 h-16 border-b border-rule">
-              <span className="font-display font-black text-lg text-ink">Меню</span>
-              <button type="button" onClick={closeMenu} className="grid place-items-center size-9 rounded-lg hover:bg-surface">
+          <div className="fixed inset-y-0 right-0 z-50 flex w-[min(100vw-3rem,320px)] flex-col border-l border-rule bg-paper shadow-lift md:hidden">
+            <div className="flex h-16 items-center justify-between border-b border-rule px-4">
+              <span className="font-display text-lg font-black text-ink">Меню</span>
+              <button type="button" onClick={closeMenu} className="grid size-9 place-items-center rounded-lg hover:bg-surface">
                 <X className="size-5" />
               </button>
             </div>
 
-            <nav className="flex-1 overflow-y-auto p-4 space-y-1">
+            <nav className="flex-1 space-y-1 overflow-y-auto p-4">
               {navLinks.map((l) =>
                 "hash" in l && l.hash ? (
                   <a
                     key={l.to}
                     href={l.to}
                     onClick={closeMenu}
-                    className="flex items-center gap-2 h-11 px-3 rounded-lg text-[14px] font-medium text-ink hover:bg-surface"
+                    className="flex h-11 items-center gap-2 rounded-lg px-3 text-[14px] font-medium text-ink hover:bg-surface"
                   >
                     {l.label}
                   </a>
@@ -132,34 +134,31 @@ export function SiteNav() {
                     key={l.to}
                     to={l.to}
                     onClick={closeMenu}
-                    className="flex items-center gap-2 h-11 px-3 rounded-lg text-[14px] font-medium text-ink hover:bg-surface"
+                    className="flex h-11 items-center gap-2 rounded-lg px-3 text-[14px] font-medium text-ink hover:bg-surface"
                   >
                     {l.label}
                     {"badge" in l && l.badge && (
-                      <span className="text-[10px] font-bold bg-brand-soft text-brand rounded-full px-1.5 py-px">{l.badge}</span>
+                      <span className="rounded-full bg-brand-soft px-1.5 py-px text-[10px] font-bold text-brand">{l.badge}</span>
                     )}
                   </Link>
                 ),
               )}
-              <Link to="/sikayet-yaz" onClick={closeMenu} className="flex items-center gap-2 h-11 px-3 rounded-lg text-[14px] font-semibold text-brand hover:bg-brand-soft">
+              <Link to="/sikayet-yaz" onClick={closeMenu} className="flex h-11 items-center gap-2 rounded-lg px-3 text-[14px] font-semibold text-brand hover:bg-brand-soft">
                 <PenLine className="size-4" /> Напиши жалба
               </Link>
-              <Link to="/register/marka-basvuru" onClick={closeMenu} className="flex items-center gap-2 h-11 px-3 rounded-lg text-[14px] font-medium text-navy hover:bg-surface">
+              <Link to="/register/marka-basvuru" onClick={closeMenu} className="flex h-11 items-center gap-2 rounded-lg px-3 text-[14px] font-medium text-navy hover:bg-surface">
                 <Building2 className="size-4" /> Кандидатствай като марка
               </Link>
-              <Link to="/register/kurumsal" onClick={closeMenu} className="flex items-center gap-2 h-11 px-3 rounded-lg text-[14px] font-medium text-navy hover:bg-surface">
-                <Building2 className="size-4" /> Корпоративна регистрация
-              </Link>
-              <div className="pt-3 mt-3 border-t border-rule md:hidden">
-                <GlobalSearchTrigger className="w-full inline-flex items-center gap-2 rounded-lg ring-1 ring-rule bg-card px-3 h-10 text-[13px] text-navy-mid" />
+              <div className="mt-3 border-t border-rule pt-3">
+                <GlobalSearchTrigger className="inline-flex h-10 w-full items-center gap-2 rounded-lg bg-card px-3 text-[13px] text-navy-mid ring-1 ring-rule" />
               </div>
             </nav>
 
-            <div className="p-4 border-t border-rule space-y-1">
+            <div className="space-y-1 border-t border-rule p-4">
               {user ? (
                 <>
                   {panelHref !== "/" && (
-                    <Link to={panelHref} onClick={closeMenu} className="flex items-center gap-2 h-11 px-3 rounded-lg text-[14px] font-medium text-ink hover:bg-surface">
+                    <Link to={panelHref} onClick={closeMenu} className="flex h-11 items-center gap-2 rounded-lg px-3 text-[14px] font-medium text-ink hover:bg-surface">
                       <LayoutDashboard className="size-4" /> Панел
                     </Link>
                   )}
@@ -171,25 +170,22 @@ export function SiteNav() {
                         to={item.to}
                         search={item.search}
                         onClick={closeMenu}
-                        className="flex items-center gap-2 h-11 px-3 rounded-lg text-[14px] font-medium text-ink hover:bg-surface"
+                        className="flex h-11 items-center gap-2 rounded-lg px-3 text-[14px] font-medium text-ink hover:bg-surface"
                       >
                         <Icon className="size-4" /> {item.label}
                       </Link>
                     );
                   })}
-                  <button onClick={handleSignOut} className="w-full flex items-center gap-2 h-11 px-3 rounded-lg text-[14px] font-medium text-ink hover:bg-surface">
+                  <button onClick={handleSignOut} className="flex h-11 w-full items-center gap-2 rounded-lg px-3 text-[14px] font-medium text-ink hover:bg-surface">
                     <LogOut className="size-4" /> Изход
                   </button>
-                  <Link to="/yardim" onClick={closeMenu} className="flex items-center gap-2 h-11 px-3 rounded-lg text-[14px] font-medium text-navy-mid hover:bg-surface">
-                    Помощ
-                  </Link>
                 </>
               ) : (
                 <>
-                  <Link to="/login" onClick={closeMenu} className="flex items-center gap-2 h-11 px-3 rounded-lg text-[14px] font-medium text-ink hover:bg-surface">
+                  <Link to="/login" onClick={closeMenu} className="flex h-11 items-center gap-2 rounded-lg px-3 text-[14px] font-medium text-ink hover:bg-surface">
                     <User className="size-4" /> Вход
                   </Link>
-                  <Link to="/register" onClick={closeMenu} className="flex items-center gap-2 h-11 px-3 rounded-lg text-[14px] font-semibold text-brand hover:bg-brand-soft">
+                  <Link to="/register" onClick={closeMenu} className="flex h-11 items-center gap-2 rounded-lg px-3 text-[14px] font-semibold text-brand hover:bg-brand-soft">
                     Регистрация
                   </Link>
                 </>
@@ -204,63 +200,79 @@ export function SiteNav() {
 
 export function SiteFooter() {
   const columns = [
-    { t: "Şikayetler", l: [
-      ["Son Şikayetler", "/sikayetler"],
-      ["Trend Şikayetler", "/trendler"],
-      ["Çözülen Şikayetler", "/sikayetler", { durum: "cozuldu" }],
-      ["Anonim Şikayet", "/sikayet-yaz"],
-      ["Yardım", "/yardim"],
-      ["SSS", "/yardim"],
-    ] },
-    { t: "Markalar", l: [
-      ["Tüm Markalar", "/markalar"],
-      ["Doğrulanmış Markalar", "/markalar", { dogrulanmis: true }],
-      ["Premium Markalar", "/markalar", { premium: true }],
-      ["Marka Başvurusu", "/register/marka-basvuru"],
-      ["Marka Yönetim", "/brand"],
-    ] },
-    { t: "Trend 100", l: [
-      ["Genel", "/trend-100"],
-      ["Bankacılık", "/trend-100", { kategori: "bankacilik" }],
-      ["E-Ticaret", "/trend-100", { kategori: "e-ticaret" }],
-      ["Telekom", "/trend-100", { kategori: "telekom" }],
-      ["Kargo", "/trend-100", { kategori: "kargo" }],
-      ["Ulaşım", "/trend-100", { kategori: "ulasim" }],
-    ] },
-    { t: "Konular", l: [
-      ["Bankacılık", "/sikayetler", { kategori: "bankacilik" }],
-      ["Sigorta", "/sikayetler", { kategori: "sigorta" }],
-      ["Kripto", "/sikayetler", { kategori: "kripto" }],
-      ["Kargo", "/sikayetler", { kategori: "kargo" }],
-      ["Yemek", "/sikayetler", { kategori: "yemek" }],
-      ["Telefon", "/sikayetler", { kategori: "telefon" }],
-    ] },
+    {
+      t: "Жалби",
+      l: [
+        ["Последни жалби", "/sikayetler"],
+        ["Trend жалби", "/trendler"],
+        ["Решени жалби", "/sikayetler", { durum: "cozuldu" }],
+        ["Анонимна жалба", "/sikayet-yaz"],
+        ["Помощ", "/yardim"],
+        ["ЧЗВ", "/yardim"],
+      ],
+    },
+    {
+      t: "Марки",
+      l: [
+        ["Всички марки", "/markalar"],
+        ["Потвърдени марки", "/markalar", { dogrulanmis: true }],
+        ["Premium марки", "/markalar", { premium: true }],
+        ["Кандидатстване", "/register/marka-basvuru"],
+        ["Управление", "/brand"],
+      ],
+    },
+    {
+      t: "Trend 100",
+      l: [
+        ["Общо", "/trend-100"],
+        ["Банки", "/trend-100", { kategori: "bankacilik" }],
+        ["E-commerce", "/trend-100", { kategori: "e-ticaret" }],
+        ["Телеком", "/trend-100", { kategori: "telekom" }],
+        ["Куриери", "/trend-100", { kategori: "kargo" }],
+        ["Транспорт", "/trend-100", { kategori: "ulasim" }],
+      ],
+    },
+    {
+      t: "Теми",
+      l: [
+        ["Банки", "/sikayetler", { kategori: "bankacilik" }],
+        ["Застраховане", "/sikayetler", { kategori: "sigorta" }],
+        ["Крипто", "/sikayetler", { kategori: "kripto" }],
+        ["Куриери", "/sikayetler", { kategori: "kargo" }],
+        ["Храна", "/sikayetler", { kategori: "yemek" }],
+        ["Телефон", "/sikayetler", { kategori: "telefon" }],
+      ],
+    },
   ] as const;
+
   const topLinks = [
-    ["Hakkımızda", "/hakkimizda"],
+    ["За нас", "/hakkimizda"],
     ["Verno SEAL", "/hakkimizda"],
-    ["Markalar İçin", "/reklam-cozumleri"],
-    ["Blog", "/blog"],
-    ["Şeffaflık Raporu", "/seffaflik-raporu"],
-    ["İletişim", "/iletisim"],
+    ["За марки", "/reklam-cozumleri"],
+    ["Блог", "/blog"],
+    ["Отчет за прозрачност", "/seffaflik-raporu"],
+    ["Контакт", "/iletisim"],
   ] as const;
+
   return (
-    <footer className="mt-0 bg-media text-media-foreground/80 border-t border-white/10">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-14">
-        <div className="flex items-center justify-between mb-10">
-          <Link to="/" className="inline-flex items-center gap-2.5" aria-label="Ana sayfa">
+    <footer className="mt-0 border-t border-white/10 bg-media text-media-foreground/80">
+      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
+        <div className="mb-10 flex items-center justify-between">
+          <Link to="/" className="inline-flex items-center gap-2.5" aria-label="Начало">
             <SiteLogoMark size={36} tone="on-dark" />
           </Link>
-          <div className="hidden md:flex items-center gap-4 text-[13px]">
+          <div className="hidden items-center gap-4 text-[13px] md:flex">
             {topLinks.map(([t, to]) => (
-              <Link key={t} to={to} className="hover:text-paper dark:hover:text-ink">{t}</Link>
+              <Link key={t} to={to} className="hover:text-paper dark:hover:text-ink">
+                {t}
+              </Link>
             ))}
           </div>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {columns.map((g) => (
             <div key={g.t}>
-              <h4 className="text-paper dark:text-ink font-semibold text-[13px] mb-3">{g.t}</h4>
+              <h4 className="mb-3 text-[13px] font-semibold text-paper dark:text-ink">{g.t}</h4>
               <ul className="space-y-2 text-[12.5px]">
                 {g.l.map(([label, to, search, params]) => (
                   <li key={label}>
@@ -268,7 +280,7 @@ export function SiteFooter() {
                       to={to}
                       search={search as never}
                       params={params as never}
-                      className="text-paper/60 dark:text-navy-mid hover:text-paper dark:hover:text-ink transition-colors"
+                      className="text-paper/60 transition-colors hover:text-paper dark:text-navy-mid dark:hover:text-ink"
                     >
                       {label}
                     </Link>
@@ -278,12 +290,18 @@ export function SiteFooter() {
             </div>
           ))}
         </div>
-        <div className="mt-12 pt-6 border-t border-paper/10 dark:border-rule flex flex-col md:flex-row gap-3 justify-between text-[12px] text-paper/60 dark:text-navy-mid">
+        <div className="mt-12 flex flex-col justify-between gap-3 border-t border-paper/10 pt-6 text-[12px] text-paper/60 dark:border-rule dark:text-navy-mid md:flex-row">
           <span>© 2026 verno.bg — Всички права запазени</span>
           <div className="flex gap-6">
-            <Link to="/kullanim-kosullari" className="hover:text-paper dark:hover:text-ink">Kullanım Koşulları</Link>
-            <Link to="/gizlilik" className="hover:text-paper dark:hover:text-ink">Gizlilik</Link>
-            <Link to="/kvkk" className="hover:text-paper dark:hover:text-ink">KVKK</Link>
+            <Link to="/kullanim-kosullari" className="hover:text-paper dark:hover:text-ink">
+              Условия за ползване
+            </Link>
+            <Link to="/gizlilik" className="hover:text-paper dark:hover:text-ink">
+              Поверителност
+            </Link>
+            <Link to="/kvkk" className="hover:text-paper dark:hover:text-ink">
+              GDPR
+            </Link>
           </div>
         </div>
       </div>

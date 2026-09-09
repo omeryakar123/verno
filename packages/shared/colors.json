@@ -1,0 +1,53 @@
+{
+  "brand": {
+    "DEFAULT": "#3AD08F",
+    "hover": "#42E29D",
+    "soft": "#ECFDF5",
+    "foreground": "#FFFFFF"
+  },
+  "primary": {
+    "DEFAULT": "#695DE9",
+    "foreground": "#FFFFFF"
+  },
+  "paper": "#FCFCFD",
+  "surface": "#F4F5F9",
+  "elevated": "#FFFFFF",
+  "ink": "#2A2A38",
+  "navy": {
+    "DEFAULT": "#565870",
+    "mid": "#78798E"
+  },
+  "rule": {
+    "DEFAULT": "#E8EAF0",
+    "strong": "#D5D8E2"
+  },
+  "success": {
+    "DEFAULT": "#2DAF7A",
+    "soft": "#E8FAF2"
+  },
+  "warning": {
+    "DEFAULT": "#C4922A",
+    "soft": "#FDF6E8"
+  },
+  "danger": {
+    "DEFAULT": "#DC4437",
+    "soft": "#FEF0EF"
+  },
+  "info": {
+    "DEFAULT": "#4A6FD4",
+    "soft": "#F0F4FC"
+  },
+  "media": {
+    "DEFAULT": "#222230",
+    "foreground": "#F5F6FA"
+  },
+  "sv": {
+    "dark": "#272635",
+    "dark-muted": "#3A384A",
+    "purple": "#695DE9",
+    "surface": "#E4E7F3",
+    "text-muted": "#85878E",
+    "text-body": "#383838",
+    "text-navy": "#626692"
+  }
+}
