@@ -2,9 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { PenLine, User, Menu, X, LogOut, LayoutDashboard, Building2 } from "lucide-react";
 import { useAuth, highestRoleRedirect } from "@/hooks/use-auth";
-import { GlobalSearchTrigger } from "@/components/global-search";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { NotificationBell } from "@/components/notification-bell";
+import { GlobalSearchIconTrigger, GlobalSearchTrigger } from "@/components/global-search";
 import { SiteLogoMark, SiteLogoNav } from "@/components/site-logo-mark";
 import { USER_MENU_ITEMS, UserMenuPopover } from "@/components/user-menu-popover";
 
@@ -32,73 +30,79 @@ export function SiteNav() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-[#e8eaef] bg-white/98 backdrop-blur-sm">
-        <div className="mx-auto flex h-[4.375rem] max-w-[1200px] items-center gap-0 px-4 sm:px-6">
-          {/* Лого — вляво */}
-          <SiteLogoNav size={52} />
-
-          {/* Навигация — веднага след логото (като şikayetvar) */}
-          <nav className="ml-6 hidden items-center gap-7 text-[15px] font-medium text-[#626692] md:flex lg:ml-10 lg:gap-9">
-            {navLinks.map((l) =>
-              "hash" in l && l.hash ? (
-                <a key={l.to} href={l.to} className="transition-colors hover:text-[#272635]">
-                  {l.label}
-                </a>
-              ) : (
-                <Link key={l.to} to={l.to} className="inline-flex items-center gap-0.5 transition-colors hover:text-[#272635]">
-                  <span>{l.label}</span>
-                  {"badge" in l && l.badge ? (
-                    <span className="font-bold text-[#272635]">{l.badge}</span>
-                  ) : null}
-                </Link>
-              ),
-            )}
-          </nav>
-
-          {/* Разтегател — бутоните отдясно */}
-          <div className="flex-1" />
-
-          <div className="hidden items-center gap-4 lg:flex">
-            <NotificationBell />
-            <ThemeToggle compact />
+      <header className="sticky top-0 z-40 border-b border-[#ebecef] bg-white">
+        <div className="mx-auto flex h-[60px] max-w-[1170px] items-center px-4 sm:h-[70px] sm:px-6">
+          {/* Mobile — logo + compact CTA + search + menu */}
+          <div className="flex min-w-0 flex-1 items-center gap-2.5 md:hidden">
+            <SiteLogoNav size={40} />
+            <Link
+              to="/sikayet-yaz"
+              className="inline-flex h-9 shrink-0 items-center justify-center rounded-full bg-[#695de9] px-3.5 text-[13px] font-semibold text-white transition hover:bg-[#5a4fd9]"
+            >
+              + Жалба
+            </Link>
+            <div className="flex-1" aria-hidden />
+            <GlobalSearchIconTrigger />
+            <button
+              type="button"
+              aria-label={menuOpen ? "Затвори менюто" : "Отвори менюто"}
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((o) => !o)}
+              className="grid size-10 shrink-0 place-items-center rounded-lg border border-[#e8eaef] text-[#272635]"
+            >
+              {menuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+            </button>
           </div>
 
-          {user ? (
-            <div className="ml-3 hidden items-center gap-3 lg:flex">
-              {panelHref !== "/" && (
-                <Link to={panelHref} className="text-[14px] font-medium text-[#626692] hover:text-[#272635] whitespace-nowrap">
-                  Панел
-                </Link>
+          {/* Desktop — logo + nav | spacer | login + CTA */}
+          <div className="hidden min-w-0 flex-1 items-center md:flex md:flex-initial">
+            <SiteLogoNav size={48} />
+            <nav className="ml-6 hidden items-center gap-8 text-[15px] font-medium tracking-[0.01em] text-[#626692] md:flex lg:ml-9 lg:gap-10">
+              {navLinks.map((l) =>
+                "hash" in l && l.hash ? (
+                  <a key={l.to} href={l.to} className="whitespace-nowrap transition-colors hover:text-[#272635]">
+                    {l.label}
+                  </a>
+                ) : (
+                  <Link key={l.to} to={l.to} className="inline-flex items-baseline gap-0.5 whitespace-nowrap transition-colors hover:text-[#272635]">
+                    <span>{l.label}</span>
+                    {"badge" in l && l.badge ? (
+                      <span className="font-bold text-[#272635]">{l.badge}</span>
+                    ) : null}
+                  </Link>
+                ),
               )}
-              <UserMenuPopover user={user} onSignOut={handleSignOut} />
-            </div>
-          ) : (
+            </nav>
+          </div>
+
+          <div className="hidden flex-1 md:block" aria-hidden />
+
+          <div className="hidden shrink-0 items-center gap-4 md:flex lg:gap-5">
+            {user ? (
+              <div className="flex items-center gap-3">
+                {panelHref !== "/" && (
+                  <Link to={panelHref} className="whitespace-nowrap text-[14px] font-medium text-[#626692] hover:text-[#272635]">
+                    Панел
+                  </Link>
+                )}
+                <UserMenuPopover user={user} onSignOut={handleSignOut} />
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                className="whitespace-nowrap text-[14px] font-medium text-[#626692] transition-colors hover:text-[#272635]"
+              >
+                Вход / Регистрация
+              </Link>
+            )}
+
             <Link
-              to="/login"
-              className="ml-3 hidden whitespace-nowrap text-[14px] font-medium text-[#626692] transition-colors hover:text-[#272635] lg:inline-flex"
+              to="/sikayet-yaz"
+              className="inline-flex h-[42px] shrink-0 items-center justify-center rounded-full bg-[#695de9] px-6 text-[14px] font-semibold text-white transition hover:bg-[#5a4fd9]"
             >
-              Вход / Регистрация
+              + Напиши жалба
             </Link>
-          )}
-
-          <Link
-            to="/sikayet-yaz"
-            className="ml-3 inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full bg-[#695de9] px-4 text-[13px] font-semibold text-white shadow-sm transition hover:bg-[#5a4fd9] sm:px-5 sm:text-[14px]"
-          >
-            <PenLine className="size-4 shrink-0" />
-            <span className="hidden min-[420px]:inline">+ Напиши жалба</span>
-            <span className="min-[420px]:hidden">+ Жалба</span>
-          </Link>
-
-          <button
-            type="button"
-            aria-label={menuOpen ? "Затвори менюто" : "Отвори менюто"}
-            aria-expanded={menuOpen}
-            onClick={() => setMenuOpen((o) => !o)}
-            className="ml-2 grid size-10 shrink-0 place-items-center rounded-lg border border-[#e8eaef] md:hidden"
-          >
-            {menuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
-          </button>
+          </div>
         </div>
       </header>
 

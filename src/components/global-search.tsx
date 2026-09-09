@@ -9,23 +9,63 @@ type BrandHit = { id: string; slug: string; name: string; logo_url: string | nul
 type ComplaintHit = { id: string; public_id: string | null; title: string; brands?: { slug: string; name: string } | null };
 type BlogHit = { id: string; slug: string; title: string };
 
-export function GlobalSearchTrigger({ className }: { className?: string }) {
+function useGlobalSearchModal() {
   const [open, setOpen] = useState(false);
+
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setOpen(true); }
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setOpen(true);
+      }
       if (e.key === "Escape") setOpen(false);
     };
     window.addEventListener("keydown", h);
     return () => window.removeEventListener("keydown", h);
   }, []);
+
+  return { open, openModal: () => setOpen(true), closeModal: () => setOpen(false) };
+}
+
+export function GlobalSearchTrigger({ className }: { className?: string }) {
+  const { open, openModal, closeModal } = useGlobalSearchModal();
   return (
     <>
-      <button onClick={() => setOpen(true)} className={className ?? "inline-flex items-center gap-2 rounded-full ring-1 ring-rule bg-card/70 backdrop-blur px-3 h-9 text-[13px] text-navy-mid hover:ring-brand/40 transition"}>
+      <button
+        type="button"
+        onClick={openModal}
+        className={
+          className ??
+          "inline-flex h-9 items-center gap-2 rounded-full bg-card/70 px-3 text-[13px] text-navy-mid ring-1 ring-rule backdrop-blur transition hover:ring-brand/40"
+        }
+      >
         <Search className="size-4" /> Търси марка, жалба или код…
-        <kbd className="ml-2 hidden sm:inline-flex items-center gap-1 text-[10px] text-navy-mid bg-surface rounded px-1.5 py-0.5">⌘K</kbd>
+        <kbd className="ml-2 hidden items-center gap-1 rounded bg-surface px-1.5 py-0.5 text-[10px] text-navy-mid sm:inline-flex">
+          ⌘K
+        </kbd>
       </button>
-      <GlobalSearchModal open={open} onClose={() => setOpen(false)} />
+      <GlobalSearchModal open={open} onClose={closeModal} />
+    </>
+  );
+}
+
+/** Navbar icon — mobile header (şikayetvar style). */
+export function GlobalSearchIconTrigger({ className }: { className?: string }) {
+  const { open, openModal, closeModal } = useGlobalSearchModal();
+  return (
+    <>
+      <button
+        type="button"
+        aria-label="Търси"
+        onClick={openModal}
+        className={
+          className ??
+          "grid size-10 shrink-0 place-items-center rounded-lg text-[#626692] transition hover:bg-[#f3f4f8] hover:text-[#272635]"
+        }
+      >
+        <Search className="size-5" />
+      </button>
+      <GlobalSearchModal open={open} onClose={closeModal} />
     </>
   );
 }

@@ -128,10 +128,10 @@ export function SiteLogoHeader({ badge }: { badge?: string }) {
 }
 
 /** Navbar logo. */
-export function SiteLogoNav({ size = 52 }: { size?: number }) {
+export function SiteLogoNav({ size = 48 }: { size?: number }) {
   return (
-    <Link to="/" className="flex items-center shrink-0 min-w-0 py-0.5" aria-label="Начало">
-      <LogoImage size={size} tone="default" className="max-h-[52px] w-auto min-w-[120px]" />
+    <Link to="/" className="flex shrink-0 items-center py-0.5" aria-label="Начало">
+      <LogoImage size={size} tone="default" className="h-[42px] w-auto min-w-[110px] max-w-[180px] sm:h-[46px]" />
     </Link>
   );
 }

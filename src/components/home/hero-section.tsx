@@ -54,13 +54,13 @@ function BannerCollage({ variant }: { variant: "mobile" | "desktop" }) {
 
 export function HeroSection({ search, onSearchChange, onSubmit }: Props) {
   return (
-    <div className="relative pt-4 pb-20 lg:pb-[247px] lg:before:absolute lg:before:top-[31px] lg:before:right-0 lg:before:block lg:before:h-[270px] lg:before:w-[calc(50%-720px)] lg:before:bg-[#e4e7f3] lg:before:content-['']">
+    <div className="relative pt-2 pb-14 sm:pt-4 sm:pb-20 lg:pb-[247px] lg:before:absolute lg:before:top-[31px] lg:before:right-0 lg:before:block lg:before:h-[270px] lg:before:w-[calc(50%-720px)] lg:before:bg-[#e4e7f3] lg:before:content-['']">
       <BannerCollage variant="mobile" />
       <BannerCollage variant="desktop" />
 
       <div className="home-container relative z-10 px-4 lg:max-w-6xl lg:px-0">
         <div className="lg:w-[46.3%] lg:pt-20">
-          <h1 className="mb-5 whitespace-pre-line font-normal text-[#383838] text-[43px] leading-tight tracking-[1px] lg:mb-28 lg:text-[61px] lg:leading-[1.12]">
+          <h1 className="mb-5 whitespace-pre-line font-normal text-[#383838] text-[36px] leading-[1.08] tracking-[0.5px] sm:text-[43px] sm:leading-tight sm:tracking-[1px] lg:mb-28 lg:text-[61px] lg:leading-[1.12]">
             <strong className="font-semibold">За решение</strong>
             {"\n"}verno
           </h1>

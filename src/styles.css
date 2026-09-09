@@ -601,46 +601,82 @@
 @utility home-talked-shell {
   position: relative;
   overflow: hidden;
-  padding-top: 3.25rem;
-  padding-bottom: 6rem;
-  background: var(--sv-purple);
+  padding-bottom: 4.5rem;
+  background: #fff;
 
+  /* Лилава зона — дясно */
   &::before {
     content: "";
     position: absolute;
+    top: 3.5rem;
     right: 0;
-    bottom: 0;
     z-index: 0;
-    margin-right: -4rem;
-    height: 12rem;
-    width: 12rem;
-    border-top-right-radius: 9999px;
-    background: var(--brand);
+    height: calc(100% - 3.5rem);
+    width: 72%;
+    border-top-left-radius: 56px;
+    background: var(--sv-purple);
   }
 
+  /* Тъмно лилаво — далеч дясно */
   &::after {
     content: "";
     position: absolute;
-    top: 0;
+    top: 3.5rem;
     right: 0;
     z-index: 0;
-    height: 100%;
-    width: 56%;
-    border-top-left-radius: 90px;
+    height: calc(100% - 3.5rem);
+    width: 55%;
+    border-top-left-radius: 72px;
     background: var(--sv-dark);
   }
 
-  @media (min-width: 768px) {
-    padding-bottom: 12rem;
+  @media (min-width: 1024px) {
+    padding-bottom: 8.5rem;
 
     &::before {
-      left: 44%;
-      right: auto;
-      margin-right: 0;
-      height: 50%;
-      width: 25%;
+      top: 5.5rem;
+      height: calc(100% - 5.5rem);
+      width: 58%;
+      border-top-left-radius: 90px;
+    }
+
+    &::after {
+      top: 5.5rem;
+      height: calc(100% - 5.5rem);
+      width: 42%;
     }
   }
+}
+
+@utility home-talked-green {
+  pointer-events: none;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  height: 7rem;
+  width: 9rem;
+  border-top-right-radius: 120px;
+  background: #3ad08f;
+
+  @media (min-width: 1024px) {
+    height: 10rem;
+    width: 13rem;
+    border-top-right-radius: 160px;
+  }
+}
+
+@utility home-talked-header {
+  position: relative;
+  z-index: 2;
+}
+
+@utility home-talked-track {
+  position: relative;
+  z-index: 2;
+  margin-inline-start: max(1rem, calc((100vw - 1170px) / 2 + 1rem));
+  padding-inline-end: max(1rem, calc((100vw - 1170px) / 2 + 1rem));
+  padding-block-end: 0.5rem;
 }
 
 @keyframes homeMarquee {
