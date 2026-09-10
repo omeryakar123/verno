@@ -3,29 +3,24 @@ import { useEffect, useState } from "react";
 import {
   Loader2,
   KeyRound,
-  MessageSquare,
-  Eye,
+  Award,
   CheckCircle2,
   Mail,
-  Award,
   Plus,
 } from "lucide-react";
-import { useAuth } from "@/hooks/use-auth";
-import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { AvatarUpload } from "@/components/avatar-upload";
 import { Messenger } from "@/components/messenger";
 import { PhoneInput } from "@/components/phone-input";
 import { toE164, fromE164 } from "@/lib/phone";
-import { Pagination } from "@/components/pagination";
-import { PAGE_SIZE } from "@/lib/data";
-import { complaintLinkId } from "@/lib/complaint-link";
-import { dbStatusToUi, statusLabel, statusClasses } from "@/lib/complaint-status";
+import { ProfilePageShell } from "@/components/profile/profile-page-shell";
+import { ProfileComplaintsList } from "@/components/profile/profile-complaints-list";
+import { useProfileData, type Profile } from "@/hooks/use-profile-data";
 import { privateHead, SITE_NAME } from "@/lib/seo";
 import { UserBadgeGrid, UserBadgeRow } from "@/components/user-badges";
-import type { UserBadgePayload } from "@/lib/server/user-badges";
 import { cn } from "@/lib/utils";
-import { ProfileAccountSidebar, type ProfileAccountSection } from "@/components/profile-account-sidebar";
+import type { ProfileAccountSection } from "@/components/profile-account-sidebar";
+import { authClient } from "@/lib/auth-client";
 
 const PROFILE_TABS = ["info", "complaints", "supported", "commented", "saved", "messages", "badges", "security"] as const;
 type Tab = (typeof PROFILE_TABS)[number];
@@ -37,6 +32,17 @@ function parseProfileTab(raw: unknown): Tab {
   return "info";
 }
 
+const TAB_REDIRECTS: Partial<Record<Tab, string>> = {
+  complaints: "/sikayetlerim",
+  supported: "/desteklediklerim",
+  commented: "/yorumladiklarim",
+};
+
+function tabToSection(tab: Tab): ProfileAccountSection {
+  if (tab === "info") return "info";
+  return tab as ProfileAccountSection;
+}
+
 export const Route = createFileRoute("/_site/profile")({
   head: () => privateHead(`Профил — ${SITE_NAME}`, "/profile"),
   validateSearch: (s: Record<string, unknown>): { sekme?: Tab | "mesajlar" } => ({
@@ -45,130 +51,28 @@ export const Route = createFileRoute("/_site/profile")({
   component: ProfilePage,
 });
 
-type Profile = {
-  id: string;
-  fullName: string | null;
-  username: string | null;
-  avatarUrl: string | null;
-  phone: string | null;
-  city: string | null;
-  bio: string | null;
-};
-
-type Complaint = {
-  id: string;
-  publicId: string | null;
-  title: string;
-  status: string;
-  views: number;
-  createdAt: string;
-};
-
-const NAV: { id: Tab; label: string }[] = [
-  { id: "info", label: "Редактирай профила" },
-  { id: "complaints", label: "Моите жалби" },
-  { id: "supported", label: "Подкрепени" },
-  { id: "commented", label: "Коментирани" },
-  { id: "saved", label: "Запазени" },
-  { id: "messages", label: "Съобщения" },
-  { id: "badges", label: "Значки" },
-  { id: "security", label: "Сигурност" },
-];
-
-function tabSearchParam(id: Tab): { sekme?: Tab | "mesajlar" } {
-  if (id === "info") return {};
-  if (id === "messages") return { sekme: "mesajlar" };
-  return { sekme: id };
-}
-
 function ProfilePage() {
-  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [email, setEmail] = useState("");
-  const [emailVerified, setEmailVerified] = useState(false);
-  const [badges, setBadges] = useState<UserBadgePayload | null>(null);
-  const [verifySending, setVerifySending] = useState(false);
-  const [loaded, setLoaded] = useState(false);
-  const [phone, setPhone] = useState("");
-  const [busy, setBusy] = useState(false);
   const { sekme } = Route.useSearch();
-  const [tab, setTab] = useState<Tab>(() => parseProfileTab(sekme));
-  const [complaints, setComplaints] = useState<Complaint[]>([]);
-  const [supported, setSupported] = useState<Complaint[]>([]);
-  const [commented, setCommented] = useState<Complaint[]>([]);
-  const [stats, setStats] = useState({
-    total: 0,
-    resolved: 0,
-    views: 0,
-    follows: 0,
-  });
+  const tab = parseProfileTab(sekme);
+
+  useEffect(() => {
+    const redirect = TAB_REDIRECTS[tab];
+    if (redirect) navigate({ to: redirect, replace: true });
+  }, [tab, navigate]);
+
+  const data = useProfileData();
+  const [busy, setBusy] = useState(false);
+  const [verifySending, setVerifySending] = useState(false);
   const [curPw, setCurPw] = useState("");
   const [newPw, setNewPw] = useState("");
   const [newPw2, setNewPw2] = useState("");
 
-  useEffect(() => {
-    if (!authLoading && !user) navigate({ to: "/login" });
-  }, [authLoading, user, navigate]);
-
-  useEffect(() => {
-    setTab(parseProfileTab(sekme));
-  }, [sekme]);
-
-  useEffect(() => {
-    if (!user) return;
-    (async () => {
-      try {
-        const res = await fetch("/api/profile", { credentials: "include" });
-        const data = (await res.json()) as {
-          profile: Profile | null;
-          email: string;
-          emailVerified: boolean;
-          badges?: UserBadgePayload;
-        };
-        if (data.profile) {
-          setProfile(data.profile);
-          setPhone(fromE164(data.profile.phone));
-        }
-        setEmail(data.email ?? "");
-        setEmailVerified(!!data.emailVerified);
-        if (data.badges) setBadges(data.badges);
-
-        const [cres, sres, cmres] = await Promise.all([
-          fetch("/api/me/complaints", { credentials: "include" }),
-          fetch("/api/me/supported", { credentials: "include" }),
-          fetch("/api/me/commented", { credentials: "include" }),
-        ]);
-        const cjson = (await cres.json()) as { complaints: Complaint[] };
-        const sjson = (await sres.json()) as { complaints: Complaint[] };
-        const cmjson = (await cmres.json()) as { complaints: Complaint[] };
-        const list = cjson.complaints ?? [];
-        setComplaints(list);
-        setSupported(sjson.complaints ?? []);
-        setCommented(cmjson.complaints ?? []);
-        setStats({
-          total: list.length,
-          resolved: list.filter((c) => dbStatusToUi(c.status) === "cozuldu").length,
-          views: list.reduce((s, c) => s + (c.views ?? 0), 0),
-          follows: 0,
-        });
-
-        fetch("/api/me/follows", { credentials: "include" })
-          .then((r) => (r.ok ? r.json() : { count: 0 }))
-          .then((j: { count?: number }) => {
-            setStats((s) => ({ ...s, follows: j.count ?? 0 }));
-          })
-          .catch(() => {});
-      } catch {
-        toast.error("Профилът не може да се зареди");
-      } finally {
-        setLoaded(true);
-      }
-    })();
-  }, [user]);
+  if (TAB_REDIRECTS[tab]) return null;
 
   async function patchProfile(body: Partial<Profile & { phone?: string | null }>) {
-    if (!profile) return false;
+    if (!data.profile) return false;
+    const profile = data.profile;
     const e164 = body.phone !== undefined ? (body.phone ? toE164(body.phone) : null) : profile.phone;
     if (body.phone && !e164) {
       toast.error("Невалиден телефонен номер");
@@ -193,24 +97,24 @@ function ProfilePage() {
       toast.error("Запазването не успя");
       return false;
     }
-    const data = (await res.json()) as { profile?: Profile };
-    if (data.profile) {
-      setProfile(data.profile);
-      setPhone(fromE164(data.profile.phone));
+    const resData = (await res.json()) as { profile?: Profile };
+    if (resData.profile) {
+      data.setProfile(resData.profile);
+      data.setPhone(fromE164(resData.profile.phone));
     }
     toast.success("Обновено");
     return true;
   }
 
   async function sendVerifyEmail() {
-    if (!email || emailVerified) return;
+    if (!data.email || data.emailVerified) return;
     setVerifySending(true);
     try {
       const res = await fetch("/api/otp/send", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email: data.email }),
       });
       const j = (await res.json().catch(() => ({}))) as { error?: string };
       if (!res.ok) {
@@ -218,7 +122,7 @@ function ProfilePage() {
         return;
       }
       toast.success("Кодът за потвърждение е изпратен на имейла ви");
-      navigate({ to: "/verify-email", search: { email, sent: "1" } });
+      navigate({ to: "/verify-email", search: { email: data.email, sent: "1" } });
     } finally {
       setVerifySending(false);
     }
@@ -243,148 +147,94 @@ function ProfilePage() {
     }
   }
 
-  async function logout() {
-    await authClient.signOut();
-    navigate({ to: "/" });
+  if (!data.loaded) {
+    return <ProfilePageShell active={tabToSection(tab)} loading onSignOut={data.logout} />;
   }
 
-  if (authLoading || !loaded) {
+  if (!data.profile) {
     return (
-      <div className="mx-auto max-w-7xl px-4 py-24 text-center text-navy-mid">
-        <Loader2 className="mx-auto size-7 animate-spin" />
-        <p className="mt-3 text-[14px]">Зареждане на профила…</p>
-      </div>
-    );
-  }
-
-  if (!profile) {
-    return (
-      <div className="mx-auto max-w-7xl px-4 py-24 text-center text-navy-mid">
-        Профилът не е намерен.
-      </div>
+      <ProfilePageShell active="info" onSignOut={data.logout}>
+        <div className="p-12 text-center text-navy-mid">Профилът не е намерен.</div>
+      </ProfilePageShell>
     );
   }
 
   const strengthItems = [
-    { done: emailVerified, label: "Потвърдете имейла си", action: !emailVerified ? sendVerifyEmail : undefined },
-    { done: !!profile.avatarUrl, label: "Качете профилна снимка" },
-    { done: !!profile.phone, label: "Добавете телефонен номер" },
+    { done: data.emailVerified, label: "Потвърдете имейла си", action: !data.emailVerified ? sendVerifyEmail : undefined },
+    { done: !!data.profile.avatarUrl, label: "Качете профилна снимка" },
+    { done: !!data.profile.phone, label: "Добавете телефонен номер" },
   ];
   const strengthPct = Math.round((strengthItems.filter((i) => i.done).length / strengthItems.length) * 100);
 
   return (
-    <div className="bg-surface/80 min-h-[calc(100vh-4rem)]">
-      <div className="mx-auto max-w-7xl px-3 sm:px-6 py-5 sm:py-8">
-        <div className="flex flex-col lg:flex-row gap-5 lg:gap-6">
-          {/* Sidebar */}
-          <div className="lg:w-[260px] shrink-0">
-            <ProfileAccountSidebar active={tab as ProfileAccountSection} onSignOut={logout} />
-            <div className="lg:hidden mt-3 flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-              {NAV.map(({ id, label }) => (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={() => {
-                    setTab(id);
-                    navigate({ to: "/profile", search: tabSearchParam(id), replace: true });
-                  }}
-                  className={cn(
-                    "shrink-0 px-4 h-9 rounded-full text-[12px] font-semibold transition",
-                    tab === id ? "bg-brand text-brand-foreground" : "bg-card ring-1 ring-rule text-navy-mid",
-                  )}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
+    <ProfilePageShell active={tabToSection(tab)} onSignOut={data.logout}>
+      {tab === "info" && (
+        <ProfileInfoPanel
+          profile={data.profile}
+          email={data.email}
+          emailVerified={data.emailVerified}
+          phone={data.phone}
+          setPhone={data.setPhone}
+          badges={data.badges}
+          stats={data.stats}
+          strengthPct={strengthPct}
+          strengthItems={strengthItems}
+          verifySending={verifySending}
+          busy={busy}
+          onPatch={patchProfile}
+          onAvatarChange={async (newUrl) => {
+            const prev = data.profile!.avatarUrl;
+            data.setProfile({ ...data.profile!, avatarUrl: newUrl });
+            const ok = await patchProfile({ avatarUrl: newUrl });
+            if (!ok) data.setProfile({ ...data.profile!, avatarUrl: prev });
+          }}
+        />
+      )}
 
-          {/* Ana içerik */}
-          <div className="flex-1 min-w-0">
-            <div className="bg-card rounded-2xl lg:rounded-3xl ring-1 ring-rule/70 shadow-sm overflow-hidden">
-              {tab === "info" && (
-                <ProfileInfoTab
-                  profile={profile}
-                  email={email}
-                  emailVerified={emailVerified}
-                  phone={phone}
-                  setPhone={setPhone}
-                  badges={badges}
-                  stats={stats}
-                  strengthPct={strengthPct}
-                  strengthItems={strengthItems}
-                  verifySending={verifySending}
-                  busy={busy}
-                  onPatch={patchProfile}
-                  onAvatarChange={async (newUrl) => {
-                    const prev = profile.avatarUrl;
-                    setProfile({ ...profile, avatarUrl: newUrl });
-                    const ok = await patchProfile({ avatarUrl: newUrl });
-                    if (!ok) setProfile({ ...profile, avatarUrl: prev });
-                  }}
-                />
-              )}
+      {tab === "badges" && data.badges && (
+        <div className="p-6 sm:p-8">
+          <SectionTitle icon={Award} title="Моите значки" />
+          <UserBadgeGrid earned={data.badges.earned} stats={data.badges.stats} next={data.badges.next} />
+        </div>
+      )}
 
-              {tab === "badges" && badges && (
-                <div className="p-6 sm:p-8">
-                  <SectionTitle icon={Award} title="Моите значки" />
-                  <UserBadgeGrid earned={badges.earned} stats={badges.stats} next={badges.next} />
-                </div>
-              )}
+      {tab === "saved" && (
+        <ProfileComplaintsList complaints={[]} title="Запазени жалби" emptyMessage="Функцията за запазване скоро ще бъде налична." />
+      )}
 
-              {tab === "complaints" && (
-                <ComplaintsTab complaints={complaints} title="Моите жалби" emptyMessage="Все още нямате жалби." />
-              )}
+      {tab === "messages" && (
+        <div className="p-4 sm:p-6">
+          <Messenger />
+        </div>
+      )}
 
-              {tab === "supported" && (
-                <ComplaintsTab complaints={supported} title="Подкрепени жалби" emptyMessage="Все още не сте подкрепили жалба." />
-              )}
-
-              {tab === "commented" && (
-                <ComplaintsTab complaints={commented} title="Коментирани жалби" emptyMessage="Все още не сте коментирали жалба." />
-              )}
-
-              {tab === "saved" && (
-                <ComplaintsTab complaints={[]} title="Запазени жалби" emptyMessage="Функцията за запазване скоро ще бъде налична." />
-              )}
-
-              {tab === "messages" && (
-                <div className="p-4 sm:p-6">
-                  <Messenger />
-                </div>
-              )}
-
-              {tab === "security" && (
-                <div className="p-6 sm:p-8 max-w-lg">
-                  <SectionTitle icon={KeyRound} title="Смяна на парола" />
-                  <p className="text-[13px] text-navy-mid mb-5">
-                    Ако сте влезли с Google, може да нямате парола; в този случай полетата не са активни.
-                  </p>
-                  <div className="space-y-4">
-                    <SecurityField label="Текуща парола" value={curPw} onChange={setCurPw} />
-                    <SecurityField label="Нова парола" value={newPw} onChange={setNewPw} />
-                    <SecurityField label="Потвърди новата парола" value={newPw2} onChange={setNewPw2} />
-                    <button
-                      type="button"
-                      onClick={changePassword}
-                      disabled={busy}
-                      className="inline-flex items-center gap-2 rounded-xl bg-brand text-brand-foreground px-6 h-11 text-[13px] font-semibold hover:brightness-105 disabled:opacity-60"
-                    >
-                      {busy && <Loader2 className="size-4 animate-spin" />}
-                      Обнови паролата
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
+      {tab === "security" && (
+        <div className="max-w-lg p-6 sm:p-8">
+          <SectionTitle icon={KeyRound} title="Смяна на парола" />
+          <p className="mb-5 text-[13px] text-navy-mid">
+            Ако сте влезли с Google, може да нямате парола; в този случай полетата не са активни.
+          </p>
+          <div className="space-y-4">
+            <SecurityField label="Текуща парола" value={curPw} onChange={setCurPw} />
+            <SecurityField label="Нова парола" value={newPw} onChange={setNewPw} />
+            <SecurityField label="Потвърди новата парола" value={newPw2} onChange={setNewPw2} />
+            <button
+              type="button"
+              onClick={changePassword}
+              disabled={busy}
+              className="inline-flex h-11 items-center gap-2 rounded-xl bg-brand px-6 text-[13px] font-semibold text-white hover:bg-brand-hover disabled:opacity-60"
+            >
+              {busy && <Loader2 className="size-4 animate-spin" />}
+              Обнови паролата
+            </button>
           </div>
         </div>
-      </div>
-    </div>
+      )}
+    </ProfilePageShell>
   );
 }
 
-function ProfileInfoTab({
+function ProfileInfoPanel({
   profile,
   email,
   emailVerified,
@@ -404,8 +254,8 @@ function ProfileInfoTab({
   emailVerified: boolean;
   phone: string;
   setPhone: (v: string) => void;
-  badges: UserBadgePayload | null;
-  stats: { total: number; resolved: number; views: number; follows: number };
+  badges: ReturnType<typeof useProfileData>["badges"];
+  stats: ReturnType<typeof useProfileData>["stats"];
   strengthPct: number;
   strengthItems: { done: boolean; label: string; action?: () => void }[];
   verifySending: boolean;
@@ -414,23 +264,17 @@ function ProfileInfoTab({
   onAvatarChange: (url: string | null) => Promise<void>;
 }) {
   return (
-    <div className="p-6 sm:p-8">
-      {/* Üst: avatar + isim | profil gücü */}
-      <div className="grid lg:grid-cols-[1fr_280px] gap-6 lg:gap-8 pb-8 border-b border-rule/70">
-        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
-          <AvatarUpload
-            url={profile.avatarUrl}
-            userId={profile.id}
-            size={112}
-            onChange={(url) => void onAvatarChange(url)}
-          />
-          <div className="text-center sm:text-left min-w-0">
-            <h1 className="font-display text-2xl sm:text-[28px] font-bold text-ink tracking-tight break-words">
+    <div className="p-6 sm:p-8 lg:p-10">
+      <div className="flex flex-col items-center gap-6 pb-8 lg:flex-row lg:items-start lg:gap-10">
+        <div className="flex flex-col items-center gap-4">
+          <AvatarUpload url={profile.avatarUrl} userId={profile.id} size={112} onChange={(url) => void onAvatarChange(url)} />
+          <div className="text-center">
+            <h1 className="font-display text-2xl font-bold tracking-tight text-ink sm:text-[28px]">
               {profile.fullName || email.split("@")[0]}
             </h1>
-            <p className="mt-1 text-[14px] text-navy-mid truncate max-w-full">{email}</p>
+            <p className="mt-1 truncate text-[14px] text-navy-mid">{email}</p>
             {badges && badges.earned.length > 0 && (
-              <div className="mt-3 flex justify-center sm:justify-start">
+              <div className="mt-3 flex justify-center">
                 <UserBadgeRow badges={badges.earned} />
               </div>
             )}
@@ -440,53 +284,48 @@ function ProfileInfoTab({
         <ProfileStrengthCard pct={strengthPct} items={strengthItems} verifySending={verifySending} />
       </div>
 
-      {/* İstatistikler */}
-      <div className="grid grid-cols-3 gap-4 py-7 border-b border-rule/70">
-        <StatPill label="Вашите жалби" value={stats.total} />
-        <StatPill label="Решени" value={stats.resolved} />
-        <StatPill label="Следени марки" value={stats.follows} />
+      <div className="mb-10 flex border-b border-rule/70 pb-8">
+        <StatCell label="Вашите жалби" value={stats.total} />
+        <div className="mx-5 w-px bg-gray-300" aria-hidden />
+        <StatCell label="Подкрепени" value={stats.supported} />
+        <div className="mx-5 w-px bg-gray-300" aria-hidden />
+        <StatCell label="Коментари" value={stats.commented} />
       </div>
 
-      {/* Alanlar */}
-      <div className="pt-7 space-y-6 max-w-2xl">
-        <EditableField
-          label="Име и фамилия"
-          value={profile.fullName ?? ""}
-          onSave={async (v) => onPatch({ fullName: v })}
-          busy={busy}
-        />
-        <EditableField
+      <div className="mx-auto max-w-2xl space-y-8">
+        <RoundedField label="Име и фамилия" value={profile.fullName ?? ""} onSave={(v) => onPatch({ fullName: v })} busy={busy} />
+        <RoundedField
           label="Потребителско име"
           value={profile.username ?? ""}
-          onSave={async (v) => onPatch({ username: v || null })}
+          onSave={(v) => onPatch({ username: v || null })}
           busy={busy}
         />
         <div>
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[13px] font-semibold text-navy-mid">Имейл</span>
+          <div className="mb-3 flex items-center justify-between px-1">
+            <span className="text-[13px] font-semibold text-gray-500">Имейл</span>
             {!emailVerified && (
               <button
                 type="button"
                 onClick={() => strengthItems[0]?.action?.()}
                 disabled={verifySending}
-                className="text-[12px] font-semibold text-brand hover:underline inline-flex items-center gap-1"
+                className="inline-flex items-center gap-1 text-[12px] font-semibold text-brand hover:underline"
               >
                 {verifySending ? <Loader2 className="size-3 animate-spin" /> : null}
                 Потвърди
               </button>
             )}
           </div>
-          <div className="flex items-center gap-3 h-12 rounded-xl ring-1 ring-rule bg-surface/50 px-4">
-            <Mail className="size-4 text-navy-mid shrink-0" />
-            <span className="text-[15px] text-ink truncate flex-1">{email}</span>
+          <div className="flex h-11 items-center gap-3 rounded-full bg-white px-5 ring-1 ring-rule">
+            <Mail className="size-4 shrink-0 text-navy-mid" />
+            <span className="flex-1 truncate text-[15px] text-gray-400">{email}</span>
             {emailVerified && (
-              <span className="text-[11px] font-bold text-brand bg-brand-soft px-2 py-0.5 rounded-full shrink-0">
+              <span className="shrink-0 rounded-full bg-brand-soft px-2 py-0.5 text-[11px] font-bold text-brand">
                 Потвърден
               </span>
             )}
           </div>
         </div>
-        <EditablePhoneField
+        <RoundedPhoneField
           label="Телефон"
           value={phone}
           onSave={async (v) => {
@@ -496,23 +335,34 @@ function ProfileInfoTab({
           busy={busy}
         />
         <div>
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[13px] font-semibold text-navy-mid">Парола</span>
-          </div>
-          <div className="h-12 rounded-xl ring-1 ring-rule bg-surface/50 px-4 flex items-center text-[15px] text-navy-mid tracking-widest">
+          <span className="mb-3 block px-1 text-[13px] font-semibold text-gray-500">Парола</span>
+          <div className="flex h-11 items-center rounded-full bg-white px-5 tracking-widest text-gray-400 ring-1 ring-rule">
             ••••••••
           </div>
-          <p className="mt-1.5 text-[12px] text-navy-mid">
-            За смяна на паролата отидете в секцията <span className="font-medium text-ink">Сигурност</span> от менюто.
+          <p className="mt-2 px-1 text-[12px] text-navy-mid">
+            За смяна на паролата отидете в секцията{" "}
+            <Link to="/profile" search={{ sekme: "security" }} className="font-medium text-brand hover:underline">
+              Сигурност
+            </Link>
+            .
           </p>
         </div>
-        <EditableTextArea
+        <RoundedTextArea
           label="За мен"
           value={profile.bio ?? ""}
-          onSave={async (v) => onPatch({ bio: v || null })}
+          onSave={(v) => onPatch({ bio: v || null })}
           busy={busy}
         />
       </div>
+    </div>
+  );
+}
+
+function StatCell({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="flex flex-1 flex-col justify-between lg:flex-none">
+      <div className="text-sm font-medium text-gray-500 xl:text-base">{label}</div>
+      <span className="text-lg font-medium text-gray-400 opacity-80 sm:text-2xl">{value.toLocaleString("bg-BG")}</span>
     </div>
   );
 }
@@ -527,23 +377,27 @@ function ProfileStrengthCard({
   verifySending: boolean;
 }) {
   return (
-    <div className="rounded-2xl ring-1 ring-rule bg-surface/40 p-5 h-fit">
+    <div className="w-full max-w-sm rounded-2xl ring-1 ring-rule bg-surface/40 p-5 lg:ml-auto">
       <div className="text-[14px] font-semibold text-ink">
-        Силата на профила: <span className="text-brand">%{pct}</span>
+        Силата на профила: <span className="font-bold text-brand">%{pct}</span>
       </div>
-      <div className="mt-3 h-2 rounded-full bg-rule overflow-hidden">
-        <div
-          className="h-full rounded-full bg-brand transition-all duration-500"
-          style={{ width: `${pct}%` }}
-        />
+      <div className="relative mt-3 flex space-x-1 overflow-hidden rounded-full">
+        {items.map((item, i) => (
+          <div key={item.label} className="relative h-3 flex-1 overflow-hidden rounded-full bg-gray-100">
+            <div
+              className={cn("absolute inset-y-0 left-0 rounded-full bg-brand transition-all", item.done ? "w-full" : "w-0")}
+              style={{ transitionDelay: `${i * 100}ms` }}
+            />
+          </div>
+        ))}
       </div>
       <ul className="mt-4 space-y-2.5">
         {items.map((item) => (
           <li key={item.label} className="flex items-start gap-2.5 text-[13px]">
             <span
               className={cn(
-                "mt-0.5 grid place-items-center size-5 rounded-full shrink-0",
-                item.done ? "bg-brand text-brand-foreground" : "bg-rule text-navy-mid",
+                "mt-0.5 grid size-5 shrink-0 place-items-center rounded-full",
+                item.done ? "bg-brand text-white" : "bg-rule text-navy-mid",
               )}
             >
               {item.done ? <CheckCircle2 className="size-3.5" /> : <Plus className="size-3.5" />}
@@ -553,7 +407,7 @@ function ProfileStrengthCard({
                 type="button"
                 onClick={item.action}
                 disabled={verifySending}
-                className="text-left text-brand font-medium hover:underline"
+                className="text-left font-medium text-brand hover:underline"
               >
                 {item.label}
               </button>
@@ -569,27 +423,16 @@ function ProfileStrengthCard({
   );
 }
 
-function StatPill({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="text-center sm:text-left">
-      <div className="text-[12px] font-medium text-navy-mid">{label}</div>
-      <div className="mt-1 font-display text-2xl sm:text-3xl font-black text-ink tabular-nums">
-        {value.toLocaleString("bg-BG")}
-      </div>
-    </div>
-  );
-}
-
 function SectionTitle({ icon: Icon, title }: { icon: typeof Award; title: string }) {
   return (
-    <div className="flex items-center gap-2 mb-6 text-ink font-semibold text-[16px]">
+    <div className="mb-6 flex items-center gap-2 text-[16px] font-semibold text-ink">
       <Icon className="size-5 text-brand" />
       {title}
     </div>
   );
 }
 
-function EditableField({
+function RoundedField({
   label,
   value,
   onSave,
@@ -602,42 +445,27 @@ function EditableField({
 }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(value);
-
   useEffect(() => {
     if (!editing) setDraft(value);
   }, [value, editing]);
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-[13px] font-semibold text-navy-mid">{label}</span>
+      <div className="mb-3 flex items-center justify-between px-1">
+        <span className="text-[13px] font-semibold text-gray-500">{label}</span>
         {!editing ? (
-          <button
-            type="button"
-            onClick={() => setEditing(true)}
-            className="text-[12px] font-semibold text-brand hover:underline"
-          >
+          <button type="button" onClick={() => setEditing(true)} className="text-[12px] font-semibold tracking-wide text-brand hover:underline">
             Редактирай
           </button>
         ) : (
           <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                setEditing(false);
-                setDraft(value);
-              }}
-              className="text-[12px] font-medium text-navy-mid hover:text-ink"
-            >
+            <button type="button" onClick={() => { setEditing(false); setDraft(value); }} className="text-[12px] text-navy-mid">
               Отказ
             </button>
             <button
               type="button"
               disabled={busy}
-              onClick={async () => {
-                const ok = await onSave(draft);
-                if (ok) setEditing(false);
-              }}
+              onClick={async () => { if (await onSave(draft)) setEditing(false); }}
               className="text-[12px] font-semibold text-brand hover:underline disabled:opacity-50"
             >
               Запази
@@ -645,22 +473,22 @@ function EditableField({
           </div>
         )}
       </div>
-      <input
-        value={editing ? draft : value}
-        onChange={(e) => setDraft(e.target.value)}
-        readOnly={!editing}
-        className={cn(
-          "w-full h-12 rounded-xl ring-1 px-4 text-[15px] transition focus:outline-none",
-          editing
-            ? "ring-brand/40 bg-card focus:ring-2 focus:ring-brand/40"
-            : "ring-rule bg-surface/50 text-ink cursor-default",
-        )}
-      />
+      {editing ? (
+        <input
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          className="h-11 w-full rounded-full bg-white px-5 text-[15px] ring-1 ring-brand/40 focus:outline-none focus:ring-2 focus:ring-brand/40"
+        />
+      ) : (
+        <div className="flex h-11 w-full items-center rounded-full bg-white px-5 text-gray-400 ring-1 ring-rule">
+          {value || "—"}
+        </div>
+      )}
     </div>
   );
 }
 
-function EditablePhoneField({
+function RoundedPhoneField({
   label,
   value,
   onSave,
@@ -673,31 +501,27 @@ function EditablePhoneField({
 }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(value);
-
   useEffect(() => {
     if (!editing) setDraft(value);
   }, [value, editing]);
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-[13px] font-semibold text-navy-mid">{label}</span>
+      <div className="mb-3 flex items-center justify-between px-1">
+        <span className="text-[13px] font-semibold text-gray-500">{label}</span>
         {!editing ? (
           <button type="button" onClick={() => setEditing(true)} className="text-[12px] font-semibold text-brand hover:underline">
             Редактирай
           </button>
         ) : (
           <div className="flex gap-2">
-            <button type="button" onClick={() => { setEditing(false); setDraft(value); }} className="text-[12px] font-medium text-navy-mid">
+            <button type="button" onClick={() => { setEditing(false); setDraft(value); }} className="text-[12px] text-navy-mid">
               Отказ
             </button>
             <button
               type="button"
               disabled={busy}
-              onClick={async () => {
-                const ok = await onSave(draft);
-                if (ok) setEditing(false);
-              }}
+              onClick={async () => { if (await onSave(draft)) setEditing(false); }}
               className="text-[12px] font-semibold text-brand hover:underline disabled:opacity-50"
             >
               Запази
@@ -708,15 +532,15 @@ function EditablePhoneField({
       {editing ? (
         <PhoneInput value={draft} onChange={setDraft} />
       ) : (
-        <div className="h-12 rounded-xl ring-1 ring-rule bg-surface/50 px-4 flex items-center text-[15px] text-ink">
-          {value || <span className="text-navy-mid">Няма добавен телефон</span>}
+        <div className="flex h-11 items-center rounded-full bg-white px-5 text-[15px] text-gray-400 ring-1 ring-rule">
+          {value || "Няма добавен телефон"}
         </div>
       )}
     </div>
   );
 }
 
-function EditableTextArea({
+function RoundedTextArea({
   label,
   value,
   onSave,
@@ -729,31 +553,27 @@ function EditableTextArea({
 }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(value);
-
   useEffect(() => {
     if (!editing) setDraft(value);
   }, [value, editing]);
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-[13px] font-semibold text-navy-mid">{label}</span>
+      <div className="mb-3 flex items-center justify-between px-1">
+        <span className="text-[13px] font-semibold text-gray-500">{label}</span>
         {!editing ? (
           <button type="button" onClick={() => setEditing(true)} className="text-[12px] font-semibold text-brand hover:underline">
             Редактирай
           </button>
         ) : (
           <div className="flex gap-2">
-            <button type="button" onClick={() => { setEditing(false); setDraft(value); }} className="text-[12px] font-medium text-navy-mid">
+            <button type="button" onClick={() => { setEditing(false); setDraft(value); }} className="text-[12px] text-navy-mid">
               Отказ
             </button>
             <button
               type="button"
               disabled={busy}
-              onClick={async () => {
-                const ok = await onSave(draft);
-                if (ok) setEditing(false);
-              }}
+              onClick={async () => { if (await onSave(draft)) setEditing(false); }}
               className="text-[12px] font-semibold text-brand hover:underline disabled:opacity-50"
             >
               Запази
@@ -767,96 +587,24 @@ function EditableTextArea({
         readOnly={!editing}
         rows={4}
         className={cn(
-          "w-full rounded-xl ring-1 p-4 text-[15px] resize-none transition focus:outline-none",
-          editing
-            ? "ring-brand/40 bg-card focus:ring-2 focus:ring-brand/40"
-            : "ring-rule bg-surface/50 cursor-default",
+          "w-full rounded-2xl p-4 text-[15px] ring-1 transition focus:outline-none",
+          editing ? "bg-white ring-brand/40 focus:ring-2" : "cursor-default bg-white text-gray-400 ring-rule",
         )}
       />
     </div>
   );
 }
 
-function SecurityField({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-}) {
+function SecurityField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
   return (
     <div>
-      <label className="text-[13px] font-semibold text-navy-mid mb-2 block">{label}</label>
+      <label className="mb-2 block text-[13px] font-semibold text-navy-mid">{label}</label>
       <input
         type="password"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full h-12 rounded-xl ring-1 ring-rule bg-surface/50 px-4 text-[15px] focus:outline-none focus:ring-2 focus:ring-brand/40"
+        className="h-11 w-full rounded-full bg-white px-5 text-[15px] ring-1 ring-rule focus:outline-none focus:ring-2 focus:ring-brand/40"
       />
-    </div>
-  );
-}
-
-function ComplaintsTab({
-  complaints,
-  title,
-  emptyMessage,
-}: {
-  complaints: Complaint[];
-  title: string;
-  emptyMessage: string;
-}) {
-  const [page, setPage] = useState(1);
-  const start = (page - 1) * PAGE_SIZE;
-  const slice = complaints.slice(start, start + PAGE_SIZE);
-
-  return (
-    <div className="p-6 sm:p-8">
-      <SectionTitle icon={MessageSquare} title={title} />
-      <div className="rounded-2xl ring-1 ring-rule divide-y divide-rule overflow-hidden">
-        {complaints.length === 0 && (
-          <div className="p-12 text-center text-navy-mid text-[14px]">
-            {emptyMessage}{" "}
-            {title === "Моите жалби" && (
-              <Link to="/sikayet-yaz" className="text-brand font-semibold hover:underline">
-                Напишете първата си жалба
-              </Link>
-            )}
-          </div>
-        )}
-        {slice.map((c) => (
-          <Link
-            key={c.id}
-            to="/sikayet/$id"
-            params={{ id: complaintLinkId(c) }}
-            className="flex items-center gap-4 p-4 sm:p-5 hover:bg-surface/60 transition"
-          >
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span
-                  className={`text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md ring-1 ring-inset ${statusClasses(dbStatusToUi(c.status))}`}
-                >
-                  {statusLabel[dbStatusToUi(c.status)]}
-                </span>
-                <span className="text-[12px] text-navy-mid">
-                  {new Date(c.createdAt).toLocaleDateString("bg-BG")}
-                </span>
-              </div>
-              <div className="mt-1.5 font-medium text-[15px] text-ink line-clamp-2">{c.title}</div>
-            </div>
-            <div className="text-[12px] text-navy-mid flex items-center gap-1 shrink-0">
-              <Eye className="size-4" /> {c.views}
-            </div>
-          </Link>
-        ))}
-      </div>
-      {complaints.length > PAGE_SIZE && (
-        <div className="mt-4">
-          <Pagination page={page} pageSize={PAGE_SIZE} total={complaints.length} onChange={setPage} />
-        </div>
-      )}
     </div>
   );
 }

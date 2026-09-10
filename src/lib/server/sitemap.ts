@@ -35,6 +35,7 @@ function staticEntries(): SitemapEntry[] {
     { path: "/blog", changefreq: "weekly", priority: "0.75" },
     { path: "/arama", changefreq: "weekly", priority: "0.5" },
     { path: "/sikayet-yaz", changefreq: "monthly", priority: "0.6" },
+    { path: "/kurumsal-uyelik", changefreq: "monthly", priority: "0.65" },
     { path: "/reklam-cozumleri", changefreq: "monthly", priority: "0.6" },
     { path: "/tepkimvar-seal", changefreq: "monthly", priority: "0.7" },
     { path: "/hakkimizda", changefreq: "monthly", priority: "0.5" },

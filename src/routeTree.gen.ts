@@ -14,6 +14,7 @@ import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as BrandRouteImport } from './routes/brand'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as SiteRouteImport } from './routes/_site'
+import { Route as CorporateRouteImport } from './routes/_corporate'
 import { Route as BrandIndexRouteImport } from './routes/brand/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as SiteIndexRouteImport } from './routes/_site/index'
@@ -66,14 +67,19 @@ import { Route as AdminCmsRouteImport } from './routes/admin/cms'
 import { Route as AdminBotRouteImport } from './routes/admin/bot'
 import { Route as AdminBlogRouteImport } from './routes/admin/blog'
 import { Route as AdminAyarlarRouteImport } from './routes/admin/ayarlar'
+import { Route as SiteYorumladiklarimRouteImport } from './routes/_site/yorumladiklarim'
 import { Route as SiteTrendlerRouteImport } from './routes/_site/trendler'
 import { Route as SiteTrend100RouteImport } from './routes/_site/trend-100'
+import { Route as SiteSikayetlerimRouteImport } from './routes/_site/sikayetlerim'
 import { Route as SiteSikayetlerRouteImport } from './routes/_site/sikayetler'
 import { Route as SiteSikayetYazRouteImport } from './routes/_site/sikayet-yaz'
+import { Route as SiteProfilimRouteImport } from './routes/_site/profilim'
 import { Route as SiteProfileRouteImport } from './routes/_site/profile'
 import { Route as SiteMarkalarRouteImport } from './routes/_site/markalar'
+import { Route as SiteDesteklediklerimRouteImport } from './routes/_site/desteklediklerim'
 import { Route as SiteBildirimlerimRouteImport } from './routes/_site/bildirimlerim'
 import { Route as SiteAramaRouteImport } from './routes/_site/arama'
+import { Route as CorporateKurumsalUyelikRouteImport } from './routes/_corporate/kurumsal-uyelik'
 import { Route as authVerifyEmailRouteImport } from './routes/(auth)/verify-email'
 import { Route as authResetPasswordRouteImport } from './routes/(auth)/reset-password'
 import { Route as authRegisterRouteImport } from './routes/(auth)/register'
@@ -179,6 +185,10 @@ const AdminRoute = AdminRouteImport.update({
 } as any)
 const SiteRoute = SiteRouteImport.update({
   id: '/_site',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CorporateRoute = CorporateRouteImport.update({
+  id: '/_corporate',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BrandIndexRoute = BrandIndexRouteImport.update({
@@ -441,6 +451,11 @@ const AdminAyarlarRoute = AdminAyarlarRouteImport.update({
   path: '/ayarlar',
   getParentRoute: () => AdminRoute,
 } as any)
+const SiteYorumladiklarimRoute = SiteYorumladiklarimRouteImport.update({
+  id: '/yorumladiklarim',
+  path: '/yorumladiklarim',
+  getParentRoute: () => SiteRoute,
+} as any)
 const SiteTrendlerRoute = SiteTrendlerRouteImport.update({
   id: '/trendler',
   path: '/trendler',
@@ -449,6 +464,11 @@ const SiteTrendlerRoute = SiteTrendlerRouteImport.update({
 const SiteTrend100Route = SiteTrend100RouteImport.update({
   id: '/trend-100',
   path: '/trend-100',
+  getParentRoute: () => SiteRoute,
+} as any)
+const SiteSikayetlerimRoute = SiteSikayetlerimRouteImport.update({
+  id: '/sikayetlerim',
+  path: '/sikayetlerim',
   getParentRoute: () => SiteRoute,
 } as any)
 const SiteSikayetlerRoute = SiteSikayetlerRouteImport.update({
@@ -461,6 +481,11 @@ const SiteSikayetYazRoute = SiteSikayetYazRouteImport.update({
   path: '/sikayet-yaz',
   getParentRoute: () => SiteRoute,
 } as any)
+const SiteProfilimRoute = SiteProfilimRouteImport.update({
+  id: '/profilim',
+  path: '/profilim',
+  getParentRoute: () => SiteRoute,
+} as any)
 const SiteProfileRoute = SiteProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -469,6 +494,11 @@ const SiteProfileRoute = SiteProfileRouteImport.update({
 const SiteMarkalarRoute = SiteMarkalarRouteImport.update({
   id: '/markalar',
   path: '/markalar',
+  getParentRoute: () => SiteRoute,
+} as any)
+const SiteDesteklediklerimRoute = SiteDesteklediklerimRouteImport.update({
+  id: '/desteklediklerim',
+  path: '/desteklediklerim',
   getParentRoute: () => SiteRoute,
 } as any)
 const SiteBildirimlerimRoute = SiteBildirimlerimRouteImport.update({
@@ -480,6 +510,11 @@ const SiteAramaRoute = SiteAramaRouteImport.update({
   id: '/arama',
   path: '/arama',
   getParentRoute: () => SiteRoute,
+} as any)
+const CorporateKurumsalUyelikRoute = CorporateKurumsalUyelikRouteImport.update({
+  id: '/kurumsal-uyelik',
+  path: '/kurumsal-uyelik',
+  getParentRoute: () => CorporateRoute,
 } as any)
 const authVerifyEmailRoute = authVerifyEmailRouteImport.update({
   id: '/(auth)/verify-email',
@@ -911,14 +946,19 @@ export interface FileRoutesByFullPath {
   '/register': typeof authRegisterRouteWithChildren
   '/reset-password': typeof authResetPasswordRoute
   '/verify-email': typeof authVerifyEmailRoute
+  '/kurumsal-uyelik': typeof CorporateKurumsalUyelikRoute
   '/arama': typeof SiteAramaRoute
   '/bildirimlerim': typeof SiteBildirimlerimRoute
+  '/desteklediklerim': typeof SiteDesteklediklerimRoute
   '/markalar': typeof SiteMarkalarRoute
   '/profile': typeof SiteProfileRoute
+  '/profilim': typeof SiteProfilimRoute
   '/sikayet-yaz': typeof SiteSikayetYazRoute
   '/sikayetler': typeof SiteSikayetlerRoute
+  '/sikayetlerim': typeof SiteSikayetlerimRoute
   '/trend-100': typeof SiteTrend100Route
   '/trendler': typeof SiteTrendlerRoute
+  '/yorumladiklarim': typeof SiteYorumladiklarimRoute
   '/admin/ayarlar': typeof AdminAyarlarRoute
   '/admin/blog': typeof AdminBlogRoute
   '/admin/bot': typeof AdminBotRoute
@@ -1049,6 +1089,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/brands/$id/members': typeof ApiAdminBrandsIdMembersRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof SiteIndexRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap': typeof SitemapRoute
   '/forgot-password': typeof authForgotPasswordRoute
@@ -1056,14 +1097,19 @@ export interface FileRoutesByTo {
   '/register': typeof authRegisterRouteWithChildren
   '/reset-password': typeof authResetPasswordRoute
   '/verify-email': typeof authVerifyEmailRoute
+  '/kurumsal-uyelik': typeof CorporateKurumsalUyelikRoute
   '/arama': typeof SiteAramaRoute
   '/bildirimlerim': typeof SiteBildirimlerimRoute
+  '/desteklediklerim': typeof SiteDesteklediklerimRoute
   '/markalar': typeof SiteMarkalarRoute
   '/profile': typeof SiteProfileRoute
+  '/profilim': typeof SiteProfilimRoute
   '/sikayet-yaz': typeof SiteSikayetYazRoute
   '/sikayetler': typeof SiteSikayetlerRoute
+  '/sikayetlerim': typeof SiteSikayetlerimRoute
   '/trend-100': typeof SiteTrend100Route
   '/trendler': typeof SiteTrendlerRoute
+  '/yorumladiklarim': typeof SiteYorumladiklarimRoute
   '/admin/ayarlar': typeof AdminAyarlarRoute
   '/admin/blog': typeof AdminBlogRoute
   '/admin/bot': typeof AdminBotRoute
@@ -1113,7 +1159,6 @@ export interface FileRoutesByTo {
   '/brand/mesajlar': typeof BrandMesajlarRoute
   '/brand/profil': typeof BrandProfilRoute
   '/brand/sikayetler': typeof BrandSikayetlerRoute
-  '/': typeof SiteIndexRoute
   '/admin': typeof AdminIndexRoute
   '/brand': typeof BrandIndexRoute
   '/register/kurumsal': typeof authRegisterKurumsalRoute
@@ -1196,6 +1241,7 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/_corporate': typeof CorporateRouteWithChildren
   '/_site': typeof SiteRouteWithChildren
   '/admin': typeof AdminRouteWithChildren
   '/brand': typeof BrandRouteWithChildren
@@ -1206,14 +1252,19 @@ export interface FileRoutesById {
   '/(auth)/register': typeof authRegisterRouteWithChildren
   '/(auth)/reset-password': typeof authResetPasswordRoute
   '/(auth)/verify-email': typeof authVerifyEmailRoute
+  '/_corporate/kurumsal-uyelik': typeof CorporateKurumsalUyelikRoute
   '/_site/arama': typeof SiteAramaRoute
   '/_site/bildirimlerim': typeof SiteBildirimlerimRoute
+  '/_site/desteklediklerim': typeof SiteDesteklediklerimRoute
   '/_site/markalar': typeof SiteMarkalarRoute
   '/_site/profile': typeof SiteProfileRoute
+  '/_site/profilim': typeof SiteProfilimRoute
   '/_site/sikayet-yaz': typeof SiteSikayetYazRoute
   '/_site/sikayetler': typeof SiteSikayetlerRoute
+  '/_site/sikayetlerim': typeof SiteSikayetlerimRoute
   '/_site/trend-100': typeof SiteTrend100Route
   '/_site/trendler': typeof SiteTrendlerRoute
+  '/_site/yorumladiklarim': typeof SiteYorumladiklarimRoute
   '/admin/ayarlar': typeof AdminAyarlarRoute
   '/admin/blog': typeof AdminBlogRoute
   '/admin/bot': typeof AdminBotRoute
@@ -1357,14 +1408,19 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/verify-email'
+    | '/kurumsal-uyelik'
     | '/arama'
     | '/bildirimlerim'
+    | '/desteklediklerim'
     | '/markalar'
     | '/profile'
+    | '/profilim'
     | '/sikayet-yaz'
     | '/sikayetler'
+    | '/sikayetlerim'
     | '/trend-100'
     | '/trendler'
+    | '/yorumladiklarim'
     | '/admin/ayarlar'
     | '/admin/blog'
     | '/admin/bot'
@@ -1495,6 +1551,7 @@ export interface FileRouteTypes {
     | '/api/admin/brands/$id/members'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
     | '/robots.txt'
     | '/sitemap'
     | '/forgot-password'
@@ -1502,14 +1559,19 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/verify-email'
+    | '/kurumsal-uyelik'
     | '/arama'
     | '/bildirimlerim'
+    | '/desteklediklerim'
     | '/markalar'
     | '/profile'
+    | '/profilim'
     | '/sikayet-yaz'
     | '/sikayetler'
+    | '/sikayetlerim'
     | '/trend-100'
     | '/trendler'
+    | '/yorumladiklarim'
     | '/admin/ayarlar'
     | '/admin/blog'
     | '/admin/bot'
@@ -1559,7 +1621,6 @@ export interface FileRouteTypes {
     | '/brand/mesajlar'
     | '/brand/profil'
     | '/brand/sikayetler'
-    | '/'
     | '/admin'
     | '/brand'
     | '/register/kurumsal'
@@ -1641,6 +1702,7 @@ export interface FileRouteTypes {
     | '/api/admin/brands/$id/members'
   id:
     | '__root__'
+    | '/_corporate'
     | '/_site'
     | '/admin'
     | '/brand'
@@ -1651,14 +1713,19 @@ export interface FileRouteTypes {
     | '/(auth)/register'
     | '/(auth)/reset-password'
     | '/(auth)/verify-email'
+    | '/_corporate/kurumsal-uyelik'
     | '/_site/arama'
     | '/_site/bildirimlerim'
+    | '/_site/desteklediklerim'
     | '/_site/markalar'
     | '/_site/profile'
+    | '/_site/profilim'
     | '/_site/sikayet-yaz'
     | '/_site/sikayetler'
+    | '/_site/sikayetlerim'
     | '/_site/trend-100'
     | '/_site/trendler'
+    | '/_site/yorumladiklarim'
     | '/admin/ayarlar'
     | '/admin/blog'
     | '/admin/bot'
@@ -1791,6 +1858,7 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  CorporateRoute: typeof CorporateRouteWithChildren
   SiteRoute: typeof SiteRouteWithChildren
   AdminRoute: typeof AdminRouteWithChildren
   BrandRoute: typeof BrandRouteWithChildren
@@ -1913,6 +1981,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof SiteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_corporate': {
+      id: '/_corporate'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof CorporateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/brand/': {
@@ -2279,6 +2354,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAyarlarRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/_site/yorumladiklarim': {
+      id: '/_site/yorumladiklarim'
+      path: '/yorumladiklarim'
+      fullPath: '/yorumladiklarim'
+      preLoaderRoute: typeof SiteYorumladiklarimRouteImport
+      parentRoute: typeof SiteRoute
+    }
     '/_site/trendler': {
       id: '/_site/trendler'
       path: '/trendler'
@@ -2291,6 +2373,13 @@ declare module '@tanstack/react-router' {
       path: '/trend-100'
       fullPath: '/trend-100'
       preLoaderRoute: typeof SiteTrend100RouteImport
+      parentRoute: typeof SiteRoute
+    }
+    '/_site/sikayetlerim': {
+      id: '/_site/sikayetlerim'
+      path: '/sikayetlerim'
+      fullPath: '/sikayetlerim'
+      preLoaderRoute: typeof SiteSikayetlerimRouteImport
       parentRoute: typeof SiteRoute
     }
     '/_site/sikayetler': {
@@ -2307,6 +2396,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SiteSikayetYazRouteImport
       parentRoute: typeof SiteRoute
     }
+    '/_site/profilim': {
+      id: '/_site/profilim'
+      path: '/profilim'
+      fullPath: '/profilim'
+      preLoaderRoute: typeof SiteProfilimRouteImport
+      parentRoute: typeof SiteRoute
+    }
     '/_site/profile': {
       id: '/_site/profile'
       path: '/profile'
@@ -2319,6 +2415,13 @@ declare module '@tanstack/react-router' {
       path: '/markalar'
       fullPath: '/markalar'
       preLoaderRoute: typeof SiteMarkalarRouteImport
+      parentRoute: typeof SiteRoute
+    }
+    '/_site/desteklediklerim': {
+      id: '/_site/desteklediklerim'
+      path: '/desteklediklerim'
+      fullPath: '/desteklediklerim'
+      preLoaderRoute: typeof SiteDesteklediklerimRouteImport
       parentRoute: typeof SiteRoute
     }
     '/_site/bildirimlerim': {
@@ -2334,6 +2437,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/arama'
       preLoaderRoute: typeof SiteAramaRouteImport
       parentRoute: typeof SiteRoute
+    }
+    '/_corporate/kurumsal-uyelik': {
+      id: '/_corporate/kurumsal-uyelik'
+      path: '/kurumsal-uyelik'
+      fullPath: '/kurumsal-uyelik'
+      preLoaderRoute: typeof CorporateKurumsalUyelikRouteImport
+      parentRoute: typeof CorporateRoute
     }
     '/(auth)/verify-email': {
       id: '/(auth)/verify-email'
@@ -2912,15 +3022,31 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface CorporateRouteChildren {
+  CorporateKurumsalUyelikRoute: typeof CorporateKurumsalUyelikRoute
+}
+
+const CorporateRouteChildren: CorporateRouteChildren = {
+  CorporateKurumsalUyelikRoute: CorporateKurumsalUyelikRoute,
+}
+
+const CorporateRouteWithChildren = CorporateRoute._addFileChildren(
+  CorporateRouteChildren,
+)
+
 interface SiteRouteChildren {
   SiteAramaRoute: typeof SiteAramaRoute
   SiteBildirimlerimRoute: typeof SiteBildirimlerimRoute
+  SiteDesteklediklerimRoute: typeof SiteDesteklediklerimRoute
   SiteMarkalarRoute: typeof SiteMarkalarRoute
   SiteProfileRoute: typeof SiteProfileRoute
+  SiteProfilimRoute: typeof SiteProfilimRoute
   SiteSikayetYazRoute: typeof SiteSikayetYazRoute
   SiteSikayetlerRoute: typeof SiteSikayetlerRoute
+  SiteSikayetlerimRoute: typeof SiteSikayetlerimRoute
   SiteTrend100Route: typeof SiteTrend100Route
   SiteTrendlerRoute: typeof SiteTrendlerRoute
+  SiteYorumladiklarimRoute: typeof SiteYorumladiklarimRoute
   SiteIndexRoute: typeof SiteIndexRoute
   SitekurumsalErisimYokRoute: typeof SitekurumsalErisimYokRoute
   SitekurumsalGizlilikRoute: typeof SitekurumsalGizlilikRoute
@@ -2942,12 +3068,16 @@ interface SiteRouteChildren {
 const SiteRouteChildren: SiteRouteChildren = {
   SiteAramaRoute: SiteAramaRoute,
   SiteBildirimlerimRoute: SiteBildirimlerimRoute,
+  SiteDesteklediklerimRoute: SiteDesteklediklerimRoute,
   SiteMarkalarRoute: SiteMarkalarRoute,
   SiteProfileRoute: SiteProfileRoute,
+  SiteProfilimRoute: SiteProfilimRoute,
   SiteSikayetYazRoute: SiteSikayetYazRoute,
   SiteSikayetlerRoute: SiteSikayetlerRoute,
+  SiteSikayetlerimRoute: SiteSikayetlerimRoute,
   SiteTrend100Route: SiteTrend100Route,
   SiteTrendlerRoute: SiteTrendlerRoute,
+  SiteYorumladiklarimRoute: SiteYorumladiklarimRoute,
   SiteIndexRoute: SiteIndexRoute,
   SitekurumsalErisimYokRoute: SitekurumsalErisimYokRoute,
   SitekurumsalGizlilikRoute: SitekurumsalGizlilikRoute,
@@ -3138,6 +3268,7 @@ const ApiAdminBrandsRouteWithChildren = ApiAdminBrandsRoute._addFileChildren(
 )
 
 const rootRouteChildren: RootRouteChildren = {
+  CorporateRoute: CorporateRouteWithChildren,
   SiteRoute: SiteRouteWithChildren,
   AdminRoute: AdminRouteWithChildren,
   BrandRoute: BrandRouteWithChildren,

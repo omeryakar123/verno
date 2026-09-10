@@ -252,7 +252,8 @@ export function SiteFooter() {
   const topLinks = [
     ["За нас", "/hakkimizda"],
     ["Verno SEAL", "/hakkimizda"],
-    ["За марки", "/reklam-cozumleri"],
+    ["Pro членство", "/kurumsal-uyelik"],
+    ["Рекламни решения", "/reklam-cozumleri"],
     ["Блог", "/blog"],
     ["Отчет за прозрачност", "/seffaflik-raporu"],
     ["Контакт", "/iletisim"],

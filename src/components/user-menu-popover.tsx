@@ -21,11 +21,11 @@ type ProfileSnippet = {
 };
 
 const MENU_ITEMS = [
-  { to: "/profile" as const, search: undefined, label: "Редактирай профила", icon: User, ga: "User_Edit_Profile" },
-  { to: "/profile" as const, search: { sekme: "complaints" as const }, label: "Моите жалби", icon: Pencil, ga: "User_Complaint" },
+  { to: "/profilim" as const, search: undefined, label: "Редактирай профила", icon: User, ga: "User_Edit_Profile" },
+  { to: "/sikayetlerim" as const, search: undefined, label: "Моите жалби", icon: Pencil, ga: "User_Complaint" },
   { to: "/bildirimlerim" as const, search: undefined, label: "Известия", icon: Bell, ga: "User_Notification" },
-  { to: "/profile" as const, search: { sekme: "supported" as const }, label: "Подкрепени", icon: ThumbsUp, ga: "User_Supported_Complaints" },
-  { to: "/profile" as const, search: { sekme: "commented" as const }, label: "Коментирани", icon: MessageSquare, ga: "User_Commented_Complaints" },
+  { to: "/desteklediklerim" as const, search: undefined, label: "Подкрепени", icon: ThumbsUp, ga: "User_Supported_Complaints" },
+  { to: "/yorumladiklarim" as const, search: undefined, label: "Коментирани", icon: MessageSquare, ga: "User_Commented_Complaints" },
   { to: "/profile" as const, search: { sekme: "saved" as const }, label: "Запазени", icon: Bookmark, ga: "User_Saved" },
 ] as const;
 
@@ -47,8 +47,8 @@ function MenuLink({
   ga,
   onNavigate,
 }: {
-  to: "/profile" | "/bildirimlerim";
-  search?: { sekme: "complaints" | "supported" | "commented" | "saved" };
+  to: "/profilim" | "/sikayetlerim" | "/bildirimlerim" | "/desteklediklerim" | "/yorumladiklarim" | "/profile";
+  search?: { sekme: "saved" };
   label: string;
   icon: typeof User;
   ga: string;
