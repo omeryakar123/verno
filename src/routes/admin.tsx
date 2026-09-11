@@ -56,7 +56,7 @@ function AdminLayout() {
   const isSuper = roles.includes("super_admin");
 
 
-  console.log("hello world 2x");
+  console.log("hello world 3x");
   return (
     <div className="min-h-screen bg-canvas flex flex-col lg:flex-row">
       {/* Mobil üst bar */}
