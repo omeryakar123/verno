@@ -13,7 +13,9 @@ type CorporateNavProps = {
   activePath?: string;
 };
 
-export function CorporateNav({ activePath = "/kurumsal-uyelik" }: CorporateNavProps) {
+export function CorporateNav({
+  activePath = "/kurumsal-uyelik",
+}: CorporateNavProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   function closeMenu() {
@@ -25,17 +27,23 @@ export function CorporateNav({ activePath = "/kurumsal-uyelik" }: CorporateNavPr
       <header className="sticky top-0 z-50 bg-[#695de9] text-white shadow-sm">
         <nav className="mx-auto flex h-[67px] max-w-[1170px] items-center justify-between px-4 sm:px-6 lg:h-[72px]">
           <Link to="/" title="Начало" className="shrink-0">
-            <SiteLogoMark size={40} tone="on-dark" />
+            <SiteLogoMark size={26} tone="on-dark" />
           </Link>
 
           <ul className="hidden items-center gap-6 whitespace-nowrap text-[15px] font-semibold lg:flex xl:gap-9">
             {CORP_LINKS.map((link) => {
-              const active = link.exact ? activePath === link.to : activePath.startsWith(link.to);
+              const active = link.exact
+                ? activePath === link.to
+                : activePath.startsWith(link.to);
               return (
                 <li key={link.to}>
                   <Link
                     to={link.to}
-                    className={active ? "text-white" : "text-white/70 transition-colors hover:text-white"}
+                    className={
+                      active
+                        ? "text-white"
+                        : "text-white/70 transition-colors hover:text-white"
+                    }
                   >
                     {link.label}
                   </Link>
@@ -82,7 +90,11 @@ export function CorporateNav({ activePath = "/kurumsal-uyelik" }: CorporateNavPr
           <div className="fixed inset-y-0 right-0 z-50 flex w-[min(100vw-3rem,320px)] flex-col bg-[#695de9] text-white shadow-xl lg:hidden">
             <div className="flex h-16 items-center justify-between border-b border-white/20 px-4">
               <span className="text-lg font-semibold">Меню</span>
-              <button type="button" onClick={closeMenu} className="grid size-9 place-items-center rounded-lg hover:bg-white/10">
+              <button
+                type="button"
+                onClick={closeMenu}
+                className="grid size-9 place-items-center rounded-lg hover:bg-white/10"
+              >
                 <X className="size-5" />
               </button>
             </div>

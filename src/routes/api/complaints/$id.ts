@@ -12,7 +12,8 @@ import { ensureDbPatches } from "@/lib/server/ensure-db-patches";
 
 // Public: tek şikayet. $id uuid, public_id veya short_id olabilir.
 const HIDDEN_STATUSES = ["rejected", "spam"] as const;
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function normalizeComplaintParam(raw: string): string {
   try {
@@ -49,8 +50,16 @@ export const Route = createFileRoute("/api/complaints/$id")({
         const [row] = await db
           .select({ c: schema.complaints, b: schema.brands })
           .from(schema.complaints)
-          .innerJoin(schema.brands, eq(schema.complaints.brandId, schema.brands.id))
-          .where(and(idMatch, notInArray(schema.complaints.status, [...HIDDEN_STATUSES])))
+          .innerJoin(
+            schema.brands,
+            eq(schema.complaints.brandId, schema.brands.id),
+          )
+          .where(
+            and(
+              idMatch,
+              notInArray(schema.complaints.status, [...HIDDEN_STATUSES]),
+            ),
+          )
           .limit(1);
 
         if (!row) return new Response("Not Found", { status: 404 });
@@ -61,11 +70,16 @@ export const Route = createFileRoute("/api/complaints/$id")({
 
         if (row.c.hidden) {
           // Gizli şikayet: yalnızca yazan müşteri veya personel görebilir.
-          if (!isOwner && !staff) return new Response("Not Found", { status: 404 });
+          if (!isOwner && !staff)
+            return new Response("Not Found", { status: 404 });
         } else if (row.c.status === "pending") {
           if (!isOwner && !staff) {
             return Response.json(
-              { error: "Bu şikayet henüz yayında değil veya moderasyon bekliyor.", code: "not_public" },
+              {
+                error:
+                  "Bu şikayet henüz yayında değil veya moderasyon bekliyor.",
+                code: "not_public",
+              },
               { status: 403 },
             );
           }
@@ -73,7 +87,11 @@ export const Route = createFileRoute("/api/complaints/$id")({
           const publiclyVisible = row.c.isPublic || row.c.isSynthetic;
           if (!publiclyVisible && !isOwner && !staff) {
             return Response.json(
-              { error: "Bu şikayet henüz yayında değil veya moderasyon bekliyor.", code: "not_public" },
+              {
+                error:
+                  "Bu şikayet henüz yayında değil veya moderasyon bekliyor.",
+                code: "not_public",
+              },
               { status: 403 },
             );
           }
@@ -101,35 +119,36 @@ export const Route = createFileRoute("/api/complaints/$id")({
           dc.profiles = await loadAuthorProfile(dc.user_id);
         }
 
-        let phoneMode: "full" | "masked" | "hidden" = "masked";
-        if (viewer) {
-          const staff = await isStaff(viewer.id);
-          const brandAccess = await isBrandMember(viewer.id, row.c.brandId);
-          if (staff || brandAccess) phoneMode = "full";
-        }
+        // Ham telefon yalnızca şikayet sahibine, personele ve marka yetkilisine döner;
+        // diğer ziyaretçiler sadece maskelenmiş görünümü alır.
+        const brandAccess =
+          !!viewer && (await isBrandMember(viewer.id, row.c.brandId));
+        const phoneMode: "full" | "masked" =
+          isOwner || staff || brandAccess ? "full" : "masked";
 
-        (dc as typeof dc & {
+        const contactFields = dc as typeof dc & {
           platform_username?: string | null;
           contact_phone?: string | null;
           contact_phone_display?: string | null;
-        }).platform_username = row.c.platformUsername
+        };
+        contactFields.platform_username = row.c.platformUsername
           ? normalizePlatformUsername(row.c.platformUsername)
           : null;
-        (dc as typeof dc & { contact_phone?: string | null }).contact_phone =
-          phoneMode === "hidden" ? null : row.c.contactPhone ?? null;
-        (dc as typeof dc & { contact_phone_display?: string | null }).contact_phone_display =
-          phoneMode === "hidden"
-            ? null
-            : displayPhone(row.c.contactPhone, phoneMode === "full" ? "full" : "masked");
+        contactFields.contact_phone =
+          phoneMode === "full" ? (row.c.contactPhone ?? null) : null;
+        contactFields.contact_phone_display = displayPhone(
+          row.c.contactPhone,
+          phoneMode,
+        );
 
         if (viewer) {
           const supported = await supportedComplaintIds(viewer.id, [dc.id]);
-          (dc as typeof dc & { user_supported?: boolean }).user_supported = supported.has(dc.id);
+          (dc as typeof dc & { user_supported?: boolean }).user_supported =
+            supported.has(dc.id);
         }
 
         const attachments = await loadComplaintAttachments(row.c.id);
-        const canSeeRestricted =
-          isOwner || staff || (viewer && (await isBrandMember(viewer.id, row.c.brandId)));
+        const canSeeRestricted = isOwner || staff || brandAccess;
 
         const publicAttachments = attachments
           .filter((a) => {

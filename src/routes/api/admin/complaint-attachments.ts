@@ -1,10 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { eq } from "drizzle-orm";
+import { db, schema } from "@/db";
 import { audit } from "@/lib/server/audit";
 import { HttpError, errorResponse, requireStaff } from "@/lib/server/guard";
 import { deleteObject } from "@/lib/server/storage";
 
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export const Route = createFileRoute("/api/admin/complaint-attachments")({
   server: {
@@ -18,7 +20,8 @@ export const Route = createFileRoute("/api/admin/complaint-attachments")({
             visibility?: "public" | "brand_only" | "super_admin_only";
           };
 
-          if (!b.id || !UUID_RE.test(b.id)) throw new HttpError(400, "Geçersiz ek");
+          if (!b.id || !UUID_RE.test(b.id))
+            throw new HttpError(400, "Geçersiz ek");
 
           const patch: Partial<{
             sensitive: boolean;
@@ -27,13 +30,18 @@ export const Route = createFileRoute("/api/admin/complaint-attachments")({
 
           if (typeof b.sensitive === "boolean") patch.sensitive = b.sensitive;
           if (b.visibility) {
-            if (!["public", "brand_only", "super_admin_only"].includes(b.visibility)) {
+            if (
+              !["public", "brand_only", "super_admin_only"].includes(
+                b.visibility,
+              )
+            ) {
               throw new HttpError(400, "Geçersiz görünürlük");
             }
             patch.visibility = b.visibility;
           }
 
-          if (Object.keys(patch).length === 0) throw new HttpError(400, "Güncellenecek alan yok");
+          if (Object.keys(patch).length === 0)
+            throw new HttpError(400, "Güncellenecek alan yok");
 
           const [row] = await db
             .update(schema.complaintAttachments)
@@ -64,7 +72,8 @@ export const Route = createFileRoute("/api/admin/complaint-attachments")({
           const user = await requireStaff(request);
           const b = (await request.json()) as { id?: string };
 
-          if (!b.id || !UUID_RE.test(b.id)) throw new HttpError(400, "Geçersiz ek");
+          if (!b.id || !UUID_RE.test(b.id))
+            throw new HttpError(400, "Geçersiz ek");
 
           const [row] = await db
             .select({
@@ -78,7 +87,9 @@ export const Route = createFileRoute("/api/admin/complaint-attachments")({
 
           if (!row) throw new HttpError(404, "Ek bulunamadı");
 
-          await db.delete(schema.complaintAttachments).where(eq(schema.complaintAttachments.id, b.id));
+          await db
+            .delete(schema.complaintAttachments)
+            .where(eq(schema.complaintAttachments.id, b.id));
 
           try {
             await deleteObject(row.storagePath);
@@ -90,7 +101,10 @@ export const Route = createFileRoute("/api/admin/complaint-attachments")({
             action: "complaint.attachment.delete",
             entityType: "complaint_attachment",
             entityId: row.id,
-            metadata: { complaintId: row.complaintId, storagePath: row.storagePath },
+            metadata: {
+              complaintId: row.complaintId,
+              storagePath: row.storagePath,
+            },
           });
 
           return Response.json({ ok: true });

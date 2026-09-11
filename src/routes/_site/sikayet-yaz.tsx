@@ -4,10 +4,15 @@ import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { seoHead } from "@/lib/seo";
 import { ComplaintShareModal } from "@/components/complaint-share-modal";
-import { ComplaintWizard, type ComplaintWizardResult } from "@/components/complaint-wizard";
+import {
+  ComplaintWizard,
+  type ComplaintWizardResult,
+} from "@/components/complaint-wizard";
 
 export const Route = createFileRoute("/_site/sikayet-yaz")({
-  validateSearch: (s: Record<string, unknown>) => ({
+  // `brand` isteğe bağlı: dönüş tipi açıkça optional olmalı, aksi halde
+  // her <Link to="/sikayet-yaz"> zorunlu `search` prop'u ister.
+  validateSearch: (s: Record<string, unknown>): { brand?: string } => ({
     brand: typeof s.brand === "string" ? s.brand : undefined,
   }),
   head: () => ({
@@ -52,7 +57,9 @@ function WriteComplaintPage() {
         if (j.items?.[0]) setInitialBrandId(j.items[0].id);
       })
       .catch(() => {});
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [brandSlug]);
 
   if (authLoading || !user || !user.emailVerified) {
@@ -69,7 +76,11 @@ function WriteComplaintPage() {
         ) : !authLoading && user && !user.emailVerified ? (
           <p>
             E-posta doğrulaması gerekli.{" "}
-            <Link to="/verify-email" search={{ email: user.email }} className="text-brand font-semibold underline">
+            <Link
+              to="/verify-email"
+              search={{ email: user.email }}
+              className="text-brand font-semibold underline"
+            >
               Kodu girin
             </Link>
           </p>
@@ -88,7 +99,9 @@ function WriteComplaintPage() {
           complaintId={created.publicId}
           title={created.title}
           onClose={() => setShareOpen(false)}
-          onView={() => navigate({ to: "/sikayet/$id", params: { id: created.publicId } })}
+          onView={() =>
+            navigate({ to: "/sikayet/$id", params: { id: created.publicId } })
+          }
         />
       )}
 

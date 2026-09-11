@@ -4,7 +4,14 @@ const BASE_URL = SITE_URL.replace(/\/$/, "");
 
 export interface SitemapEntry {
   path: string;
-  changefreq?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
+  changefreq?:
+    | "always"
+    | "hourly"
+    | "daily"
+    | "weekly"
+    | "monthly"
+    | "yearly"
+    | "never";
   priority?: string;
   lastmod?: Date | string | null;
 }
@@ -56,12 +63,19 @@ async function dynamicEntries(): Promise<SitemapEntry[]> {
 
     const [brands, cats, complaints, posts] = await Promise.all([
       db
-        .select({ slug: schema.brands.slug, updatedAt: schema.brands.updatedAt })
+        .select({
+          slug: schema.brands.slug,
+          updatedAt: schema.brands.updatedAt,
+        })
         .from(schema.brands)
         .where(eq(schema.brands.isActive, true))
         .limit(5000),
       db
-        .select({ slug: schema.categories.slug, updatedAt: schema.categories.updatedAt })
+        // `categories` tablosunda `updated_at` kolonu yok — oluşturma tarihi kullanılır.
+        .select({
+          slug: schema.categories.slug,
+          updatedAt: schema.categories.createdAt,
+        })
         .from(schema.categories)
         .where(eq(schema.categories.isActive, true))
         .limit(500),
@@ -76,7 +90,11 @@ async function dynamicEntries(): Promise<SitemapEntry[]> {
           and(
             eq(schema.complaints.isPublic, true),
             eq(schema.complaints.hidden, false),
-            notInArray(schema.complaints.status, ["pending", "rejected", "spam"]),
+            notInArray(schema.complaints.status, [
+              "pending",
+              "rejected",
+              "spam",
+            ]),
           ),
         )
         .orderBy(desc(schema.complaints.updatedAt))

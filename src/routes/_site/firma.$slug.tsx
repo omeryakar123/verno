@@ -1,4 +1,9 @@
-import { createFileRoute, Link, useParams, useNavigate } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Link,
+  useParams,
+  useNavigate,
+} from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import {
   BadgeCheck,
@@ -9,23 +14,30 @@ import {
   Pencil,
   Plus,
   Sparkles,
-  Star,
   MessageSquare,
 } from "lucide-react";
-import { BrandProfileComplaintCard, BrandAvatar } from "@/components/cards";
 import {
-  formatRating,
+  BrandProfileComplaintCard,
+  BrandAvatar,
+  BrandScore100,
+} from "@/components/cards";
+import {
   formatResponseTime,
   type Company,
   type Complaint,
 } from "@/lib/mock-data";
+import { score100 } from "@verno/shared/format";
 import {
   fetchBrandBySlug,
   fetchComplaintsPaged,
   BRAND_PROFILE_COMPLAINTS_LIMIT,
   type DbBrand,
 } from "@/lib/data";
-import { displayResolutionRate, displayResponseMinutes, formatResolutionRate } from "@/lib/display-brand-metrics";
+import {
+  displayResolutionRate,
+  displayResponseMinutes,
+  formatResolutionRate,
+} from "@/lib/display-brand-metrics";
 import { brandCoverUrl } from "@/lib/brand-cover";
 import { proxyImage } from "@/lib/img";
 import { Pagination } from "@/components/pagination";
@@ -34,7 +46,14 @@ import { toast } from "sonner";
 import { logAudit } from "@/lib/audit";
 import { BrandVerifyModal } from "@/components/brand-verify-modal";
 import { BrandFollowButton } from "@/components/brand-follow-button";
-import { seoHead, jsonLd, breadcrumbLd, clamp, absUrl, SITE_NAME } from "@/lib/seo";
+import {
+  seoHead,
+  jsonLd,
+  breadcrumbLd,
+  clamp,
+  absUrl,
+  SITE_NAME,
+} from "@/lib/seo";
 
 export const Route = createFileRoute("/_site/firma/$slug")({
   // SSR: marka verisi sunucuda yüklenir (arama motorları gerçek içeriği görür).
@@ -78,7 +97,12 @@ export const Route = createFileRoute("/_site/firma/$slug")({
     );
 
     return {
-      ...seoHead({ title, description, path, image: c.coverUrl ?? c.logoUrl ?? undefined }),
+      ...seoHead({
+        title,
+        description,
+        path,
+        image: c.coverUrl ?? c.logoUrl ?? undefined,
+      }),
       scripts: [
         jsonLd({
           "@context": "https://schema.org",
@@ -147,10 +171,19 @@ function CompanyPage() {
         raw.complaints_resolved,
       )
     : company
-      ? displayResolutionRate(company.slug, company.resolutionRate, company.totalComplaints, undefined)
+      ? displayResolutionRate(
+          company.slug,
+          company.resolutionRate,
+          company.totalComplaints,
+          undefined,
+        )
       : 0;
   const responseDisplay = raw
-    ? displayResponseMinutes(raw.slug, raw.avg_response_minutes, raw.total_complaints)
+    ? displayResponseMinutes(
+        raw.slug,
+        raw.avg_response_minutes,
+        raw.total_complaints,
+      )
     : null;
   const logoInput = useRef<HTMLInputElement>(null);
   const coverInput = useRef<HTMLInputElement>(null);
@@ -195,14 +228,22 @@ function CompanyPage() {
   }, [slug, page]);
 
   async function messageBrand() {
-    if (!user) { toast.error("Влезте, за да изпратите съобщение"); navigate({ to: "/login" }); return; }
+    if (!user) {
+      toast.error("Влезте, за да изпратите съобщение");
+      navigate({ to: "/login" });
+      return;
+    }
     if (!raw) return;
     const res = await fetch("/api/conversations", {
-      method: "POST", credentials: "include",
+      method: "POST",
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ brandId: raw.id }),
     });
-    if (!res.ok) { toast.error("Разговорът не може да бъде започнат"); return; }
+    if (!res.ok) {
+      toast.error("Разговорът не може да бъде започнат");
+      return;
+    }
     navigate({ to: "/profile", search: { sekme: "mesajlar" } });
   }
 
@@ -234,7 +275,8 @@ function CompanyPage() {
       url?: string;
       error?: string;
     };
-    if (!up.ok || !uj.url) return toast.error(uj.error ?? "Качването не бе успешно");
+    if (!up.ok || !uj.url)
+      return toast.error(uj.error ?? "Качването не бе успешно");
 
     const field = kind === "logo" ? "logo_url" : "cover_url";
     const res = await fetch(`/api/admin/brands/${raw.id}`, {
@@ -269,7 +311,10 @@ function CompanyPage() {
     <div>
       <div className="h-40 sm:h-56 bg-gradient-to-br from-brand/80 via-brand to-dark/70 relative overflow-hidden">
         <img
-          src={proxyImage(brandCoverUrl(raw.cover_url)) ?? brandCoverUrl(raw.cover_url)}
+          src={
+            proxyImage(brandCoverUrl(raw.cover_url)) ??
+            brandCoverUrl(raw.cover_url)
+          }
           alt=""
           className="absolute inset-0 size-full object-cover"
         />
@@ -373,32 +418,21 @@ function CompanyPage() {
               </div>
 
               <div className="mt-3 flex items-center gap-2 flex-wrap">
-                {(raw.rating_count ?? 0) > 0 ? (
-                  <>
-                    <div className="flex items-center gap-0.5" aria-label="Средна оценка по жалби">
-                      {[1, 2, 3, 4, 5].map((n) => (
-                        <Star
-                          key={n}
-                          className={`size-5 ${Math.round(raw.rating ?? 0) >= n ? "fill-amber-400 text-amber-400" : "text-navy-mid/40"}`}
-                        />
-                      ))}
-                    </div>
-                    <span className="text-[12px] text-navy-mid">
-                      {formatRating(raw.rating, raw.rating_count)} / 5 · {raw.rating_count} оценки от жалби
-                    </span>
-                  </>
-                ) : (
-                  <span className="text-[12px] text-navy-mid">
-                    Все още няма оценки от жалби — оценките се изчисляват само от резултати по жалби
-                  </span>
-                )}
+                <BrandScore100
+                  rating={raw.rating}
+                  ratingCount={raw.rating_count}
+                  size="lg"
+                />
                 {!company.verified && (
                   <span className="text-[11px] text-warning">Непотвърдена</span>
                 )}
               </div>
             </div>
             <div className="flex gap-2 flex-wrap">
-              <BrandFollowButton brandSlug={company.slug} brandName={company.name} />
+              <BrandFollowButton
+                brandSlug={company.slug}
+                brandName={company.name}
+              />
               {isAdmin && (
                 <Link
                   to="/admin/firma/$id"
@@ -436,7 +470,10 @@ function CompanyPage() {
             {[
               {
                 label: "Оценка",
-                value: formatRating(raw.rating, raw.rating_count),
+                value:
+                  score100(raw.rating, raw.rating_count) !== null
+                    ? `${score100(raw.rating, raw.rating_count)}/100`
+                    : "—",
                 tone: "text-brand",
               },
               {
@@ -488,7 +525,8 @@ function CompanyPage() {
               <div className="bg-card rounded-2xl ring-1 ring-rule p-6">
                 <h2 className="text-base font-semibold mb-3">За марката</h2>
                 <p className="text-sm text-navy leading-relaxed whitespace-pre-line">
-                  {raw.about || "Тази марка все още не е добавила информация за себе си."}
+                  {raw.about ||
+                    "Тази марка все още не е добавила информация за себе си."}
                 </p>
               </div>
             )}
@@ -496,7 +534,12 @@ function CompanyPage() {
               (complaints.length > 0 ? (
                 <>
                   <p className="text-[13px] text-navy-mid mb-2">
-                    Последните {Math.min(BRAND_PROFILE_COMPLAINTS_LIMIT, complaints.length)} жалби
+                    Последните{" "}
+                    {Math.min(
+                      BRAND_PROFILE_COMPLAINTS_LIMIT,
+                      complaints.length,
+                    )}{" "}
+                    жалби
                     {total > BRAND_PROFILE_COMPLAINTS_LIMIT
                       ? ` (${total.toLocaleString("bg-BG")} общо)`
                       : ""}
@@ -546,7 +589,8 @@ function CompanyPage() {
                   onClick={messageBrand}
                   className="inline-flex items-center gap-2 rounded-full bg-brand text-brand-foreground px-5 h-10 text-[13px] font-semibold hover:bg-brand-hover transition"
                 >
-                  <MessageSquare className="size-4" /> Изпрати съобщение до марката
+                  <MessageSquare className="size-4" /> Изпрати съобщение до
+                  марката
                 </button>
                 <div className="h-px bg-rule my-1" />
                 {raw.phone && (
@@ -599,7 +643,10 @@ function CompanyPage() {
               <div className="space-y-3 text-sm">
                 <Row
                   label="Процент решени"
-                  value={formatResolutionRate(resolutionDisplay, raw.total_complaints)}
+                  value={formatResolutionRate(
+                    resolutionDisplay,
+                    raw.total_complaints,
+                  )}
                   tone="brand"
                 />
                 <Row

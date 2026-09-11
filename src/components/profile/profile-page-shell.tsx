@@ -1,15 +1,24 @@
 import { Link } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
-import { ProfileAccountSidebar, type ProfileAccountSection } from "@/components/profile-account-sidebar";
+import {
+  ProfileAccountSidebar,
+  type ProfileAccountSection,
+} from "@/components/profile-account-sidebar";
 
 type ProfilePageShellProps = {
   active: ProfileAccountSection;
   loading?: boolean;
   onSignOut: () => void | Promise<void>;
-  children: React.ReactNode;
+  /** `loading` durumunda içerik yerine iskelet gösterildiği için isteğe bağlı. */
+  children?: React.ReactNode;
 };
 
-export function ProfilePageShell({ active, loading, onSignOut, children }: ProfilePageShellProps) {
+export function ProfilePageShell({
+  active,
+  loading,
+  onSignOut,
+  children,
+}: ProfilePageShellProps) {
   if (loading) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-24 text-center text-navy-mid">
@@ -25,7 +34,9 @@ export function ProfilePageShell({ active, loading, onSignOut, children }: Profi
         <ProfileAccountSidebar active={active} onSignOut={onSignOut} />
 
         <div className="min-w-0 flex-1">
-          <div className="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-rule/60">{children}</div>
+          <div className="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-rule/60">
+            {children}
+          </div>
         </div>
       </div>
     </div>
@@ -40,16 +51,29 @@ type ProfileEmptyStateProps = {
   actionTo?: string;
 };
 
-export function ProfileEmptyState({ icon, title, description, actionLabel, actionTo }: ProfileEmptyStateProps) {
+export function ProfileEmptyState({
+  icon,
+  title,
+  description,
+  actionLabel,
+  actionTo,
+}: ProfileEmptyStateProps) {
   return (
     <div className="px-4 py-16 text-center lg:py-24">
       <div className="relative mx-auto mb-9 flex w-full max-w-md justify-center">
-        <div className="flex size-44 shrink-0 items-center justify-center rounded-full bg-zinc-300 xl:size-56" aria-hidden>
+        <div
+          className="flex size-44 shrink-0 items-center justify-center rounded-full bg-zinc-300 xl:size-56"
+          aria-hidden
+        >
           {icon}
         </div>
       </div>
-      <h2 className="mb-4 px-4 text-2xl font-semibold tracking-wide text-zinc-900 lg:text-4xl">{title}</h2>
-      <p className="mx-auto mb-6 max-w-lg px-6 text-lg leading-relaxed text-zinc-600 lg:text-2xl">{description}</p>
+      <h2 className="mb-4 px-4 text-2xl font-semibold tracking-wide text-zinc-900 lg:text-4xl">
+        {title}
+      </h2>
+      <p className="mx-auto mb-6 max-w-lg px-6 text-lg leading-relaxed text-zinc-600 lg:text-2xl">
+        {description}
+      </p>
       {actionLabel && actionTo ? (
         <Link
           to={actionTo}

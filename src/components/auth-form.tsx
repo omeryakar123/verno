@@ -15,7 +15,10 @@ import {
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { highestRoleRedirect, type AppRole } from "@/hooks/use-auth";
-import { enabledOAuthProviders, type OAuthProvider } from "@/lib/social-providers-client";
+import {
+  enabledOAuthProviders,
+  type OAuthProvider,
+} from "@/lib/social-providers-client";
 import { apiSendSignupOtp } from "@/lib/otp-client";
 import { PhoneInput } from "@/components/phone-input";
 import { toE164Tr } from "@/lib/phone";
@@ -27,9 +30,21 @@ type Mode = "login" | "register" | "reset";
 type Variant = "user" | "admin" | "brand";
 
 const titles: Record<Variant, { login: string; sub: string; brand: string }> = {
-  user: { login: "Вход", sub: "Следете жалбите си и получавайте официални отговори от марките.", brand: "" },
-  admin: { login: "Админ панел", sub: "Само за оторизирани администраторски акаунти.", brand: "Admin" },
-  brand: { login: "Брандов панел", sub: "Влезте с акаунта на представител на марката.", brand: "Brand" },
+  user: {
+    login: "Вход",
+    sub: "Следете жалбите си и получавайте официални отговори от марките.",
+    brand: "",
+  },
+  admin: {
+    login: "Админ панел",
+    sub: "Само за оторизирани администраторски акаунти.",
+    brand: "Admin",
+  },
+  brand: {
+    login: "Брандов панел",
+    sub: "Влезте с акаунта на представител на марката.",
+    brand: "Brand",
+  },
 };
 
 export function AuthForm({
@@ -60,7 +75,11 @@ export function AuthForm({
   const [companyMessage, setCompanyMessage] = useState("");
 
   const allowedRolesForVariant: AppRole[] =
-    variant === "admin" ? ["admin", "super_admin"] : variant === "brand" ? ["brand"] : ["user", "admin", "super_admin", "brand"];
+    variant === "admin"
+      ? ["admin", "super_admin"]
+      : variant === "brand"
+        ? ["brand"]
+        : ["user", "admin", "super_admin", "brand"];
 
   const oauthProviders = enabledOAuthProviders();
 
@@ -70,7 +89,9 @@ export function AuthForm({
     try {
       await authClient.signIn.social({ provider, callbackURL: "/" });
     } catch (e2: unknown) {
-      setErr(e2 instanceof Error ? e2.message : `Вход с ${provider} неуспешен.`);
+      setErr(
+        e2 instanceof Error ? e2.message : `Вход с ${provider} неуспешен.`,
+      );
       setLoading(false);
     }
   }
@@ -81,7 +102,10 @@ export function AuthForm({
       roles: AppRole[];
       user: { email: string; emailVerified?: boolean } | null;
     };
-    if (variant !== "user" && !roles.some((r) => allowedRolesForVariant.includes(r))) {
+    if (
+      variant !== "user" &&
+      !roles.some((r) => allowedRolesForVariant.includes(r))
+    ) {
       await authClient.signOut();
       setErr("Нямате достъп до тази страница за вход.");
       return;
@@ -89,7 +113,10 @@ export function AuthForm({
     if (variant === "user" && user && !user.emailVerified) {
       const { error: otpErr } = await apiSendSignupOtp(user.email);
       if (otpErr) setErr(otpErr);
-      navigate({ to: "/verify-email", search: { email: user.email, sent: otpErr ? undefined : "1" } });
+      navigate({
+        to: "/verify-email",
+        search: { email: user.email, sent: otpErr ? undefined : "1" },
+      });
       return;
     }
     navigate({ to: highestRoleRedirect(roles) });
@@ -103,7 +130,10 @@ export function AuthForm({
       return;
     }
     setMsg("Акаунтът ви е създаден. Въведете 6-цифрения код от имейла си.");
-    navigate({ to: "/verify-email", search: { email: normalizedEmail, sent: "1" } });
+    navigate({
+      to: "/verify-email",
+      search: { email: normalizedEmail, sent: "1" },
+    });
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -113,9 +143,11 @@ export function AuthForm({
     if (mode === "register") {
       if (!fullName.trim()) return setErr("Името и фамилията са задължителни.");
       if (!toE164Tr(phone)) return setErr("Въведете валиден телефонен номер.");
-      if (password.length < 6) return setErr("Паролата трябва да е поне 6 символа.");
+      if (password.length < 6)
+        return setErr("Паролата трябва да е поне 6 символа.");
       if (password !== password2) return setErr("Паролите не съвпадат.");
-      if (corporate && !companyName.trim()) return setErr("Името на фирмата е задължително.");
+      if (corporate && !companyName.trim())
+        return setErr("Името на фирмата е задължително.");
     }
     setLoading(true);
     try {
@@ -144,8 +176,12 @@ export function AuthForm({
             }),
           });
           if (!corpRes.ok) {
-            const j = (await corpRes.json().catch(() => ({}))) as { error?: string };
-            throw new Error(j.error ?? "Корпоративната заявка не можа да бъде изпратена");
+            const j = (await corpRes.json().catch(() => ({}))) as {
+              error?: string;
+            };
+            throw new Error(
+              j.error ?? "Корпоративната заявка не можа да бъде изпратена",
+            );
           }
           await finishSignupAndVerify(email.toLowerCase());
           return;
@@ -170,7 +206,11 @@ export function AuthForm({
 
   const t = titles[variant];
   const isRegister = mode === "register";
-  const pageTitle = corporate ? "Корпоративна регистрация" : isRegister ? "Регистрация" : t.login;
+  const pageTitle = corporate
+    ? "Корпоративна регистрация"
+    : isRegister
+      ? "Регистрация"
+      : t.login;
   const pageSub = corporate
     ? "Регистрирайте се за управление на марка или заявка за собственост."
     : isRegister
@@ -227,7 +267,11 @@ export function AuthForm({
                   className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[#a0a4b8]"
                   aria-label="Покажи паролата"
                 >
-                  {showPassword2 ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
+                  {showPassword2 ? (
+                    <EyeOff className="size-5" />
+                  ) : (
+                    <Eye className="size-5" />
+                  )}
                 </button>
               </div>
             </>
@@ -239,7 +283,13 @@ export function AuthForm({
 
   return (
     <div className="min-h-[100dvh] bg-surface flex flex-col lg:flex-row">
-      <AuthBrandPanel variant={variant} mode={mode} corporate={corporate} badge={t.brand} copy={brandCopy} />
+      <AuthBrandPanel
+        variant={variant}
+        mode={mode}
+        corporate={corporate}
+        badge={t.brand}
+        copy={brandCopy}
+      />
 
       <div className="flex-1 flex flex-col min-h-[100dvh] lg:min-h-0">
         {/* Mobil hero — masaüstündeki sol panelin karşılığı */}
@@ -297,14 +347,22 @@ export function AuthForm({
                     {isRegister ? (
                       <>
                         Вече имате акаунт?{" "}
-                        <button type="button" onClick={() => setMode("login")} className="text-brand font-semibold hover:underline">
+                        <button
+                          type="button"
+                          onClick={() => setMode("login")}
+                          className="text-brand font-semibold hover:underline"
+                        >
                           Влезте
                         </button>
                       </>
                     ) : (
                       <>
                         Нямате акаунт?{" "}
-                        <button type="button" onClick={() => setMode("register")} className="text-brand font-semibold hover:underline">
+                        <button
+                          type="button"
+                          onClick={() => setMode("register")}
+                          className="text-brand font-semibold hover:underline"
+                        >
                           Регистрирайте се
                         </button>
                       </>
@@ -312,7 +370,9 @@ export function AuthForm({
                   </p>
                 )}
               </div>
-              <p className="mt-2 text-[14px] text-navy-mid leading-relaxed">{pageSub}</p>
+              <p className="mt-2 text-[14px] text-navy-mid leading-relaxed">
+                {pageSub}
+              </p>
             </div>
 
             {err && (
@@ -330,14 +390,28 @@ export function AuthForm({
               <div className="space-y-2.5 mb-6">
                 <div className="grid gap-2.5 grid-cols-1 sm:grid-cols-2">
                   {oauthProviders.includes("facebook") && (
-                    <SocialButton provider="facebook" onClick={() => handleSocial("facebook")} disabled={loading} compact />
+                    <SocialButton
+                      provider="facebook"
+                      onClick={() => handleSocial("facebook")}
+                      disabled={loading}
+                      compact
+                    />
                   )}
                   {oauthProviders.includes("google") && (
-                    <SocialButton provider="google" onClick={() => handleSocial("google")} disabled={loading} compact />
+                    <SocialButton
+                      provider="google"
+                      onClick={() => handleSocial("google")}
+                      disabled={loading}
+                      compact
+                    />
                   )}
                 </div>
                 {oauthProviders.includes("apple") && (
-                  <SocialButton provider="apple" onClick={() => handleSocial("apple")} disabled={loading} />
+                  <SocialButton
+                    provider="apple"
+                    onClick={() => handleSocial("apple")}
+                    disabled={loading}
+                  />
                 )}
                 <div className="flex items-center gap-3 pt-1 text-[11px] uppercase tracking-wider text-navy-mid font-medium">
                   <div className="h-px bg-rule flex-1" />
@@ -371,7 +445,9 @@ export function AuthForm({
               />
               {isRegister && (
                 <div>
-                  <label className="text-[12px] font-semibold text-navy-mid mb-1.5 block">Телефон</label>
+                  <label className="text-[12px] font-semibold text-navy-mid mb-1.5 block">
+                    Телефон
+                  </label>
                   <PhoneInput value={phone} onChange={setPhone} required />
                 </div>
               )}
@@ -390,9 +466,15 @@ export function AuthForm({
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
                     className="text-navy-mid hover:text-ink transition-colors p-1"
-                    aria-label={showPassword ? "Скрий паролата" : "Покажи паролата"}
+                    aria-label={
+                      showPassword ? "Скрий паролата" : "Покажи паролата"
+                    }
                   >
-                    {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                    {showPassword ? (
+                      <EyeOff className="size-4" />
+                    ) : (
+                      <Eye className="size-4" />
+                    )}
                   </button>
                 }
               />
@@ -412,9 +494,15 @@ export function AuthForm({
                       type="button"
                       onClick={() => setShowPassword2((v) => !v)}
                       className="text-navy-mid hover:text-ink transition-colors p-1"
-                      aria-label={showPassword2 ? "Скрий паролата" : "Покажи паролата"}
+                      aria-label={
+                        showPassword2 ? "Скрий паролата" : "Покажи паролата"
+                      }
                     >
-                      {showPassword2 ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                      {showPassword2 ? (
+                        <EyeOff className="size-4" />
+                      ) : (
+                        <Eye className="size-4" />
+                      )}
                     </button>
                   }
                 />
@@ -447,7 +535,9 @@ export function AuthForm({
                     onChange={setBrandSlug}
                   />
                   <div>
-                    <label className="text-[12px] font-semibold text-navy-mid mb-1.5 block">Вашето съобщение</label>
+                    <label className="text-[12px] font-semibold text-navy-mid mb-1.5 block">
+                      Вашето съобщение
+                    </label>
                     <textarea
                       value={companyMessage}
                       onChange={(e) => setCompanyMessage(e.target.value)}
@@ -468,7 +558,9 @@ export function AuthForm({
                       onChange={(e) => setRememberMe(e.target.checked)}
                       className="size-[18px] rounded border-rule text-brand focus:ring-brand/40"
                     />
-                    <span className="text-[14px] text-navy-mid">Запомни ме</span>
+                    <span className="text-[14px] text-navy-mid">
+                      Запомни ме
+                    </span>
                   </label>
                   <Link
                     to="/forgot-password"
@@ -485,14 +577,21 @@ export function AuthForm({
                 className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-brand text-brand-foreground font-semibold h-[52px] text-[16px] shadow-sm hover:brightness-105 active:scale-[0.99] transition disabled:opacity-60 mt-2 lg:h-12 lg:text-[15px]"
               >
                 {loading && <Loader2 className="size-4 animate-spin" />}
-                {isRegister ? (corporate ? "Регистрация и изпращане" : "Регистрация") : "Вход"}
+                {isRegister
+                  ? corporate
+                    ? "Регистрация и изпращане"
+                    : "Регистрация"
+                  : "Вход"}
               </button>
             </form>
 
             {variant === "user" && !corporate && isRegister && (
               <p className="mt-6 text-center text-[13px] text-navy-mid">
                 Представител на марка?{" "}
-                <Link to="/register/marka-basvuru" className="text-brand font-semibold hover:underline">
+                <Link
+                  to="/register/marka-basvuru"
+                  className="text-brand font-semibold hover:underline"
+                >
                   Кандидатствай като марка
                 </Link>
               </p>
@@ -500,7 +599,10 @@ export function AuthForm({
 
             <p className="mt-8 text-center text-[11px] text-navy-mid/80 leading-relaxed">
               Продължавайки, приемате{" "}
-              <Link to="/kullanim-kosullari" className="underline hover:text-ink">
+              <Link
+                to="/kullanim-kosullari"
+                className="underline hover:text-ink"
+              >
                 Условията за ползване
               </Link>{" "}
               и{" "}
@@ -522,7 +624,11 @@ type AuthBrandCopy = {
   features: { icon: typeof MessageSquare; text: string }[];
 };
 
-function getAuthBrandCopy(variant: Variant, mode: Mode, corporate: boolean): AuthBrandCopy {
+function getAuthBrandCopy(
+  variant: Variant,
+  mode: Mode,
+  corporate: boolean,
+): AuthBrandCopy {
   const isRegister = mode === "register";
   const headline =
     variant === "admin"
@@ -559,7 +665,13 @@ function getAuthBrandCopy(variant: Variant, mode: Mode, corporate: boolean): Aut
   return { headline, sub, features };
 }
 
-function MobileAuthHero({ copy, badge }: { copy: AuthBrandCopy; badge: string }) {
+function MobileAuthHero({
+  copy,
+  badge,
+}: {
+  copy: AuthBrandCopy;
+  badge: string;
+}) {
   return (
     <section className="relative lg:hidden overflow-hidden bg-media text-media-foreground shrink-0">
       <div className="absolute inset-0 pointer-events-none" aria-hidden>
@@ -577,7 +689,7 @@ function MobileAuthHero({ copy, badge }: { copy: AuthBrandCopy; badge: string })
             <ArrowLeft className="size-4 shrink-0" />
             Начало
           </Link>
-          <SiteLogoMark size={30} linked tone="on-dark" />
+          <SiteLogoMark size={22} linked tone="on-dark" />
         </div>
 
         {badge ? (
@@ -589,7 +701,9 @@ function MobileAuthHero({ copy, badge }: { copy: AuthBrandCopy; badge: string })
         <h2 className="font-display text-[26px] font-bold leading-[1.15] tracking-tight text-white max-w-[18ch]">
           {copy.headline}
         </h2>
-        <p className="mt-2 text-[14px] text-white/72 leading-relaxed max-w-[34ch]">{copy.sub}</p>
+        <p className="mt-2 text-[14px] text-white/72 leading-relaxed max-w-[34ch]">
+          {copy.sub}
+        </p>
 
         {copy.features.length > 0 && (
           <ul className="mt-5 flex gap-2 overflow-x-auto pb-1 scrollbar-none snap-x snap-mandatory">
@@ -604,7 +718,6 @@ function MobileAuthHero({ copy, badge }: { copy: AuthBrandCopy; badge: string })
             ))}
           </ul>
         )}
-
       </div>
     </section>
   );
@@ -629,7 +742,7 @@ function AuthBrandPanel({
       </div>
 
       <div className="relative z-10">
-        <SiteLogoMark size={36} linked tone="on-dark" />
+        <SiteLogoMark size={26} linked tone="on-dark" />
         {badge ? (
           <span className="mt-4 inline-flex text-[10px] uppercase tracking-wider font-bold bg-white/10 text-white/90 px-2.5 py-1 rounded-full ring-1 ring-white/15">
             {badge}
@@ -642,13 +755,18 @@ function AuthBrandPanel({
           <h2 className="font-display text-[32px] xl:text-[36px] font-bold leading-[1.12] tracking-tight text-white">
             {copy.headline}
           </h2>
-          <p className="mt-3 text-[15px] text-white/70 leading-relaxed">{copy.sub}</p>
+          <p className="mt-3 text-[15px] text-white/70 leading-relaxed">
+            {copy.sub}
+          </p>
         </div>
 
         {copy.features.length > 0 && (
           <ul className="space-y-3">
             {copy.features.map(({ icon: Icon, text }) => (
-              <li key={text} className="flex items-center gap-3 text-[14px] text-white/85">
+              <li
+                key={text}
+                className="flex items-center gap-3 text-[14px] text-white/85"
+              >
                 <span className="grid place-items-center size-9 rounded-lg bg-white/10 ring-1 ring-white/10 shrink-0">
                   <Icon className="size-4 text-brand" />
                 </span>
@@ -676,14 +794,73 @@ function AuthPattern({ className }: { className?: string }) {
       viewBox="0 0 200 200"
       aria-hidden
     >
-      <rect x="8" y="8" width="56" height="56" rx="12" fill="oklch(0.76 0.15 162 / 0.5)" />
-      <rect x="72" y="8" width="56" height="56" rx="28" fill="oklch(0.72 0.16 285 / 0.45)" />
-      <rect x="136" y="8" width="56" height="56" rx="8" fill="white" fillOpacity="0.12" />
-      <rect x="8" y="72" width="56" height="56" rx="28" fill="white" fillOpacity="0.08" />
-      <rect x="72" y="72" width="56" height="56" rx="12" fill="oklch(0.76 0.15 162 / 0.35)" />
-      <rect x="136" y="72" width="56" height="56" rx="28" fill="oklch(0.72 0.16 285 / 0.4)" />
-      <rect x="8" y="136" width="56" height="56" rx="8" fill="oklch(0.72 0.16 285 / 0.3)" />
-      <rect x="72" y="136" width="56" height="56" rx="12" fill="white" fillOpacity="0.1" />
+      <rect
+        x="8"
+        y="8"
+        width="56"
+        height="56"
+        rx="12"
+        fill="oklch(0.76 0.15 162 / 0.5)"
+      />
+      <rect
+        x="72"
+        y="8"
+        width="56"
+        height="56"
+        rx="28"
+        fill="oklch(0.72 0.16 285 / 0.45)"
+      />
+      <rect
+        x="136"
+        y="8"
+        width="56"
+        height="56"
+        rx="8"
+        fill="white"
+        fillOpacity="0.12"
+      />
+      <rect
+        x="8"
+        y="72"
+        width="56"
+        height="56"
+        rx="28"
+        fill="white"
+        fillOpacity="0.08"
+      />
+      <rect
+        x="72"
+        y="72"
+        width="56"
+        height="56"
+        rx="12"
+        fill="oklch(0.76 0.15 162 / 0.35)"
+      />
+      <rect
+        x="136"
+        y="72"
+        width="56"
+        height="56"
+        rx="28"
+        fill="oklch(0.72 0.16 285 / 0.4)"
+      />
+      <rect
+        x="8"
+        y="136"
+        width="56"
+        height="56"
+        rx="8"
+        fill="oklch(0.72 0.16 285 / 0.3)"
+      />
+      <rect
+        x="72"
+        y="136"
+        width="56"
+        height="56"
+        rx="12"
+        fill="white"
+        fillOpacity="0.1"
+      />
       <circle cx="164" cy="164" r="28" fill="oklch(0.76 0.15 162 / 0.45)" />
     </svg>
   );
@@ -714,7 +891,9 @@ function Field({
 }) {
   return (
     <div>
-      <label className="text-[12px] font-semibold text-navy-mid mb-1.5 block">{label}</label>
+      <label className="text-[12px] font-semibold text-navy-mid mb-1.5 block">
+        {label}
+      </label>
       <div className="relative">
         <Icon className="absolute left-3.5 top-1/2 -translate-y-1/2 size-[18px] text-navy-mid/80 pointer-events-none" />
         <input
@@ -727,7 +906,11 @@ function Field({
           autoComplete={autoComplete}
           className="w-full h-[52px] lg:h-12 rounded-xl ring-1 ring-rule bg-card pl-11 pr-11 text-[16px] lg:text-[15px] text-ink placeholder:text-navy-mid/70 focus:outline-none focus:ring-2 focus:ring-brand/40 transition"
         />
-        {trailing && <div className="absolute right-2.5 top-1/2 -translate-y-1/2">{trailing}</div>}
+        {trailing && (
+          <div className="absolute right-2.5 top-1/2 -translate-y-1/2">
+            {trailing}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -747,7 +930,8 @@ function SocialButton({
   const styles: Record<OAuthProvider, string> = {
     google:
       "bg-surface text-ink ring-1 ring-rule hover:bg-[oklch(0.96_0.004_250)]",
-    facebook: "bg-[#1877F2] text-white hover:brightness-110 ring-1 ring-[#1877F2]",
+    facebook:
+      "bg-[#1877F2] text-white hover:brightness-110 ring-1 ring-[#1877F2]",
     apple: "bg-ink text-white hover:brightness-110 ring-1 ring-ink/20",
   };
 
@@ -782,17 +966,34 @@ function SocialButton({
 function GoogleIcon() {
   return (
     <svg className="size-[18px] shrink-0" viewBox="0 0 48 48" aria-hidden>
-      <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.3 35.5 24 35.5c-6.4 0-11.5-5.1-11.5-11.5S17.6 12.5 24 12.5c3 0 5.7 1.1 7.7 2.9l5.7-5.7C33.9 6.5 29.2 4.5 24 4.5 13.2 4.5 4.5 13.2 4.5 24S13.2 43.5 24 43.5 43.5 34.8 43.5 24c0-1.2-.1-2.3-.4-3.5z" />
-      <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 19 12.5 24 12.5c3 0 5.7 1.1 7.7 2.9l5.7-5.7C33.9 6.5 29.2 4.5 24 4.5 16.3 4.5 9.7 8.9 6.3 14.7z" />
-      <path fill="#4CAF50" d="M24 43.5c5.1 0 9.8-2 13.3-5.2l-6.1-5c-1.9 1.3-4.4 2.2-7.2 2.2-5.3 0-9.7-3.1-11.3-7.5l-6.5 5C9.6 39 16.3 43.5 24 43.5z" />
-      <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.2-4.1 5.4l6.1 5c-.4.4 6.7-4.9 6.7-14.4 0-1.2-.1-2.3-.4-3.5z" />
+      <path
+        fill="#FFC107"
+        d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.3 35.5 24 35.5c-6.4 0-11.5-5.1-11.5-11.5S17.6 12.5 24 12.5c3 0 5.7 1.1 7.7 2.9l5.7-5.7C33.9 6.5 29.2 4.5 24 4.5 13.2 4.5 4.5 13.2 4.5 24S13.2 43.5 24 43.5 43.5 34.8 43.5 24c0-1.2-.1-2.3-.4-3.5z"
+      />
+      <path
+        fill="#FF3D00"
+        d="M6.3 14.7l6.6 4.8C14.7 16 19 12.5 24 12.5c3 0 5.7 1.1 7.7 2.9l5.7-5.7C33.9 6.5 29.2 4.5 24 4.5 16.3 4.5 9.7 8.9 6.3 14.7z"
+      />
+      <path
+        fill="#4CAF50"
+        d="M24 43.5c5.1 0 9.8-2 13.3-5.2l-6.1-5c-1.9 1.3-4.4 2.2-7.2 2.2-5.3 0-9.7-3.1-11.3-7.5l-6.5 5C9.6 39 16.3 43.5 24 43.5z"
+      />
+      <path
+        fill="#1976D2"
+        d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.2-4.1 5.4l6.1 5c-.4.4 6.7-4.9 6.7-14.4 0-1.2-.1-2.3-.4-3.5z"
+      />
     </svg>
   );
 }
 
 function FacebookIcon() {
   return (
-    <svg className="size-[18px] shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+    <svg
+      className="size-[18px] shrink-0"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden
+    >
       <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
     </svg>
   );
@@ -800,7 +1001,12 @@ function FacebookIcon() {
 
 function AppleIcon() {
   return (
-    <svg className="size-[18px] shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+    <svg
+      className="size-[18px] shrink-0"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden
+    >
       <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
     </svg>
   );

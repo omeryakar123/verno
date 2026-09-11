@@ -24,11 +24,17 @@ export function ComplaintRating({
 
   const load = useCallback(async () => {
     try {
-      const res = await fetch(`/api/complaint-rating?complaintId=${complaintId}`, {
-        credentials: "include",
-      });
+      const res = await fetch(
+        `/api/complaint-rating?complaintId=${complaintId}`,
+        {
+          credentials: "include",
+        },
+      );
       if (!res.ok) return;
-      const data = (await res.json()) as { can_rate: boolean; rating: number | null };
+      const data = (await res.json()) as {
+        can_rate: boolean;
+        rating: number | null;
+      };
       setCanRate(data.can_rate);
       setRating(data.rating);
     } catch {
@@ -83,14 +89,18 @@ export function ComplaintRating({
   return (
     <div className="mt-6 bg-card rounded-2xl ring-1 ring-rule p-5">
       <p className="text-sm font-semibold text-ink">
-        {rating ? "Değerlendirmeniz" : "Şikayetinizin sonucundan memnun kaldınız mı?"}
+        {rating ? "Вашата оценка" : "Доволни ли сте от резултата на жалбата?"}
       </p>
       <p className="text-xs text-navy-mid mt-0.5">
-        Vereceğiniz yıldız markanın genel puan ortalamasına yansır.
+        Оценката се дава след приключване на жалбата и влиза в общия рейтинг на
+        марката (оценка от 100).
       </p>
 
       <div className="mt-3 flex items-center gap-3 flex-wrap">
-        <div className="flex items-center gap-1" onMouseLeave={() => setHover(0)}>
+        <div
+          className="flex items-center gap-1"
+          onMouseLeave={() => setHover(0)}
+        >
           {[1, 2, 3, 4, 5].map((n) => (
             <button
               key={n}
@@ -103,7 +113,9 @@ export function ComplaintRating({
             >
               <Star
                 className={`size-7 transition-transform ${
-                  shown >= n ? "fill-amber-400 text-amber-400 scale-105" : "text-navy-mid"
+                  shown >= n
+                    ? "fill-amber-400 text-amber-400 scale-105"
+                    : "text-navy-mid"
                 }`}
               />
             </button>

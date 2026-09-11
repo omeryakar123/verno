@@ -1,20 +1,65 @@
 import { Search } from "lucide-react";
+import { SiteLogoResponsive } from "@/components/site-logo-mark";
 
 const BANNER = {
   mobile: {
-    frame: "https://files.sikayetvar.com/web-files/public/images/home-banner/mobile/banner.svg",
+    frame:
+      "https://files.sikayetvar.com/web-files/public/images/home-banner/mobile/banner.svg",
     slots: [
-      { src: "https://files.sikayetvar.com/web-files/public/images/home-banner/mobile/1.jpg", left: "24.939%", top: "0%", width: "38.499%", height: "46.377%", borderRadius: undefined },
-      { src: "https://files.sikayetvar.com/web-files/public/images/home-banner/mobile/3.jpg", left: "0%", top: "0%", width: "24.939%", height: "46.377%", borderRadius: "70.874% 76.042% 0 0" },
-      { src: "https://files.sikayetvar.com/web-files/public/images/home-banner/mobile/2.jpg", left: "63.438%", top: "0%", width: "36.562%", height: "72.947%", borderRadius: "9999px" },
+      {
+        src: "https://files.sikayetvar.com/web-files/public/images/home-banner/mobile/1.jpg",
+        left: "24.939%",
+        top: "0%",
+        width: "38.499%",
+        height: "46.377%",
+        borderRadius: undefined,
+      },
+      {
+        src: "https://files.sikayetvar.com/web-files/public/images/home-banner/mobile/3.jpg",
+        left: "0%",
+        top: "0%",
+        width: "24.939%",
+        height: "46.377%",
+        borderRadius: "70.874% 76.042% 0 0",
+      },
+      {
+        src: "https://files.sikayetvar.com/web-files/public/images/home-banner/mobile/2.jpg",
+        left: "63.438%",
+        top: "0%",
+        width: "36.562%",
+        height: "72.947%",
+        borderRadius: "9999px",
+      },
     ],
   },
   desktop: {
-    frame: "https://files.sikayetvar.com/web-files/public/images/home-banner/desktop/banner.svg",
+    frame:
+      "https://files.sikayetvar.com/web-files/public/images/home-banner/desktop/banner.svg",
     slots: [
-      { src: "https://files.sikayetvar.com/web-files/public/images/home-banner/desktop/1.jpg", left: "24.939%", top: "0%", width: "38.499%", height: "46.377%", borderRadius: undefined },
-      { src: "https://files.sikayetvar.com/web-files/public/images/home-banner/desktop/3.jpg", left: "0%", top: "0%", width: "24.939%", height: "46.377%", borderRadius: "70.874% 76.042% 0 0" },
-      { src: "https://files.sikayetvar.com/web-files/public/images/home-banner/desktop/2.jpg", left: "63.438%", top: "0%", width: "36.562%", height: "72.947%", borderRadius: "9999px" },
+      {
+        src: "https://files.sikayetvar.com/web-files/public/images/home-banner/desktop/1.jpg",
+        left: "24.939%",
+        top: "0%",
+        width: "38.499%",
+        height: "46.377%",
+        borderRadius: undefined,
+      },
+      {
+        src: "https://files.sikayetvar.com/web-files/public/images/home-banner/desktop/3.jpg",
+        left: "0%",
+        top: "0%",
+        width: "24.939%",
+        height: "46.377%",
+        borderRadius: "70.874% 76.042% 0 0",
+      },
+      {
+        src: "https://files.sikayetvar.com/web-files/public/images/home-banner/desktop/2.jpg",
+        left: "63.438%",
+        top: "0%",
+        width: "36.562%",
+        height: "72.947%",
+        borderRadius: "9999px",
+      },
     ],
   },
 } as const;
@@ -30,8 +75,15 @@ function BannerCollage({ variant }: { variant: "mobile" | "desktop" }) {
   const visibility = variant === "mobile" ? "lg:hidden" : "hidden lg:block";
 
   return (
-    <div className={`relative mb-8 block h-[50.1vw] w-full ${visibility} ${variant === "desktop" ? "lg:absolute lg:inset-y-0 lg:right-0 lg:mb-0 lg:h-auto lg:w-[53.7%]" : ""}`}>
-      <img src={data.frame} alt="" fetchPriority="high" className="absolute inset-0 h-full w-full" />
+    <div
+      className={`relative mb-8 block h-[50.1vw] w-full ${visibility} ${variant === "desktop" ? "lg:absolute lg:inset-y-0 lg:right-0 lg:mb-0 lg:h-auto lg:w-[53.7%]" : ""}`}
+    >
+      <img
+        src={data.frame}
+        alt=""
+        fetchPriority="high"
+        className="absolute inset-0 h-full w-full"
+      />
       {data.slots.map((slot) => (
         <div
           key={slot.src}
@@ -41,11 +93,18 @@ function BannerCollage({ variant }: { variant: "mobile" | "desktop" }) {
             top: slot.top,
             width: slot.width,
             height: slot.height,
-            borderTopRightRadius: slot.borderRadius?.includes("70.874") ? "70.874% 76.042%" : undefined,
+            borderTopRightRadius: slot.borderRadius?.includes("70.874")
+              ? "70.874% 76.042%"
+              : undefined,
             borderRadius: slot.borderRadius === "9999px" ? "9999px" : undefined,
           }}
         >
-          <img src={slot.src} alt="" fetchPriority="high" className="absolute inset-0 size-full object-cover" />
+          <img
+            src={slot.src}
+            alt=""
+            fetchPriority="high"
+            className="absolute inset-0 size-full object-cover"
+          />
         </div>
       ))}
     </div>
@@ -60,10 +119,12 @@ export function HeroSection({ search, onSearchChange, onSubmit }: Props) {
 
       <div className="home-container relative z-10 px-4 lg:max-w-6xl lg:px-0">
         <div className="lg:w-[46.3%] lg:pt-20">
-          <h1 className="mb-5 whitespace-pre-line font-normal text-[#383838] text-[36px] leading-[1.08] tracking-[0.5px] sm:text-[43px] sm:leading-tight sm:tracking-[1px] lg:mb-28 lg:text-[61px] lg:leading-[1.12]">
-            <strong className="font-semibold">За решение</strong>
-            {"\n"}verno
-          </h1>
+          <div className="mb-5 lg:mb-28">
+            <h1 className="font-semibold text-[#383838] text-[36px] leading-[1.08] tracking-[0.5px] sm:text-[43px] sm:leading-tight sm:tracking-[1px] lg:text-[61px] lg:leading-[1.12]">
+              За решение
+            </h1>
+            <SiteLogoResponsive className="mt-2 h-[34px] sm:mt-3 sm:h-[40px] lg:h-[56px]" />
+          </div>
 
           <form onSubmit={onSubmit}>
             <div className="relative font-semibold text-base tracking-wide">

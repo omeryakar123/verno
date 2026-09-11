@@ -29,7 +29,10 @@ function normalize(s: string): string {
 }
 
 function stripTurkishSuffix(token: string): string {
-  return token.replace(/(?:[''']?(?:te|ta|de|da|den|dan|ten|tan|e|a|i|ı|u|ü))$/i, "");
+  return token.replace(
+    /(?:[''']?(?:te|ta|de|da|den|dan|ten|tan|e|a|i|ı|u|ü))$/i,
+    "",
+  );
 }
 
 function formatBrandToken(base: string): string {
@@ -75,7 +78,12 @@ function matchBrand(text: string, brands: BrandHint[]): string | null {
     for (const b of brands) {
       const bn = normalize(b.name);
       const bs = b.slug ? normalize(b.slug) : bn;
-      if (stripped === bn || stripped === bs || bn.startsWith(stripped) || stripped.startsWith(bn)) {
+      if (
+        stripped === bn ||
+        stripped === bs ||
+        bn.startsWith(stripped) ||
+        stripped.startsWith(bn)
+      ) {
         if (bn.length > bestLen) {
           best = b.name;
           bestLen = bn.length;
@@ -103,7 +111,9 @@ function extractBrandFallback(text: string): string | null {
 
 function resolveBrandName(name: string, brands: BrandHint[]): string {
   const n = normalize(name);
-  const hit = brands.find((b) => normalize(b.name) === n || (b.slug && normalize(b.slug) === n));
+  const hit = brands.find(
+    (b) => normalize(b.name) === n || (b.slug && normalize(b.slug) === n),
+  );
   return hit?.name ?? name;
 }
 
@@ -113,34 +123,75 @@ function parseAmount(raw: string): number | string {
   return Number.isFinite(num) ? num : raw.trim();
 }
 
-function formatAmount(amount: number | string, currency: string | null): string {
+function formatAmount(
+  amount: number | string,
+  currency: string | null,
+): string {
   if (typeof amount === "number") {
     const formatted = amount.toLocaleString("tr-TR");
-    return currency === "TRY" || !currency ? `${formatted} TL` : `${formatted} ${currency}`;
+    return currency === "TRY" || !currency
+      ? `${formatted} TL`
+      : `${formatted} ${currency}`;
   }
   return String(amount);
 }
 
 const TX_PATTERNS: { re: RegExp; type: string }[] = [
-  { re: /yatırım|yatirim|para yatır|para yatir|yatirdim|yatırdım|deposit/i, type: "yatırım" },
+  {
+    re: /yatırım|yatirim|para yatır|para yatir|yatirdim|yatırdım|deposit/i,
+    type: "yatırım",
+  },
   { re: /çekim|cekim|para çek|para cek|withdraw/i, type: "çekim" },
   { re: /bonus|promosyon|freespin|free spin/i, type: "bonus" },
   { re: /bahis|kupon|iddaa/i, type: "bahis" },
   { re: /casino|slot|rulet|blackjack/i, type: "casino" },
-  { re: /hesap|üyelik|uyelik|kapat|bloke|doğrulama|dogrulama|kimlik/i, type: "hesap" },
-  { re: /teknik|site açılm|site acilm|bağlantı|baglanti|hata/i, type: "teknik sorun" },
+  {
+    re: /hesap|üyelik|uyelik|kapat|bloke|doğrulama|dogrulama|kimlik/i,
+    type: "hesap",
+  },
+  {
+    re: /teknik|site açılm|site acilm|bağlantı|baglanti|hata/i,
+    type: "teknik sorun",
+  },
 ];
 
 const PROBLEM_PATTERNS: { re: RegExp; problem: string }[] = [
-  { re: /yatırım yaptım.*(geçmedi|yansımadı|yansimadi|gelmedi)/i, problem: "Yapılan yatırım hesaba yansımadı" },
-  { re: /yatirim yaptim.*(geçmedi|yansımadı|yansimadi|gelmedi)/i, problem: "Yapılan yatırım hesaba yansımadı" },
-  { re: /yatırım.*(geçmedi|yansımadı|yansimadi|gelmedi)/i, problem: "Yapılan yatırım hesaba yansımadı" },
-  { re: /(geçmedi|yansımadı|yansimadi|gelmedi).*(yatırım|yatirim|hesab|para)/i, problem: "Yapılan yatırım hesaba yansımadı" },
-  { re: /hesab(a|ıma|ima)?\s*(geçmedi|yansımadı|yansimadi|gelmedi)/i, problem: "Yapılan yatırım hesaba yansımadı" },
-  { re: /çekim.*(yapılmadı|yapilmadi|gelmedi|vermediler|ödenmedi|odenmedi)/i, problem: "Çekim talebi karşılanmadı" },
-  { re: /(vermediler|ödemediler|odedemediler|paramı vermediler|parami vermediler)/i, problem: "Ödeme/çekim yapılmadı" },
-  { re: /bonus.*(verilmedi|iptal|silindi)/i, problem: "Bonus hakkı tanınmadı veya iptal edildi" },
-  { re: /hesab.*(kapand|kapatt|bloke|askıya|askiya)/i, problem: "Hesap erişimi kısıtlandı veya kapatıldı" },
+  {
+    re: /yatırım yaptım.*(geçmedi|yansımadı|yansimadi|gelmedi)/i,
+    problem: "Yapılan yatırım hesaba yansımadı",
+  },
+  {
+    re: /yatirim yaptim.*(geçmedi|yansımadı|yansimadi|gelmedi)/i,
+    problem: "Yapılan yatırım hesaba yansımadı",
+  },
+  {
+    re: /yatırım.*(geçmedi|yansımadı|yansimadi|gelmedi)/i,
+    problem: "Yapılan yatırım hesaba yansımadı",
+  },
+  {
+    re: /(geçmedi|yansımadı|yansimadi|gelmedi).*(yatırım|yatirim|hesab|para)/i,
+    problem: "Yapılan yatırım hesaba yansımadı",
+  },
+  {
+    re: /hesab(a|ıma|ima)?\s*(geçmedi|yansımadı|yansimadi|gelmedi)/i,
+    problem: "Yapılan yatırım hesaba yansımadı",
+  },
+  {
+    re: /çekim.*(yapılmadı|yapilmadi|gelmedi|vermediler|ödenmedi|odenmedi)/i,
+    problem: "Çekim talebi karşılanmadı",
+  },
+  {
+    re: /(vermediler|ödemediler|odedemediler|paramı vermediler|parami vermediler)/i,
+    problem: "Ödeme/çekim yapılmadı",
+  },
+  {
+    re: /bonus.*(verilmedi|iptal|silindi)/i,
+    problem: "Bonus hakkı tanınmadı veya iptal edildi",
+  },
+  {
+    re: /hesab.*(kapand|kapatt|bloke|askıya|askiya)/i,
+    problem: "Hesap erişimi kısıtlandı veya kapatıldı",
+  },
   {
     re: /param(a|ı|i|ım|im)?\s*(çöktü|çöktüler|coktu|coktuler|çekti|cekti|çektiler|cektiler|bloke|kilitl)/i,
     problem: "Bakiyeme/parama el konuldu veya para çekildi",
@@ -170,9 +221,15 @@ const DATE_PATTERNS: RegExp[] = [
 
 const EVIDENCE_PATTERNS: { re: RegExp; label: string }[] = [
   { re: /dekont/i, label: "dekont" },
-  { re: /ekran görüntüsü|ekran goruntusu|screenshot/i, label: "ekran görüntüsü" },
+  {
+    re: /ekran görüntüsü|ekran goruntusu|screenshot/i,
+    label: "ekran görüntüsü",
+  },
   { re: /işlem numarası|islem numarasi|referans/i, label: "işlem numarası" },
-  { re: /canlı destek|canli destek|destek konuşması|destek konusmasi/i, label: "canlı destek konuşması" },
+  {
+    re: /canlı destek|canli destek|destek konuşması|destek konusmasi/i,
+    label: "canlı destek konuşması",
+  },
 ];
 
 function extractDate(text: string): string | null {
@@ -183,7 +240,9 @@ function extractDate(text: string): string | null {
   return null;
 }
 
-function extractAmountAndCurrency(text: string): { amount: number | string; currency: string } | null {
+function extractAmountAndCurrency(
+  text: string,
+): { amount: number | string; currency: string } | null {
   const swap = text.match(
     /(\d[\d.,\s]*)\s*(?:tl|try|lira)?\s*değil\s*(\d[\d.,\s]*)\s*(tl|try|lira)?/i,
   );
@@ -196,7 +255,9 @@ function extractAmountAndCurrency(text: string): { amount: number | string; curr
     return { amount: parseAmount(hayir[1]), currency: "TRY" };
   }
 
-  const m = text.match(/(\d[\d.,\s]*)\s*(tl|try|lira|usd|eur|€|\$|dolar|euro)?/i);
+  const m = text.match(
+    /(\d[\d.,\s]*)\s*(tl|try|lira|usd|eur|€|\$|dolar|euro)?/i,
+  );
   if (!m) return null;
   const amount = parseAmount(m[1]);
   const curRaw = (m[2] ?? "TRY").toUpperCase();
@@ -209,7 +270,9 @@ function extractAmountAndCurrency(text: string): { amount: number | string; curr
 function isVagueProblemStatement(text: string): boolean {
   const t = text.trim();
   if (t.length > 55) return false;
-  return /sorun yaşad|sorun yasad|problem yaşad|problem yasad|sorun var|problem var/i.test(t);
+  return /sorun yaşad|sorun yasad|problem yaşad|problem yasad|sorun var|problem var/i.test(
+    t,
+  );
 }
 
 function inferProblem(text: string, prev: ComplaintState): string | null {
@@ -219,8 +282,10 @@ function inferProblem(text: string, prev: ComplaintState): string | null {
     if (re.test(text)) problems.push(problem);
   }
 
-  if (/canlı yardım|canli yardim|canli destek|canlı destek/i.test(text) &&
-      /cevap vermiyor|yanıt alamad|yanit alamad|dönüş yok|donus yok/i.test(text)) {
+  if (
+    /canlı yardım|canli yardim|canli destek|canlı destek/i.test(text) &&
+    /cevap vermiyor|yanıt alamad|yanit alamad|dönüş yok|donus yok/i.test(text)
+  ) {
     problems.push("Canlı yardım yanıt vermedi");
   }
 
@@ -234,13 +299,23 @@ function inferProblem(text: string, prev: ComplaintState): string | null {
 
   if (isVagueProblemStatement(text)) return prev.problem;
   if (prev.problem) return prev.problem;
-  if (text.length >= 22 && /sorun yaşıyorum|sorun yasiyorum|sorun yasıyorum/.test(text)) {
+  if (
+    text.length >= 22 &&
+    /sorun yaşıyorum|sorun yasiyorum|sorun yasıyorum/.test(text)
+  ) {
     const cleaned = text.replace(/\s+/g, " ").trim();
-    if (/parama|para |çöktü|coktu|çekti|cekti|bloke|geçmedi|yansımadı|yansimadi/.test(cleaned)) {
+    if (
+      /parama|para |çöktü|coktu|çekti|cekti|bloke|geçmedi|yansımadı|yansimadi/.test(
+        cleaned,
+      )
+    ) {
       return cleaned.length <= 200 ? cleaned : cleaned.slice(0, 200);
     }
   }
-  if (text.length >= 28 && /sorun|mağdur|magdur|şikayet|sikayet|yaşadım|yasadim/.test(text)) {
+  if (
+    text.length >= 28 &&
+    /sorun|mağdur|magdur|şikayet|sikayet|yaşadım|yasadim/.test(text)
+  ) {
     const cleaned = text.replace(/\s+/g, " ").trim();
     return cleaned.length <= 200 ? cleaned : cleaned.slice(0, 200);
   }
@@ -254,13 +329,18 @@ function isCorrectionMessage(text: string): boolean {
 }
 
 function isGreetingOnly(text: string): boolean {
-  return /^(merhaba|selam|hey|hi|hello|günaydın|gunaydin|iyi akşamlar|iyi aksamlar)[.!?\s]*$/i.test(text.trim());
+  return /^(merhaba|selam|hey|hi|hello|günaydın|gunaydin|iyi akşamlar|iyi aksamlar)[.!?\s]*$/i.test(
+    text.trim(),
+  );
 }
 
 export function isFrustratedRepeatMessage(text: string): boolean {
   const t = text.trim().toLowerCase();
-  return /^(soyledim|söyledim|az önce|az once|yukarıda|yukarida|onu zaten|tekrar sorma|söylemiştim|soylemistim|yazdım|yazdim)/.test(t) ||
-    /zaten söyledim|zaten soyledim|söylemiştim|soylemistim/.test(t);
+  return (
+    /^(soyledim|söyledim|az önce|az once|yukarıda|yukarida|onu zaten|tekrar sorma|söylemiştim|soylemistim|yazdım|yazdim)/.test(
+      t,
+    ) || /zaten söyledim|zaten soyledim|söylemiştim|soylemistim/.test(t)
+  );
 }
 
 function isSubstantiveMessage(text: string): boolean {
@@ -278,7 +358,10 @@ function uniqueAppend(list: string[], item: string): string[] {
   return [...list, trimmed];
 }
 
-function buildChronologyEntries(text: string, state: Partial<ComplaintState>): string[] {
+function buildChronologyEntries(
+  text: string,
+  state: Partial<ComplaintState>,
+): string[] {
   const entries: string[] = [];
   const brand = state.brandName;
   const amount = state.amount;
@@ -288,7 +371,9 @@ function buildChronologyEntries(text: string, state: Partial<ComplaintState>): s
 
   if (brand && tx === "yatırım" && amount != null) {
     const when = date ? `${date.charAt(0).toUpperCase()}${date.slice(1)} ` : "";
-    entries.push(`${when}${brand}'e ${formatAmount(amount, currency)} yatırım yaptım.`.trim());
+    entries.push(
+      `${when}${brand}'e ${formatAmount(amount, currency ?? null)} yatırım yaptım.`.trim(),
+    );
   } else if (brand && tx) {
     entries.push(`${brand} üzerinde ${tx} işlemi gerçekleştirdim.`);
   }
@@ -296,7 +381,10 @@ function buildChronologyEntries(text: string, state: Partial<ComplaintState>): s
   if (/hesab(a|ıma|ima)?\s*(geçmedi|yansımadı|yansimadi|gelmedi)/i.test(text)) {
     entries.push("Yatırım hesabıma yansımadı.");
   }
-  if (/canlı yardım|canli yardim/i.test(text) && /cevap vermiyor|yanıt alamad|yanit alamad/i.test(text)) {
+  if (
+    /canlı yardım|canli yardim/i.test(text) &&
+    /cevap vermiyor|yanıt alamad|yanit alamad/i.test(text)
+  ) {
     entries.push("Canlı yardım yanıt vermedi.");
   }
 
@@ -304,7 +392,9 @@ function buildChronologyEntries(text: string, state: Partial<ComplaintState>): s
   return entries;
 }
 
-export function normalizeComplaintState(raw: Partial<ComplaintState> | null | undefined): ComplaintState {
+export function normalizeComplaintState(
+  raw: Partial<ComplaintState> | null | undefined,
+): ComplaintState {
   if (!raw) return { ...EMPTY_COMPLAINT_STATE, chronology: [], evidence: [] };
   return {
     brandName: raw.brandName?.trim() || null,
@@ -313,23 +403,32 @@ export function normalizeComplaintState(raw: Partial<ComplaintState> | null | un
     amount: raw.amount ?? null,
     currency: raw.currency?.trim()?.toUpperCase() || null,
     date: raw.date?.trim() || null,
-    chronology: Array.isArray(raw.chronology) ? raw.chronology.map(String).filter(Boolean) : [],
-    evidence: Array.isArray(raw.evidence) ? raw.evidence.map(String).filter(Boolean) : [],
+    chronology: Array.isArray(raw.chronology)
+      ? raw.chronology.map(String).filter(Boolean)
+      : [],
+    evidence: Array.isArray(raw.evidence)
+      ? raw.evidence.map(String).filter(Boolean)
+      : [],
     desiredResolution: raw.desiredResolution?.trim() || null,
   };
 }
 
-export function mergeComplaintState(prev: ComplaintState, updates: Partial<ComplaintState>): ComplaintState {
+export function mergeComplaintState(
+  prev: ComplaintState,
+  updates: Partial<ComplaintState>,
+): ComplaintState {
   const next = normalizeComplaintState(prev);
   const patch = normalizeComplaintState(updates);
 
   if (patch.brandName !== null) next.brandName = patch.brandName;
   if (patch.problem !== null) next.problem = patch.problem;
-  if (patch.transactionType !== null) next.transactionType = patch.transactionType;
+  if (patch.transactionType !== null)
+    next.transactionType = patch.transactionType;
   if (patch.amount !== null) next.amount = patch.amount;
   if (patch.currency !== null) next.currency = patch.currency;
   if (patch.date !== null) next.date = patch.date;
-  if (patch.desiredResolution !== null) next.desiredResolution = patch.desiredResolution;
+  if (patch.desiredResolution !== null)
+    next.desiredResolution = patch.desiredResolution;
 
   if (updates.chronology?.length) {
     for (const item of updates.chronology) {
@@ -380,7 +479,8 @@ export function extractStateFromMessage(
 
   const dateHit = extractDate(text);
   if (dateHit) updates.date = dateHit;
-  else if (text.length <= 40 && /^(dün|dun|bugün|bugun)$/i.test(text)) updates.date = text.toLowerCase();
+  else if (text.length <= 40 && /^(dün|dun|bugün|bugun)$/i.test(text))
+    updates.date = text.toLowerCase();
 
   const problemHit = inferProblem(text, prev);
   if (problemHit) updates.problem = problemHit;
@@ -391,7 +491,11 @@ export function extractStateFromMessage(
   }
   if (evidence.length) updates.evidence = evidence;
 
-  if (/istiyorum|talep ediyorum|talep ederim|iade|aktarılmasını|aktarilmasini|çözülmesini|cozulmesini|geri ödem/i.test(lower)) {
+  if (
+    /istiyorum|talep ediyorum|talep ederim|iade|aktarılmasını|aktarilmasini|çözülmesini|cozulmesini|geri ödem/i.test(
+      lower,
+    )
+  ) {
     updates.desiredResolution = text.length <= 220 ? text : text.slice(0, 220);
   }
 
@@ -414,7 +518,11 @@ export function rebuildStateFromMessages(
   let state = EMPTY_COMPLAINT_STATE;
   for (const m of messages) {
     if (m.role !== "user") continue;
-    state = processIntakeMessage({ message: m.content, complaintState: state, brands });
+    state = processIntakeMessage({
+      message: m.content,
+      complaintState: state,
+      brands,
+    });
   }
   return state;
 }
@@ -423,7 +531,9 @@ export function buildBodyFromState(state: ComplaintState): string {
   const paragraphs: string[] = [];
 
   if (state.brandName) {
-    paragraphs.push(`${state.brandName} platformunda yaşadığım sorun hakkında şikayetimi iletmek istiyorum.`);
+    paragraphs.push(
+      `${state.brandName} platformunda yaşadığım sorun hakkında şikayetimi iletmek istiyorum.`,
+    );
   } else {
     paragraphs.push("Yaşadığım sorun hakkında şikayetimi iletmek istiyorum.");
   }
@@ -432,14 +542,24 @@ export function buildBodyFromState(state: ComplaintState): string {
     paragraphs.push(state.chronology.join(" "));
   } else {
     const parts: string[] = [];
-    if (state.date && state.brandName && state.amount != null && state.transactionType) {
+    if (
+      state.date &&
+      state.brandName &&
+      state.amount != null &&
+      state.transactionType
+    ) {
       parts.push(
         `${state.date.charAt(0).toUpperCase() + state.date.slice(1)} ${state.brandName} üzerinde ${formatAmount(state.amount, state.currency)} tutarında ${state.transactionType} işlemi gerçekleştirdim.`,
       );
     } else if (state.brandName && state.transactionType) {
-      parts.push(`${state.brandName} üzerinde ${state.transactionType} işlemi gerçekleştirdim.`);
+      parts.push(
+        `${state.brandName} üzerinde ${state.transactionType} işlemi gerçekleştirdim.`,
+      );
     }
-    if (state.problem) parts.push(state.problem.endsWith(".") ? state.problem : `${state.problem}.`);
+    if (state.problem)
+      parts.push(
+        state.problem.endsWith(".") ? state.problem : `${state.problem}.`,
+      );
     if (parts.length) paragraphs.push(parts.join(" "));
   }
 
@@ -449,16 +569,23 @@ export function buildBodyFromState(state: ComplaintState): string {
 
   if (state.desiredResolution) {
     paragraphs.push(
-      state.desiredResolution.endsWith(".") ? state.desiredResolution : `${state.desiredResolution}.`,
+      state.desiredResolution.endsWith(".")
+        ? state.desiredResolution
+        : `${state.desiredResolution}.`,
     );
   } else if (state.problem) {
-    paragraphs.push("İşlemle ilgili yaşadığım sorunun çözülmesini talep ediyorum.");
+    paragraphs.push(
+      "İşlemle ilgili yaşadığım sorunun çözülmesini talep ediyorum.",
+    );
   }
 
   return paragraphs.join("\n\n").trim();
 }
 
-export function buildTitleFromState(state: ComplaintState, body: string): string {
+export function buildTitleFromState(
+  state: ComplaintState,
+  body: string,
+): string {
   if (state.brandName && state.problem) {
     const short =
       state.amount != null
@@ -492,7 +619,10 @@ export function getNextQuestion(state: ComplaintState): string | null {
   return null;
 }
 
-export function computeReadyToContinue(state: ComplaintState, body: string): boolean {
+export function computeReadyToContinue(
+  state: ComplaintState,
+  body: string,
+): boolean {
   if (!hasMinimumComplaintInfo(state)) return false;
   return body.trim().length >= 60;
 }
@@ -510,7 +640,13 @@ export function computeDraftQuality(
 const ASK_PATTERNS: { field: keyof ComplaintState; patterns: RegExp[] }[] = [
   {
     field: "brandName",
-    patterns: [/hangi site/i, /hangi marka/i, /hangi bahis/i, /hangi casino/i, /site.*olduğunu/i],
+    patterns: [
+      /hangi site/i,
+      /hangi marka/i,
+      /hangi bahis/i,
+      /hangi casino/i,
+      /site.*olduğunu/i,
+    ],
   },
   {
     field: "problem",
@@ -527,19 +663,35 @@ const ASK_PATTERNS: { field: keyof ComplaintState; patterns: RegExp[] }[] = [
   },
   {
     field: "amount",
-    patterns: [/ne kadar/i, /kaç tl/i, /kac tl/i, /yatırım yaptınız/i, /yatirim yaptiniz/i],
+    patterns: [
+      /ne kadar/i,
+      /kaç tl/i,
+      /kac tl/i,
+      /yatırım yaptınız/i,
+      /yatirim yaptiniz/i,
+    ],
   },
   {
     field: "date",
-    patterns: [/ne zaman/i, /hangi tarih/i, /yaklaşık ne zaman/i, /yaklasik ne zaman/i],
+    patterns: [
+      /ne zaman/i,
+      /hangi tarih/i,
+      /yaklaşık ne zaman/i,
+      /yaklasik ne zaman/i,
+    ],
   },
 ];
 
-export function replyAsksKnownField(reply: string, state: ComplaintState): boolean {
+export function replyAsksKnownField(
+  reply: string,
+  state: ComplaintState,
+): boolean {
   const r = reply.toLowerCase().trim();
   const looksLikeQuestion =
     r.includes("?") ||
-    /^(anladım\.?\s*)?(hangi|ne sorun|ne kadar|ne zaman|kaç tl|kac tl|tam olarak ne)/.test(r);
+    /^(anladım\.?\s*)?(hangi|ne sorun|ne kadar|ne zaman|kaç tl|kac tl|tam olarak ne)/.test(
+      r,
+    );
   if (!looksLikeQuestion) return false;
 
   for (const { field, patterns } of ASK_PATTERNS) {
@@ -570,9 +722,17 @@ export function buildAcknowledgmentReply(state: ComplaintState): string {
     parts.push(`${brand}'te belirttiğiniz sorunun`);
   }
 
-  if (state.problem?.toLowerCase().includes("canlı yardım") || state.problem?.toLowerCase().includes("canli yardim")) {
-    parts.push("hesabınıza yansımadığını ve canlı yardımdan yanıt alamadığınızı");
-  } else if (state.problem?.toLowerCase().includes("yansımadı") || state.problem?.toLowerCase().includes("geçmedi")) {
+  if (
+    state.problem?.toLowerCase().includes("canlı yardım") ||
+    state.problem?.toLowerCase().includes("canli yardim")
+  ) {
+    parts.push(
+      "hesabınıza yansımadığını ve canlı yardımdan yanıt alamadığınızı",
+    );
+  } else if (
+    state.problem?.toLowerCase().includes("yansımadı") ||
+    state.problem?.toLowerCase().includes("geçmedi")
+  ) {
     parts.push("hesabınıza yansımadığını");
   } else {
     parts.push("yaşandığını");
@@ -617,9 +777,13 @@ export function buildIntakeReply(
   return "Anlattıklarınızı not aldım. Biraz daha detay verirseniz metni güçlendirebilirim.";
 }
 
-export function logComplaintDebug(label: string, data: Record<string, unknown>): void {
+export function logComplaintDebug(
+  label: string,
+  data: Record<string, unknown>,
+): void {
   const isDev =
-    (typeof import.meta !== "undefined" && (import.meta as { env?: { DEV?: boolean } }).env?.DEV) ||
+    (typeof import.meta !== "undefined" &&
+      (import.meta as { env?: { DEV?: boolean } }).env?.DEV) ||
     (typeof process !== "undefined" && process.env?.NODE_ENV === "development");
   if (isDev) {
     console.info(`[COMPLAINT DEBUG] ${label}`, data);

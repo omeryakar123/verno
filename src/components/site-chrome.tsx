@@ -1,10 +1,24 @@
 import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { PenLine, User, Menu, X, LogOut, LayoutDashboard, Building2 } from "lucide-react";
+import {
+  PenLine,
+  User,
+  Menu,
+  X,
+  LogOut,
+  LayoutDashboard,
+  Building2,
+} from "lucide-react";
 import { useAuth, highestRoleRedirect } from "@/hooks/use-auth";
-import { GlobalSearchIconTrigger, GlobalSearchTrigger } from "@/components/global-search";
+import {
+  GlobalSearchIconTrigger,
+  GlobalSearchTrigger,
+} from "@/components/global-search";
 import { SiteLogoMark, SiteLogoNav } from "@/components/site-logo-mark";
-import { USER_MENU_ITEMS, UserMenuPopover } from "@/components/user-menu-popover";
+import {
+  USER_MENU_ITEMS,
+  UserMenuPopover,
+} from "@/components/user-menu-popover";
 
 export function SiteNav() {
   const { user, roles, signOut } = useAuth();
@@ -22,11 +36,12 @@ export function SiteNav() {
     setMenuOpen(false);
   }
 
+  // Router rotaları ve hash bağlantısı ayrı: `Link to` yalnızca gerçek rotaları kabul eder.
   const navLinks = [
     { to: "/sikayetler" as const, label: "Жалби" },
-    { to: "/trendler" as const, label: "Trend", badge: "100" as const },
-    { to: "/#video" as const, label: "Видео", hash: true as const },
-  ] as const;
+    { to: "/trendler" as const, label: "Trend", badge: "100" },
+  ];
+  const videoLink = { href: "/#video", label: "Видео" };
 
   return (
     <>
@@ -34,7 +49,7 @@ export function SiteNav() {
         <div className="mx-auto flex h-[60px] max-w-[1170px] items-center px-4 sm:h-[70px] sm:px-6">
           {/* Mobile — logo + compact CTA + search + menu */}
           <div className="flex min-w-0 flex-1 items-center gap-2.5 md:hidden">
-            <SiteLogoNav size={40} />
+            <SiteLogoNav className="h-[24px]" />
             <Link
               to="/sikayet-yaz"
               className="inline-flex h-9 shrink-0 items-center justify-center rounded-full bg-[#695de9] px-3.5 text-[13px] font-semibold text-white transition hover:bg-[#5a4fd9]"
@@ -50,28 +65,36 @@ export function SiteNav() {
               onClick={() => setMenuOpen((o) => !o)}
               className="grid size-10 shrink-0 place-items-center rounded-lg border border-[#e8eaef] text-[#272635]"
             >
-              {menuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+              {menuOpen ? (
+                <X className="size-5" />
+              ) : (
+                <Menu className="size-5" />
+              )}
             </button>
           </div>
 
           {/* Desktop — logo + nav | spacer | login + CTA */}
           <div className="hidden min-w-0 flex-1 items-center md:flex md:flex-initial">
-            <SiteLogoNav size={48} />
+            <SiteLogoNav className="h-[28px] lg:h-[32px]" />
             <nav className="ml-6 hidden items-center gap-8 text-[15px] font-medium tracking-[0.01em] text-[#626692] md:flex lg:ml-9 lg:gap-10">
-              {navLinks.map((l) =>
-                "hash" in l && l.hash ? (
-                  <a key={l.to} href={l.to} className="whitespace-nowrap transition-colors hover:text-[#272635]">
-                    {l.label}
-                  </a>
-                ) : (
-                  <Link key={l.to} to={l.to} className="inline-flex items-baseline gap-0.5 whitespace-nowrap transition-colors hover:text-[#272635]">
-                    <span>{l.label}</span>
-                    {"badge" in l && l.badge ? (
-                      <span className="font-bold text-[#272635]">{l.badge}</span>
-                    ) : null}
-                  </Link>
-                ),
-              )}
+              {navLinks.map((l) => (
+                <Link
+                  key={l.to}
+                  to={l.to}
+                  className="inline-flex items-baseline gap-0.5 whitespace-nowrap transition-colors hover:text-[#272635]"
+                >
+                  <span>{l.label}</span>
+                  {l.badge ? (
+                    <span className="font-bold text-[#272635]">{l.badge}</span>
+                  ) : null}
+                </Link>
+              ))}
+              <a
+                href={videoLink.href}
+                className="whitespace-nowrap transition-colors hover:text-[#272635]"
+              >
+                {videoLink.label}
+              </a>
             </nav>
           </div>
 
@@ -81,7 +104,10 @@ export function SiteNav() {
             {user ? (
               <div className="flex items-center gap-3">
                 {panelHref !== "/" && (
-                  <Link to={panelHref} className="whitespace-nowrap text-[14px] font-medium text-[#626692] hover:text-[#272635]">
+                  <Link
+                    to={panelHref}
+                    className="whitespace-nowrap text-[14px] font-medium text-[#626692] hover:text-[#272635]"
+                  >
                     Панел
                   </Link>
                 )}
@@ -116,41 +142,53 @@ export function SiteNav() {
           />
           <div className="fixed inset-y-0 right-0 z-50 flex w-[min(100vw-3rem,320px)] flex-col border-l border-rule bg-paper shadow-lift md:hidden">
             <div className="flex h-16 items-center justify-between border-b border-rule px-4">
-              <span className="font-display text-lg font-black text-ink">Меню</span>
-              <button type="button" onClick={closeMenu} className="grid size-9 place-items-center rounded-lg hover:bg-surface">
+              <span className="font-display text-lg font-black text-ink">
+                Меню
+              </span>
+              <button
+                type="button"
+                onClick={closeMenu}
+                className="grid size-9 place-items-center rounded-lg hover:bg-surface"
+              >
                 <X className="size-5" />
               </button>
             </div>
 
             <nav className="flex-1 space-y-1 overflow-y-auto p-4">
-              {navLinks.map((l) =>
-                "hash" in l && l.hash ? (
-                  <a
-                    key={l.to}
-                    href={l.to}
-                    onClick={closeMenu}
-                    className="flex h-11 items-center gap-2 rounded-lg px-3 text-[14px] font-medium text-ink hover:bg-surface"
-                  >
-                    {l.label}
-                  </a>
-                ) : (
-                  <Link
-                    key={l.to}
-                    to={l.to}
-                    onClick={closeMenu}
-                    className="flex h-11 items-center gap-2 rounded-lg px-3 text-[14px] font-medium text-ink hover:bg-surface"
-                  >
-                    {l.label}
-                    {"badge" in l && l.badge && (
-                      <span className="rounded-full bg-brand-soft px-1.5 py-px text-[10px] font-bold text-brand">{l.badge}</span>
-                    )}
-                  </Link>
-                ),
-              )}
-              <Link to="/sikayet-yaz" onClick={closeMenu} className="flex h-11 items-center gap-2 rounded-lg px-3 text-[14px] font-semibold text-brand hover:bg-brand-soft">
+              {navLinks.map((l) => (
+                <Link
+                  key={l.to}
+                  to={l.to}
+                  onClick={closeMenu}
+                  className="flex h-11 items-center gap-2 rounded-lg px-3 text-[14px] font-medium text-ink hover:bg-surface"
+                >
+                  {l.label}
+                  {l.badge ? (
+                    <span className="rounded-full bg-brand-soft px-1.5 py-px text-[10px] font-bold text-brand">
+                      {l.badge}
+                    </span>
+                  ) : null}
+                </Link>
+              ))}
+              <a
+                href={videoLink.href}
+                onClick={closeMenu}
+                className="flex h-11 items-center gap-2 rounded-lg px-3 text-[14px] font-medium text-ink hover:bg-surface"
+              >
+                {videoLink.label}
+              </a>
+              <Link
+                to="/sikayet-yaz"
+                onClick={closeMenu}
+                className="flex h-11 items-center gap-2 rounded-lg px-3 text-[14px] font-semibold text-brand hover:bg-brand-soft"
+              >
                 <PenLine className="size-4" /> Напиши жалба
               </Link>
-              <Link to="/register/marka-basvuru" onClick={closeMenu} className="flex h-11 items-center gap-2 rounded-lg px-3 text-[14px] font-medium text-navy hover:bg-surface">
+              <Link
+                to="/register/marka-basvuru"
+                onClick={closeMenu}
+                className="flex h-11 items-center gap-2 rounded-lg px-3 text-[14px] font-medium text-navy hover:bg-surface"
+              >
                 <Building2 className="size-4" /> Кандидатствай като марка
               </Link>
               <div className="mt-3 border-t border-rule pt-3">
@@ -162,7 +200,11 @@ export function SiteNav() {
               {user ? (
                 <>
                   {panelHref !== "/" && (
-                    <Link to={panelHref} onClick={closeMenu} className="flex h-11 items-center gap-2 rounded-lg px-3 text-[14px] font-medium text-ink hover:bg-surface">
+                    <Link
+                      to={panelHref}
+                      onClick={closeMenu}
+                      className="flex h-11 items-center gap-2 rounded-lg px-3 text-[14px] font-medium text-ink hover:bg-surface"
+                    >
                       <LayoutDashboard className="size-4" /> Панел
                     </Link>
                   )}
@@ -180,16 +222,27 @@ export function SiteNav() {
                       </Link>
                     );
                   })}
-                  <button onClick={handleSignOut} className="flex h-11 w-full items-center gap-2 rounded-lg px-3 text-[14px] font-medium text-ink hover:bg-surface">
+                  <button
+                    onClick={handleSignOut}
+                    className="flex h-11 w-full items-center gap-2 rounded-lg px-3 text-[14px] font-medium text-ink hover:bg-surface"
+                  >
                     <LogOut className="size-4" /> Изход
                   </button>
                 </>
               ) : (
                 <>
-                  <Link to="/login" onClick={closeMenu} className="flex h-11 items-center gap-2 rounded-lg px-3 text-[14px] font-medium text-ink hover:bg-surface">
+                  <Link
+                    to="/login"
+                    onClick={closeMenu}
+                    className="flex h-11 items-center gap-2 rounded-lg px-3 text-[14px] font-medium text-ink hover:bg-surface"
+                  >
                     <User className="size-4" /> Вход
                   </Link>
-                  <Link to="/register" onClick={closeMenu} className="flex h-11 items-center gap-2 rounded-lg px-3 text-[14px] font-semibold text-brand hover:bg-brand-soft">
+                  <Link
+                    to="/register"
+                    onClick={closeMenu}
+                    className="flex h-11 items-center gap-2 rounded-lg px-3 text-[14px] font-semibold text-brand hover:bg-brand-soft"
+                  >
                     Регистрация
                   </Link>
                 </>
@@ -263,12 +316,20 @@ export function SiteFooter() {
     <footer className="mt-0 border-t border-white/10 bg-media text-media-foreground/80">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
         <div className="mb-10 flex items-center justify-between">
-          <Link to="/" className="inline-flex items-center gap-2.5" aria-label="Начало">
-            <SiteLogoMark size={36} tone="on-dark" />
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2.5"
+            aria-label="Начало"
+          >
+            <SiteLogoMark size={28} tone="on-dark" />
           </Link>
           <div className="hidden items-center gap-4 text-[13px] md:flex">
             {topLinks.map(([t, to]) => (
-              <Link key={t} to={to} className="hover:text-paper dark:hover:text-ink">
+              <Link
+                key={t}
+                to={to}
+                className="hover:text-paper dark:hover:text-ink"
+              >
                 {t}
               </Link>
             ))}
@@ -277,14 +338,15 @@ export function SiteFooter() {
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {columns.map((g) => (
             <div key={g.t}>
-              <h4 className="mb-3 text-[13px] font-semibold text-paper dark:text-ink">{g.t}</h4>
+              <h4 className="mb-3 text-[13px] font-semibold text-paper dark:text-ink">
+                {g.t}
+              </h4>
               <ul className="space-y-2 text-[12.5px]">
-                {g.l.map(([label, to, search, params]) => (
+                {g.l.map(([label, to, search]) => (
                   <li key={label}>
                     <Link
                       to={to}
                       search={search as never}
-                      params={params as never}
                       className="text-paper/60 transition-colors hover:text-paper dark:text-navy-mid dark:hover:text-ink"
                     >
                       {label}
@@ -298,10 +360,16 @@ export function SiteFooter() {
         <div className="mt-12 flex flex-col justify-between gap-3 border-t border-paper/10 pt-6 text-[12px] text-paper/60 dark:border-rule dark:text-navy-mid md:flex-row">
           <span>© 2026 verno.bg — Всички права запазени</span>
           <div className="flex gap-6">
-            <Link to="/kullanim-kosullari" className="hover:text-paper dark:hover:text-ink">
+            <Link
+              to="/kullanim-kosullari"
+              className="hover:text-paper dark:hover:text-ink"
+            >
               Условия за ползване
             </Link>
-            <Link to="/gizlilik" className="hover:text-paper dark:hover:text-ink">
+            <Link
+              to="/gizlilik"
+              className="hover:text-paper dark:hover:text-ink"
+            >
               Поверителност
             </Link>
             <Link to="/kvkk" className="hover:text-paper dark:hover:text-ink">

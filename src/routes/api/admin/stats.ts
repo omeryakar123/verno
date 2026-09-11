@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { eq, gte, sql } from "drizzle-orm";
-import postgres from "postgres"; 
+import postgres from "postgres";
 import { db, schema } from "@/db";
 import { errorResponse, requireStaff } from "@/lib/server/guard";
 import { ensureDbPatches } from "@/lib/server/ensure-db-patches";
@@ -15,6 +15,21 @@ type SourceStats = {
   resolved: number;
   spam: number;
 };
+
+/** Ham SQL sorgularının satır tipleri — `postgres` şablonuna generic olarak verilir. */
+type FlowRow = {
+  day: string;
+  pending: number;
+  approved: number;
+  answered: number;
+  resolved: number;
+  total: number;
+};
+type ViewRow = { day: string; views: number };
+type SignupRow = { day: string; signups: number };
+type TotalsRow = { total: number; today: number; week: number };
+
+const EMPTY_TOTALS: TotalsRow = { total: 0, today: 0, week: 0 };
 
 /** Yönetim paneli özet sayaçları + grafik verileri. */
 export const Route = createFileRoute("/api/admin/stats")({
@@ -31,7 +46,9 @@ export const Route = createFileRoute("/api/admin/stats")({
           const n = (rows: { n: number }[]) => Number(rows[0]?.n ?? 0);
           const c = sql<number>`count(*)`;
 
-          async function sourceStats(isSynthetic: boolean): Promise<SourceStats> {
+          async function sourceStats(
+            isSynthetic: boolean,
+          ): Promise<SourceStats> {
             const base = eq(schema.complaints.isSynthetic, isSynthetic);
             const [row] = await db
               .select({
@@ -90,14 +107,22 @@ export const Route = createFileRoute("/api/admin/stats")({
               .from(schema.complaints)
               .where(sql`${COMPLAINT_RESOLVED}`)
               .then(n),
-            db.select({ n: c }).from(schema.brands).where(eq(schema.brands.premium, true)).then(n),
-            db.select({ n: c }).from(schema.brands).where(eq(schema.brands.verified, true)).then(n),
+            db
+              .select({ n: c })
+              .from(schema.brands)
+              .where(eq(schema.brands.premium, true))
+              .then(n),
+            db
+              .select({ n: c })
+              .from(schema.brands)
+              .where(eq(schema.brands.verified, true))
+              .then(n),
             sourceStats(false),
             sourceStats(true),
           ]);
 
           const url = process.env.DATABASE_URL;
-          let complaint_flow: { day: string; pending: number; approved: number; answered: number; resolved: number; total: number }[] = [];
+          let complaint_flow: FlowRow[] = [];
           let complaint_flow_organic: typeof complaint_flow = [];
           let complaint_flow_bot: typeof complaint_flow = [];
           let page_views: {
@@ -115,7 +140,7 @@ export const Route = createFileRoute("/api/admin/stats")({
 
           if (url) {
             const pg = postgres(url, { max: 1 });
-            const flowQuery = (synthetic: boolean | null) => pg`
+            const flowQuery = (synthetic: boolean | null) => pg<FlowRow[]>`
               SELECT
                 to_char(date_trunc('day', created_at AT TIME ZONE 'Europe/Istanbul'), 'YYYY-MM-DD') AS day,
                 count(*) FILTER (WHERE status = 'pending')::int AS pending,
@@ -129,27 +154,28 @@ export const Route = createFileRoute("/api/admin/stats")({
               GROUP BY 1
               ORDER BY 1
             `;
-            [complaint_flow, complaint_flow_organic, complaint_flow_bot] = await Promise.all([
-              flowQuery(null),
-              flowQuery(false),
-              flowQuery(true),
-            ]);
-            const [pv] = await pg`
+            [complaint_flow, complaint_flow_organic, complaint_flow_bot] =
+              await Promise.all([
+                flowQuery(null),
+                flowQuery(false),
+                flowQuery(true),
+              ]);
+            const [pv] = await pg<TotalsRow[]>`
               SELECT
                 count(*)::int AS total,
                 count(*) FILTER (WHERE created_at >= now() - interval '24 hours')::int AS today,
                 count(*) FILTER (WHERE created_at >= now() - interval '7 days')::int AS week
               FROM page_views
-            `.catch(() => [{ total: 0, today: 0, week: 0 }]);
-            const pvDaily = await pg`
+            `.catch((): TotalsRow[] => [EMPTY_TOTALS]);
+            const pvDaily = await pg<ViewRow[]>`
               SELECT
                 to_char(date_trunc('day', created_at AT TIME ZONE 'Europe/Istanbul'), 'YYYY-MM-DD') AS day,
                 count(*)::int AS views
               FROM page_views
               WHERE created_at >= now() - interval '6 days'
               GROUP BY 1 ORDER BY 1
-            `.catch(() => []);
-            const [us] = await pg`
+            `.catch((): ViewRow[] => []);
+            const [us] = await pg<TotalsRow[]>`
               SELECT
                 count(*)::int AS total,
                 count(*) FILTER (
@@ -157,18 +183,18 @@ export const Route = createFileRoute("/api/admin/stats")({
                 )::int AS today,
                 count(*) FILTER (WHERE created_at >= now() - interval '7 days')::int AS week
               FROM "user"
-            `.catch(() => [{ total: 0, today: 0, week: 0 }]);
-            const usDaily = await pg`
+            `.catch((): TotalsRow[] => [EMPTY_TOTALS]);
+            const usDaily = await pg<SignupRow[]>`
               SELECT
                 to_char(date_trunc('day', created_at AT TIME ZONE 'Europe/Istanbul'), 'YYYY-MM-DD') AS day,
                 count(*)::int AS signups
               FROM "user"
               WHERE created_at >= now() - interval '6 days'
               GROUP BY 1 ORDER BY 1
-            `.catch(() => []);
+            `.catch((): SignupRow[] => []);
             await pg.end();
-            page_views = { ...pv, daily: pvDaily };
-            user_signups = { ...us, daily: usDaily };
+            page_views = { ...(pv ?? EMPTY_TOTALS), daily: [...pvDaily] };
+            user_signups = { ...(us ?? EMPTY_TOTALS), daily: [...usDaily] };
           }
 
           return Response.json({

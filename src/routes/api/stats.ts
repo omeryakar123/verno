@@ -2,7 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { eq, notInArray, sql } from "drizzle-orm";
 import { db, schema } from "@/db";
 import { publicPlatformStats } from "@/lib/public-stats";
-import { COMPLAINT_COUNTED, COMPLAINT_RESOLVED } from "@/lib/server/brand-stats";
+import {
+  COMPLAINT_COUNTED,
+  COMPLAINT_RESOLVED,
+} from "@/lib/server/brand-stats";
 
 // Public: platform istatistikleri (count sorguları).
 // Reddedilen/spam kayıtlar toplamdan düşülür — marka sayaçlarıyla aynı kural.
@@ -20,7 +23,7 @@ export const Route = createFileRoute("/api/stats")({
           db
             .select({ count: sql<number>`count(*)` })
             .from(schema.complaints)
-            .where(notInArray(schema.complaints.status, IGNORED_STATUSES)),
+            .where(notInArray(schema.complaints.status, [...IGNORED_STATUSES])),
           db
             .select({ count: sql<number>`count(*)` })
             .from(schema.complaints)
@@ -38,7 +41,9 @@ export const Route = createFileRoute("/api/stats")({
           publicPlatformStats({
             totalComplaints,
             resolvedComplaints,
-            resolutionRate: totalComplaints ? (resolvedComplaints * 100) / totalComplaints : 0,
+            resolutionRate: totalComplaints
+              ? (resolvedComplaints * 100) / totalComplaints
+              : 0,
             totalCompanies: Number(bTotal),
             totalUsers: Number(uTotal),
           }),

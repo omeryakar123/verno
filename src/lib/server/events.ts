@@ -13,7 +13,8 @@
 import { sql } from "@/db";
 
 export type ComplaintEvent = {
-  type: "comment" | "vote" | "complaint";
+  /** İstemci bu adları SSE olay adı olarak dinler (`sikayet.$id.tsx`). */
+  type: "comment" | "vote" | "complaint" | "complaint-support";
   complaintId: string;
 };
 

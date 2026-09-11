@@ -8,7 +8,8 @@ export const Route = createFileRoute("/api/brand-logo/$slug")({
       GET: async ({ params }) => {
         const hit = await resolveBrandLogo(params.slug);
         if (!hit) return new Response("Not found", { status: 404 });
-        return new Response(hit.buf, {
+        // Node `Buffer` doğrudan `BodyInit` sayılmaz — düz bir Uint8Array'e çevrilir.
+        return new Response(new Uint8Array(hit.buf), {
           headers: {
             "Content-Type": hit.type,
             "Cache-Control": "public, max-age=86400, s-maxage=604800",

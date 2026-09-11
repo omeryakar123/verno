@@ -1,8 +1,17 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { seoHead, jsonLd, absUrl, SITE_NAME } from "@/lib/seo";
 import { useEffect, useState } from "react";
-import { ArrowRight, Eye, FileText, MessageCircle, Play, Shield, Sparkles, Users, Zap } from "lucide-react";
-import { complaintLinkId } from "@/lib/complaint-link";
+import {
+  ArrowRight,
+  Eye,
+  FileText,
+  MessageCircle,
+  Play,
+  Shield,
+  Sparkles,
+  Users,
+  Zap,
+} from "lucide-react";
 import { type Company, type Complaint } from "@/lib/mock-data";
 import { formatResolutionRate } from "@/lib/display-brand-metrics";
 import {
@@ -22,61 +31,80 @@ import { BrandRankLogo } from "@/components/cards";
 import { HeroSection } from "@/components/home/hero-section";
 import { AgendaMarquee } from "@/components/home/agenda-marquee";
 import { TalkedCarousel } from "@/components/home/talked-carousel";
+import { LatestResolvedCarousel } from "@/components/home/latest-resolved-carousel";
 
 const HOME_REFRESH_MS = 30 * 60 * 1000;
 
 const PLACEHOLDER_LATEST: Complaint[] = [
   {
     id: "ph-1",
-    title: "Жалба за закъснение на доставката — решена",
+    title: "Поръчката ми беше доставена след ескалация — сумата възстановена",
     body: "",
-    companySlug: "placeholder",
-    companyName: "Примерна марка",
+    companySlug: "emag",
+    companyName: "eMAG",
     category: "diger",
     categoryName: "Общо",
-    userInitials: "AY",
-    userName: "Анна Y.",
+    userInitials: "ED",
+    userName: "Елена Димитрова",
     createdAgo: "преди 2 часа",
     status: "cozuldu",
-    views: 120,
-    comments: 3,
-    votes: 8,
+    views: 2310,
+    comments: 38,
+    votes: 143,
     supported: false,
     brandId: "",
   },
   {
     id: "ph-2",
-    title: "Процесът по връщане приключи успешно",
+    title: "Таксата беше възстановена по сметката след жалба",
     body: "",
-    companySlug: "placeholder",
-    companyName: "Demo Store",
+    companySlug: "dsk-bank",
+    companyName: "ДСК Банк",
     category: "diger",
     categoryName: "Общо",
-    userInitials: "MK",
-    userName: "Мартин K.",
+    userInitials: "IP",
+    userName: "Иван Петров",
     createdAgo: "преди 5 часа",
     status: "cozuldu",
-    views: 89,
-    comments: 1,
-    votes: 4,
+    views: 3120,
+    comments: 51,
+    votes: 208,
     supported: false,
     brandId: "",
   },
   {
     id: "ph-3",
-    title: "Обслужването на клиенти отговори",
+    title: "Интернет проблемът беше отстранен в рамките на 48 часа",
     body: "",
-    companySlug: "placeholder",
-    companyName: "Test Bank",
+    companySlug: "telenor",
+    companyName: "Теленор",
     category: "diger",
     categoryName: "Общо",
-    userInitials: "EL",
-    userName: "Елена L.",
+    userInitials: "MG",
+    userName: "Мартин Георгиев",
     createdAgo: "преди 1 ден",
     status: "cozuldu",
-    views: 210,
-    comments: 5,
-    votes: 12,
+    views: 1840,
+    comments: 24,
+    votes: 96,
+    supported: false,
+    brandId: "",
+  },
+  {
+    id: "ph-4",
+    title: "Пратката пристигна след повторна доставка",
+    body: "",
+    companySlug: "speedy",
+    companyName: "Спиди",
+    category: "diger",
+    categoryName: "Общо",
+    userInitials: "SA",
+    userName: "София Ангелова",
+    createdAgo: "преди 2 дни",
+    status: "cozuldu",
+    views: 940,
+    comments: 11,
+    votes: 42,
     supported: false,
     brandId: "",
   },
@@ -102,10 +130,19 @@ export const Route = createFileRoute("/_site/")({
         fetchHomeAgenda({ limit: 10 }).catch(() => [] as Complaint[]),
         fetchHomeTalked({ limit: 8 }).catch(() => [] as Complaint[]),
         fetchPlatformStats().catch(() => FALLBACK_STATS),
-        fetchBrandsList({ limit: 8, sortBy: "resolution" }).catch(() => [] as Company[]),
+        fetchBrandsList({ limit: 8, sortBy: "resolution" }).catch(
+          () => [] as Company[],
+        ),
         fetchBrandsTrend({ limit: 10 }).catch(() => [] as TrendBrand[]),
       ]);
-    return { latest: liveFeed, agenda, talked, stats: platformStats, topBrands, trendBrands };
+    return {
+      latest: liveFeed,
+      agenda,
+      talked,
+      stats: platformStats,
+      topBrands,
+      trendBrands,
+    };
   },
   head: () => {
     const base = seoHead({
@@ -122,7 +159,7 @@ export const Route = createFileRoute("/_site/")({
           "@type": "Organization",
           name: SITE_NAME,
           url: absUrl("/"),
-          logo: absUrl("/site-logo.jpg"),
+          logo: absUrl("/mainlogo.png"),
           contactPoint: {
             "@type": "ContactPoint",
             contactType: "customer service",
@@ -152,9 +189,13 @@ function Home() {
   const [agenda, setAgenda] = useState<Complaint[]>(loaderData.agenda ?? []);
   const [talked, setTalked] = useState<Complaint[]>(loaderData.talked ?? []);
   const [top, setTop] = useState<Company[]>(loaderData.topBrands ?? []);
-  const [trend100, setTrend100] = useState<TrendBrand[]>(loaderData.trendBrands ?? []);
+  const [trend100, setTrend100] = useState<TrendBrand[]>(
+    loaderData.trendBrands ?? [],
+  );
   const [stats, setStats] = useState(loaderData.stats ?? FALLBACK_STATS);
-  const [talkedUpdatedAt, setTalkedUpdatedAt] = useState<Date>(() => new Date());
+  const [talkedUpdatedAt, setTalkedUpdatedAt] = useState<Date>(
+    () => new Date(),
+  );
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
 
@@ -202,9 +243,15 @@ function Home() {
   }
 
   return (
-    <div data-page="home" className="isolate min-h-screen overflow-x-hidden bg-white">
+    <div
+      data-page="home"
+      className="isolate min-h-screen overflow-x-hidden bg-white"
+    >
       {/* Горна лента — общ брой решения */}
-      <Link to="/sikayetler" className="home-top-bar z-10 flex h-[4.125rem] items-center lg:h-[4.375rem]">
+      <Link
+        to="/sikayetler"
+        className="home-top-bar z-10 flex h-[4.125rem] items-center lg:h-[4.375rem]"
+      >
         <div className="home-container flex h-full w-full max-w-6xl items-center justify-between px-4">
           <div className="flex items-center gap-1 lg:gap-7">
             <p className="font-medium text-[13px] text-white max-[361px]:text-[11px] lg:text-lg">
@@ -220,51 +267,32 @@ function Home() {
         </div>
       </Link>
 
-      <HeroSection search={search} onSearchChange={setSearch} onSubmit={doSearch} />
+      <HeroSection
+        search={search}
+        onSearchChange={setSearch}
+        onSubmit={doSearch}
+      />
 
       {/* Популярни марки */}
       <div className="home-container max-w-6xl px-4 pb-8 lg:pb-12">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-[#626692] lg:text-[13px]">
           <span className="font-semibold text-[#85878e]">Популярни:</span>
           {PRIORITY_BRAND_LINKS.slice(0, 6).map((b) => (
-            <Link key={b.slug} to="/firma/$slug" params={{ slug: b.slug }} className="hover:text-brand transition-colors">
+            <Link
+              key={b.slug}
+              to="/firma/$slug"
+              params={{ slug: b.slug }}
+              className="hover:text-brand transition-colors"
+            >
               {b.name}
             </Link>
           ))}
         </div>
       </div>
 
-      {/* Последно решени жалби */}
-      <section className="home-container max-w-6xl px-4 pb-10 lg:pb-16">
-        <h2 className="mb-6 font-semibold text-2xl text-[#85878e] lg:mb-10 lg:text-3xl">
-          Последно решени жалби
-        </h2>
-        {latest.length === 0 ? (
-          <p className="text-sm text-[#85878e]">Все още няма жалби — показват се примерни карти.</p>
-        ) : null}
-        <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {(latest.length > 0 ? latest : PLACEHOLDER_LATEST).slice(0, 6).map((c) => (
-            <li key={c.id}>
-              <Link
-                to="/sikayet/$id"
-                params={{ id: complaintLinkId(c) }}
-                className="flex h-full flex-col rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-100 transition hover:shadow-md"
-              >
-                <div className="mb-3 flex items-center gap-2">
-                  <span className="grid size-9 shrink-0 place-items-center rounded-full bg-brand-soft text-[11px] font-bold text-brand">
-                    {c.userInitials}
-                  </span>
-                  <div className="min-w-0">
-                    <div className="truncate text-[13px] font-bold text-[#272635]">{c.userName}</div>
-                    <div className="truncate text-[11px] font-semibold text-brand">{c.companyName}</div>
-                  </div>
-                </div>
-                <p className="line-clamp-3 flex-1 text-[14px] leading-snug text-[#626692]">{c.title}</p>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
+      <LatestResolvedCarousel
+        items={(latest.length > 0 ? latest : PLACEHOLDER_LATEST).slice(0, 8)}
+      />
 
       <AgendaMarquee items={agenda} />
       <TalkedCarousel items={talked} updatedAt={talkedUpdatedAt} />
@@ -276,7 +304,8 @@ function Home() {
             Успех в решаването
           </h2>
           <p className="mx-auto mt-8.5 max-w-3xl px-2.5 text-center text-sm leading-5.5 tracking-wide text-zinc-500 lg:mt-16">
-            Класирането се базира единствено на удовлетвореността на потребителите — независимо от размера на фирмата или броя жалби.
+            Класирането се базира единствено на удовлетвореността на
+            потребителите — независимо от размера на фирмата или броя жалби.
           </p>
           <ul className="mt-10 space-y-5 lg:mt-12 lg:space-y-2.5 lg:px-2.5">
             {top.map((b, i) => (
@@ -286,20 +315,36 @@ function Home() {
                   params={{ slug: b.slug }}
                   className="relative flex w-full rounded-2xl bg-gray-100 lg:rounded-3xl hover:bg-gray-50 transition"
                 >
-                  <div className={`flex w-max min-w-7.5 flex-col items-center justify-center gap-0.5 rounded-3xl px-0.5 py-3 font-bold text-xs leading-3.5 tracking-tight text-neutral-700 lg:min-w-11 lg:gap-1 lg:text-[13px] ${i === 0 ? "bg-blue-100" : "bg-transparent"}`}>
+                  <div
+                    className={`flex w-max min-w-7.5 flex-col items-center justify-center gap-0.5 rounded-3xl px-0.5 py-3 font-bold text-xs leading-3.5 tracking-tight text-neutral-700 lg:min-w-11 lg:gap-1 lg:text-[13px] ${i === 0 ? "bg-blue-100" : "bg-transparent"}`}
+                  >
                     {i + 1}
                   </div>
                   <div className="ml-2.5 flex flex-1 items-center py-4 pr-2.5 lg:ml-7 lg:pr-7.5">
-                    <BrandRankLogo name={b.name} slug={b.slug} logoUrl={b.logoUrl} website={b.website} />
+                    <BrandRankLogo
+                      name={b.name}
+                      slug={b.slug}
+                      logoUrl={b.logoUrl}
+                      website={b.website}
+                    />
                     <div className="ml-3 min-w-0 flex-1 lg:ml-5">
-                      <div className="truncate font-semibold text-[14px] text-neutral-800 lg:text-[16px]">{b.name}</div>
-                      <div className="truncate text-[11px] text-neutral-500 lg:text-[12px]">{b.categoryName}</div>
+                      <div className="truncate font-semibold text-[14px] text-neutral-800 lg:text-[16px]">
+                        {b.name}
+                      </div>
+                      <div className="truncate text-[11px] text-neutral-500 lg:text-[12px]">
+                        {b.categoryName}
+                      </div>
                     </div>
                     <div className="shrink-0 pr-3 text-right lg:pr-5">
                       <div className="font-bold text-[#3ad08f] text-[13px] tabular-nums lg:text-[15px]">
-                        {formatResolutionRate(b.resolutionRate, b.totalComplaints)}
+                        {formatResolutionRate(
+                          b.resolutionRate,
+                          b.totalComplaints,
+                        )}
                       </div>
-                      <div className="text-[10px] text-neutral-500">решение</div>
+                      <div className="text-[10px] text-neutral-500">
+                        решение
+                      </div>
                     </div>
                   </div>
                 </Link>
@@ -307,7 +352,10 @@ function Home() {
             ))}
           </ul>
           <div className="mt-8 text-center">
-            <Link to="/markalar" className="inline-flex items-center gap-2 rounded-full border border-white/20 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10 transition">
+            <Link
+              to="/markalar"
+              className="inline-flex items-center gap-2 rounded-full border border-white/20 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10 transition"
+            >
               Всички марки <ArrowRight className="size-4" />
             </Link>
           </div>
@@ -315,13 +363,18 @@ function Home() {
       </section>
 
       {/* Video — navbar link hedefi */}
-      <section id="video" className="home-container max-w-6xl scroll-mt-24 px-4 py-12 lg:py-20">
+      <section
+        id="video"
+        className="home-container max-w-6xl scroll-mt-24 px-4 py-12 lg:py-20"
+      >
         <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
           <div>
-            <h2 className="font-semibold text-2xl text-[#383838] lg:text-4xl">Мнения</h2>
+            <h2 className="font-semibold text-2xl text-[#383838] lg:text-4xl">
+              Мнения
+            </h2>
             <p className="mt-4 text-[15px] leading-relaxed text-[#85878e] lg:text-base">
-              Гледайте потребителски истории на видео. Verno изгражда прозрачен мост между
-              марки и потребители.
+              Гледайте потребителски истории на видео. Verno изгражда прозрачен
+              мост между марки и потребители.
             </p>
           </div>
           <div className="relative aspect-video overflow-hidden rounded-3xl bg-[#272635] shadow-lift">
@@ -331,7 +384,9 @@ function Home() {
                 <Play className="size-7 fill-current ml-1" />
               </span>
             </div>
-            <span className="absolute bottom-4 left-4 text-[12px] font-medium text-white/80">Видео — скоро</span>
+            <span className="absolute bottom-4 left-4 text-[12px] font-medium text-white/80">
+              Видео — скоро
+            </span>
           </div>
         </div>
       </section>
@@ -346,11 +401,16 @@ function Home() {
             { icon: MessageCircle, label: "Официален отговор" },
             { icon: Users, label: "Общност" },
           ].map(({ icon: Icon, label }) => (
-            <li key={label} className="flex flex-col items-center rounded-2xl bg-white px-4 py-6 text-center shadow-sm ring-1 ring-gray-100">
+            <li
+              key={label}
+              className="flex flex-col items-center rounded-2xl bg-white px-4 py-6 text-center shadow-sm ring-1 ring-gray-100"
+            >
               <span className="mb-3 grid size-12 place-items-center rounded-xl bg-brand/10 text-brand">
                 <Icon className="size-6" />
               </span>
-              <span className="text-[13px] font-semibold text-[#383838]">{label}</span>
+              <span className="text-[13px] font-semibold text-[#383838]">
+                {label}
+              </span>
             </li>
           ))}
         </ul>
@@ -365,19 +425,28 @@ function Home() {
               <br className="hidden lg:block" /> {SITE_NAME}
             </h2>
             <p className="mt-7.5 text-lg leading-6.5 lg:pr-10">
-              Всяка година награждаваме марките, които правят разлика в удовлетвореността на клиентите.
-              {SITE_NAME} продължава да свързва марки и потребители с фокус върху решенията.
+              Всяка година награждаваме марките, които правят разлика в
+              удовлетвореността на клиентите.
+              {SITE_NAME} продължава да свързва марки и потребители с фокус
+              върху решенията.
             </p>
-            <Link to="/hakkimizda" className="mt-6 inline-flex items-center gap-2 text-[13px] font-semibold text-brand hover:gap-3 transition-all">
+            <Link
+              to="/hakkimizda"
+              className="mt-6 inline-flex items-center gap-2 text-[13px] font-semibold text-brand hover:gap-3 transition-all"
+            >
               Verno SEAL & Верификация <ArrowRight className="size-4" />
             </Link>
           </div>
           <div className="relative mx-auto mt-[4.5rem] w-full max-w-[420px] px-4 lg:mt-0 lg:w-[420px] lg:shrink-0 lg:px-0">
             <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#272635] via-[#3a384a] to-brand/30 p-1.5 shadow-lift ring-1 ring-white/10">
               <div className="overflow-hidden rounded-[14px] bg-[#272635] p-8 text-center text-white ring-1 ring-white/10">
-                <div className="mx-auto mb-4 grid size-20 place-items-center rounded-full bg-brand/20 text-brand text-3xl font-black">✓</div>
+                <div className="mx-auto mb-4 grid size-20 place-items-center rounded-full bg-brand/20 text-brand text-3xl font-black">
+                  ✓
+                </div>
                 <p className="font-semibold text-lg">Верифицирана марка</p>
-                <p className="mt-2 text-sm text-white/70">QR код · Оценка на доверие · Официален отговор</p>
+                <p className="mt-2 text-sm text-white/70">
+                  QR код · Оценка на доверие · Официален отговор
+                </p>
               </div>
             </div>
           </div>
@@ -393,12 +462,19 @@ function Home() {
           {[
             { k: "Потребители", v: stats.totalUsers, i: Users },
             { k: "Жалби", v: stats.totalComplaints, i: FileText },
-            { k: "Регистрирани марки", v: stats.totalCompanies, i: MessageCircle },
+            {
+              k: "Регистрирани марки",
+              v: stats.totalCompanies,
+              i: MessageCircle,
+            },
             { k: "Решени жалби", v: stats.resolvedComplaints, i: Eye },
           ].map((s) => {
             const Icon = s.i;
             return (
-              <li key={s.k} className="flex items-center gap-4 rounded-3xl bg-white py-7.5 pr-4 pl-6 shadow-sm ring-1 ring-gray-100 lg:flex-col lg:items-start lg:justify-between lg:px-7.5 lg:pt-9 lg:pb-9.5">
+              <li
+                key={s.k}
+                className="flex items-center gap-4 rounded-3xl bg-white py-7.5 pr-4 pl-6 shadow-sm ring-1 ring-gray-100 lg:flex-col lg:items-start lg:justify-between lg:px-7.5 lg:pt-9 lg:pb-9.5"
+              >
                 <span className="grid size-10 place-items-center rounded-xl bg-brand/10 text-brand lg:mb-4">
                   <Icon className="size-5" />
                 </span>
@@ -424,7 +500,8 @@ function Home() {
             </span>
           </h2>
           <p className="mx-auto mt-[35px] mb-5.5 max-w-xl font-normal text-lg leading-6.5 text-neutral-400 lg:mt-9 lg:text-xl">
-            Марки с най-голям ръст през последните 7 дни — изчислено от реални данни.
+            Марки с най-голям ръст през последните 7 дни — изчислено от реални
+            данни.
           </p>
         </header>
 
@@ -483,13 +560,22 @@ function Home() {
               Проверете Trust Score на марката преди покупка
             </h2>
             <div className="mt-7.5 space-y-3 text-lg leading-6.5 lg:mt-6 lg:space-y-2.5 lg:pr-10 lg:text-base lg:leading-6">
-              <p>{SITE_NAME} е адресът на потребителското доверие в България.</p>
               <p>
-                <strong>Trust Score</strong> прави нивото на доверие на марките видимо за вас.
+                {SITE_NAME} е адресът на потребителското доверие в България.
               </p>
-              <p>Преди да пазарувате, проверете оценката, скоростта на отговор и реалните отзиви.</p>
+              <p>
+                <strong>Trust Score</strong> прави нивото на доверие на марките
+                видимо за вас.
+              </p>
+              <p>
+                Преди да пазарувате, проверете оценката, скоростта на отговор и
+                реалните отзиви.
+              </p>
             </div>
-            <Link to="/markalar" className="mt-8 inline-flex w-max items-center gap-2 rounded-full bg-brand px-6 py-3 text-sm font-semibold text-white hover:bg-brand-hover transition">
+            <Link
+              to="/markalar"
+              className="mt-8 inline-flex w-max items-center gap-2 rounded-full bg-brand px-6 py-3 text-sm font-semibold text-white hover:bg-brand-hover transition"
+            >
               Без колебание — провери <ArrowRight className="size-4" />
             </Link>
           </div>
@@ -499,14 +585,24 @@ function Home() {
                 {[
                   { label: "Решени жалби", value: stats.resolvedComplaints },
                   { label: "Марки", value: stats.totalCompanies },
-                  { label: "Процент решение", value: `${Math.round(stats.resolutionRate)}%` },
+                  {
+                    label: "Процент решение",
+                    value: `${Math.round(stats.resolutionRate)}%`,
+                  },
                   { label: "Жалби", value: stats.totalComplaints },
                 ].map((item) => (
-                  <div key={item.label} className="rounded-2xl bg-white p-4 text-center shadow-sm">
+                  <div
+                    key={item.label}
+                    className="rounded-2xl bg-white p-4 text-center shadow-sm"
+                  >
                     <div className="font-black text-xl text-[#383838] tabular-nums">
-                      {typeof item.value === "number" ? item.value.toLocaleString("bg-BG") : item.value}
+                      {typeof item.value === "number"
+                        ? item.value.toLocaleString("bg-BG")
+                        : item.value}
                     </div>
-                    <div className="mt-1 text-[11px] text-[#85878e]">{item.label}</div>
+                    <div className="mt-1 text-[11px] text-[#85878e]">
+                      {item.label}
+                    </div>
                   </div>
                 ))}
               </div>

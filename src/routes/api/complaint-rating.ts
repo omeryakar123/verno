@@ -22,15 +22,17 @@ import {
  * Çözüm tüneli (/api/resolutions) da aynı alanı yazar; ikisi tek kaynağı
  * güncellediği için bir şikayet ortalamaya en fazla BİR kez katılır.
  *
- * Oy hakkı: yalnızca şikayet SAHİBİ ve şikayet sitede yayınlanmış durumdaysa.
- * Markanın yanıt vermesi ŞART DEĞİL — yanıtsız bırakılan bir şikayete de
- * düşük puan verilebilmelidir.
+ * Oy hakkı: yalnızca şikayet SAHİBİ ve şikayet SONUÇLANMIŞSA. Yıldız,
+ * şikayetin SONUCUNU değerlendirir — süreç bitmeden verilemez: memnun = 5,
+ * memnun değil = 1, orta = 3-4. Marka puanı bu notların ortalamasıdır
+ * (100'lük gösterim: ortalama / 5 × 100).
  */
 
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-/** Bu durumlarda oy kullanılamaz (yayında değil ya da moderasyon kararı var). */
-const BLOCKED = ["pending", "rejected", "spam", "archived"] as const;
+/** Yalnızca sonuçlanan şikayet puanlanabilir (marka yanıtladı ya da çözüldü). */
+const RATABLE = ["answered", "resolved"] as const;
 
 type ComplaintRow = {
   id: string;
@@ -40,8 +42,12 @@ type ComplaintRow = {
   rating: number | null;
 };
 
-async function loadOwnComplaint(complaintId: string, userId: string): Promise<ComplaintRow> {
-  if (!UUID_RE.test(complaintId)) throw new HttpError(400, "Şikayet belirtilmeli");
+async function loadOwnComplaint(
+  complaintId: string,
+  userId: string,
+): Promise<ComplaintRow> {
+  if (!UUID_RE.test(complaintId))
+    throw new HttpError(400, "Şikayet belirtilmeli");
 
   const [c] = await db
     .select({
@@ -56,9 +62,13 @@ async function loadOwnComplaint(complaintId: string, userId: string): Promise<Co
     .limit(1);
 
   if (!c) throw new HttpError(404, "Şikayet bulunamadı");
-  if (c.userId !== userId) throw new HttpError(403, "Yalnızca şikayet sahibi oy verebilir");
-  if ((BLOCKED as readonly string[]).includes(c.status))
-    throw new HttpError(409, "Bu şikayet için oy kullanılamaz");
+  if (c.userId !== userId)
+    throw new HttpError(403, "Yalnızca şikayet sahibi oy verebilir");
+  if (!(RATABLE as readonly string[]).includes(c.status))
+    throw new HttpError(
+      409,
+      "Değerlendirme, şikayet sonuçlandıktan sonra yapılabilir",
+    );
 
   return c;
 }
@@ -72,7 +82,8 @@ export const Route = createFileRoute("/api/complaint-rating")({
        */
       GET: async ({ request }) => {
         try {
-          const complaintId = new URL(request.url).searchParams.get("complaintId") ?? "";
+          const complaintId =
+            new URL(request.url).searchParams.get("complaintId") ?? "";
           const user = await optionalUser(request);
           if (!user || !UUID_RE.test(complaintId)) {
             return Response.json({ can_rate: false, rating: null });
@@ -93,7 +104,7 @@ export const Route = createFileRoute("/api/complaint-rating")({
           }
 
           return Response.json({
-            can_rate: !(BLOCKED as readonly string[]).includes(c.status),
+            can_rate: (RATABLE as readonly string[]).includes(c.status),
             rating: c.rating,
           });
         } catch (e) {
@@ -107,9 +118,13 @@ export const Route = createFileRoute("/api/complaint-rating")({
           const user = await requireUser(request);
           rateLimit(`complaint-rating:${user.id}`, 40, 60 * 60_000);
 
-          const b = (await request.json()) as { complaintId?: string; rating?: number };
+          const b = (await request.json()) as {
+            complaintId?: string;
+            rating?: number;
+          };
           const rating = Math.round(Number(b.rating));
-          if (!(rating >= 1 && rating <= 5)) throw new HttpError(400, "Puan 1-5 arasında olmalı");
+          if (!(rating >= 1 && rating <= 5))
+            throw new HttpError(400, "Puan 1-5 arasında olmalı");
 
           const c = await loadOwnComplaint(b.complaintId ?? "", user.id);
 
@@ -145,7 +160,9 @@ export const Route = createFileRoute("/api/complaint-rating")({
       DELETE: async ({ request }) => {
         try {
           const user = await requireUser(request);
-          const b = (await request.json().catch(() => ({}))) as { complaintId?: string };
+          const b = (await request.json().catch(() => ({}))) as {
+            complaintId?: string;
+          };
           const c = await loadOwnComplaint(b.complaintId ?? "", user.id);
 
           const [resolution] = await db
@@ -154,7 +171,10 @@ export const Route = createFileRoute("/api/complaint-rating")({
             .where(eq(schema.complaintResolutions.complaintId, c.id))
             .limit(1);
           if (resolution)
-            throw new HttpError(409, "Çözüm kaydı bulunan şikayetin puanı kaldırılamaz");
+            throw new HttpError(
+              409,
+              "Çözüm kaydı bulunan şikayetin puanı kaldırılamaz",
+            );
 
           await db
             .update(schema.complaints)

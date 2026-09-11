@@ -6,7 +6,11 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist", ".output", ".vinxi"] },
+  // `appmobile` kendi eslint.config.js'iyle ayrı denetlenir (React Native kuralları,
+  // asset `require()`'ları). `routeTree.gen.ts` üretilmiş dosyadır.
+  {
+    ignores: ["dist", ".output", ".vinxi", "appmobile", "src/routeTree.gen.ts"],
+  },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],
@@ -32,7 +36,10 @@ export default tseslint.config(
           ],
         },
       ],
-      "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+      "react-refresh/only-export-components": [
+        "warn",
+        { allowConstantExport: true },
+      ],
       "@typescript-eslint/no-unused-vars": "off",
     },
   },

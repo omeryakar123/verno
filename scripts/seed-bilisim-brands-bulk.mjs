@@ -9,16 +9,27 @@ import postgres from "postgres";
 import { DOMAIN_OVERRIDES } from "./brand-domain-overrides.mjs";
 
 const __dir = dirname(fileURLToPath(import.meta.url));
-const sql = postgres(process.env.DATABASE_URL!, { max: 3 });
 if (!process.env.DATABASE_URL) {
   console.error("DATABASE_URL tanımlı değil");
   process.exit(1);
 }
+const sql = postgres(process.env.DATABASE_URL, { max: 3 });
 
 const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
 const TR = {
-  ç: "c", Ç: "c", ğ: "g", Ğ: "g", ı: "i", I: "i", İ: "i",
-  ö: "o", Ö: "o", ş: "s", Ş: "s", ü: "u", Ü: "u",
+  ç: "c",
+  Ç: "c",
+  ğ: "g",
+  Ğ: "g",
+  ı: "i",
+  I: "i",
+  İ: "i",
+  ö: "o",
+  Ö: "o",
+  ş: "s",
+  Ş: "s",
+  ü: "u",
+  Ü: "u",
 };
 const slugify = (s) =>
   s
@@ -50,7 +61,8 @@ for (const line of raw.split("\n")) {
   names.push(name);
 }
 
-const [cat] = await sql`SELECT id FROM categories WHERE slug = ${"bilisim-teknoloji"}`;
+const [cat] =
+  await sql`SELECT id FROM categories WHERE slug = ${"bilisim-teknoloji"}`;
 if (!cat) {
   console.error("Kategori bulunamadı: bilisim-teknoloji");
   process.exit(1);
@@ -84,12 +96,18 @@ for (const name of names) {
   added++;
 }
 
-const [{ n }] = await sql`SELECT count(*)::int n FROM brands WHERE category_id = ${cat.id}`;
+const [{ n }] =
+  await sql`SELECT count(*)::int n FROM brands WHERE category_id = ${cat.id}`;
 console.log(`Eklendi: ${added}, atlandı: ${skipped}, kategori toplam: ${n}`);
 
 /** Mevcut kayıtları bilişim-teknoloji kategorisine taşır / günceller */
 const ENSURE_BILISIM = [
-  { name: "Matbet", slug: "matbet", website: "https://matbet.com", logo_url: "/brand-logos/matbet.png" },
+  {
+    name: "Matbet",
+    slug: "matbet",
+    website: "https://matbet.com",
+    logo_url: "/brand-logos/matbet.png",
+  },
 ];
 
 let ensured = 0;

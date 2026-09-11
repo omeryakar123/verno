@@ -9,7 +9,10 @@ import {
   fetchBrandTrendScoresBySlugs,
   mergePinnedTrendScores,
 } from "@/lib/server/brand-trend";
-import { applyLiveMetricsToBrand, fetchLiveBrandMetrics } from "@/lib/server/brand-stats";
+import {
+  applyLiveMetricsToBrand,
+  fetchLiveBrandMetrics,
+} from "@/lib/server/brand-stats";
 
 export const Route = createFileRoute("/api/brands/trend")({
   server: {
@@ -19,16 +22,26 @@ export const Route = createFileRoute("/api/brands/trend")({
         const limit = Number(url.searchParams.get("limit")) || 10;
         const categorySlug = url.searchParams.get("categorySlug") ?? undefined;
 
-        const pinnedSlugs = categorySlug ? [] : [...TALKED_PRIORITY_BRAND_SLUGS];
+        const pinnedSlugs = categorySlug
+          ? []
+          : [...TALKED_PRIORITY_BRAND_SLUGS];
         const pinned = await fetchBrandTrendScoresBySlugs(pinnedSlugs);
         const restLimit = Math.max(limit - pinned.length, 0);
-        let rest = restLimit > 0 ? await fetchBrandTrendScores({ limit: restLimit + pinned.length, categorySlug }) : [];
+        let rest =
+          restLimit > 0
+            ? await fetchBrandTrendScores({
+                limit: restLimit + pinned.length,
+                categorySlug,
+              })
+            : [];
         rest = rest.filter((r) => !pinned.some((p) => p.brandId === r.brandId));
 
-        let scores = mergePinnedTrendScores(pinned, rest, limit);
+        const scores = mergePinnedTrendScores(pinned, rest, limit);
 
         if (scores.length < limit) {
-          const fallbackIds = await fetchBrandTrendFallback(limit - scores.length);
+          const fallbackIds = await fetchBrandTrendFallback(
+            limit - scores.length,
+          );
           const existing = new Set(scores.map((s) => s.brandId));
           for (const id of fallbackIds) {
             if (existing.has(id)) continue;
@@ -47,11 +60,21 @@ export const Route = createFileRoute("/api/brands/trend")({
         const brandIds = scores.map((s) => s.brandId);
         if (brandIds.length === 0) return Response.json({ items: [] });
 
-        const brandRows = await db.select().from(schema.brands).where(inArray(schema.brands.id, brandIds));
-        const catIds = [...new Set(brandRows.map((b) => b.categoryId).filter(Boolean) as string[])];
+        const brandRows = await db
+          .select()
+          .from(schema.brands)
+          .where(inArray(schema.brands.id, brandIds));
+        const catIds = [
+          ...new Set(
+            brandRows.map((b) => b.categoryId).filter(Boolean) as string[],
+          ),
+        ];
         const cats =
           catIds.length > 0
-            ? await db.select().from(schema.categories).where(inArray(schema.categories.id, catIds))
+            ? await db
+                .select()
+                .from(schema.categories)
+                .where(inArray(schema.categories.id, catIds))
             : [];
         const catById = Object.fromEntries(cats.map((c) => [c.id, c]));
 

@@ -37,8 +37,18 @@ const ITEMS: {
   { id: "info", label: "Редактирай профила", icon: User, to: "/profilim" },
   { id: "complaints", label: "Моите жалби", icon: Pencil, to: "/sikayetlerim" },
   { id: "notifications", label: "Известия", icon: Bell, to: "/bildirimlerim" },
-  { id: "supported", label: "Подкрепени", icon: ThumbsUp, to: "/desteklediklerim" },
-  { id: "commented", label: "Коментирани", icon: MessageSquare, to: "/yorumladiklarim" },
+  {
+    id: "supported",
+    label: "Подкрепени",
+    icon: ThumbsUp,
+    to: "/desteklediklerim",
+  },
+  {
+    id: "commented",
+    label: "Коментирани",
+    icon: MessageSquare,
+    to: "/yorumladiklarim",
+  },
   { id: "saved", label: "Запазени", icon: Bookmark, to: "/profile" },
   { id: "messages", label: "Съобщения", icon: Mail, to: "/profile" },
   { id: "badges", label: "Значки", icon: Award, to: "/profile" },
@@ -53,16 +63,25 @@ type Props = {
 
 export function ProfileAccountSidebar({ active, onSignOut, className }: Props) {
   const primaryItems = ITEMS.filter((i) =>
-    ["info", "complaints", "notifications", "supported", "commented", "saved"].includes(i.id),
+    [
+      "info",
+      "complaints",
+      "notifications",
+      "supported",
+      "commented",
+      "saved",
+    ].includes(i.id),
   );
-  const secondaryItems = ITEMS.filter((i) => ["messages", "badges", "security"].includes(i.id));
+  const secondaryItems = ITEMS.filter((i) =>
+    ["messages", "badges", "security"].includes(i.id),
+  );
 
   return (
     <aside className={cn("shrink-0 lg:w-72", className)}>
       <div className="overflow-hidden rounded-b-4xl bg-[#272635] text-white lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:rounded-3xl">
         <div className="hidden px-6 pt-8 pb-4 lg:block">
           <Link to="/" title="Начало">
-            <SiteLogoMark size={28} tone="on-dark" />
+            <SiteLogoMark size={22} tone="on-dark" />
           </Link>
         </div>
 
@@ -86,12 +105,16 @@ export function ProfileAccountSidebar({ active, onSignOut, className }: Props) {
                 }
                 className={cn(
                   "flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-left text-[13.5px] font-medium transition",
-                  isActive ? "bg-white/12 text-white" : "text-white/70 hover:bg-white/8 hover:text-white",
+                  isActive
+                    ? "bg-white/12 text-white"
+                    : "text-white/70 hover:bg-white/8 hover:text-white",
                 )}
               >
                 <Icon className="size-[18px] shrink-0 opacity-90" />
                 {label}
-                {isActive && <ChevronRight className="ml-auto size-4 opacity-60" />}
+                {isActive && (
+                  <ChevronRight className="ml-auto size-4 opacity-60" />
+                )}
               </Link>
             );
           })}
@@ -117,7 +140,9 @@ export function ProfileAccountSidebar({ active, onSignOut, className }: Props) {
                 search={search}
                 className={cn(
                   "flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-left text-[13.5px] font-medium transition",
-                  isActive ? "bg-white/12 text-white" : "text-white/65 hover:bg-white/8 hover:text-white",
+                  isActive
+                    ? "bg-white/12 text-white"
+                    : "text-white/65 hover:bg-white/8 hover:text-white",
                 )}
               >
                 <Icon className="size-[18px] shrink-0 opacity-90" />

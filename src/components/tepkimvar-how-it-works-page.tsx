@@ -27,7 +27,11 @@ import {
   fadeUp,
   stagger,
 } from "@/components/marketing/shared";
-import { SiteLogoInline, SiteLogoMark, SiteLogoTitle } from "@/components/site-logo-mark";
+import {
+  SiteLogoInline,
+  SiteLogoMark,
+  SiteLogoTitle,
+} from "@/components/site-logo-mark";
 import { siteContactMailto } from "@/lib/contact";
 
 const TRUST_METRICS = [
@@ -89,9 +93,21 @@ const USER_FEATURES = [
 ] as const;
 
 const MOD_STEPS = [
-  { icon: Zap, t: "Otomatik filtre", d: "Küfür, kişisel veri ve spam engellenir" },
-  { icon: Users, t: "Manuel inceleme", d: "Şüpheli içerik uzman ekibe iletilir" },
-  { icon: MessageCircle, t: "Yayın & yanıt", d: "Onaylanan şikayet marka paneline düşer" },
+  {
+    icon: Zap,
+    t: "Otomatik filtre",
+    d: "Küfür, kişisel veri ve spam engellenir",
+  },
+  {
+    icon: Users,
+    t: "Manuel inceleme",
+    d: "Şüpheli içerik uzman ekibe iletilir",
+  },
+  {
+    icon: MessageCircle,
+    t: "Yayın & yanıt",
+    d: "Onaylanan şikayet marka paneline düşer",
+  },
   { icon: Scale, t: "Çözüm onayı", d: "Kapatma kararı müşteriye aittir" },
 ] as const;
 
@@ -111,15 +127,23 @@ export function TepkimvarHowItWorksPage() {
 
         <div className="mx-auto max-w-7xl px-4 sm:px-6 pt-10 sm:pt-20 pb-12 sm:pb-20 relative">
           <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-20 items-center">
-            <motion.div initial="hidden" animate="visible" variants={stagger(reduceMotion)} className="min-w-0">
-              <motion.div variants={fadeUp(reduceMotion)} className="site-cta-badge mb-8">
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={stagger(reduceMotion)}
+              className="min-w-0"
+            >
+              <motion.div
+                variants={fadeUp(reduceMotion)}
+                className="site-cta-badge mb-8"
+              >
                 Platform rehberi
               </motion.div>
 
               <motion.div variants={fadeUp(reduceMotion, 0.05)}>
                 <SiteLogoTitle
                   dark
-                  logoSize={60}
+                  logoSize={34}
                   subtitle="nasıl çalışır?"
                   subtitleClassName="site-cta-gradient-text !text-[32px] sm:!text-[46px] lg:!text-[50px]"
                 />
@@ -129,12 +153,18 @@ export function TepkimvarHowItWorksPage() {
                 variants={fadeUp(reduceMotion, 0.12)}
                 className="mt-7 text-[15px] sm:text-[16px] site-cta-muted leading-[1.75] max-w-lg"
               >
-                Markaları araştırın, deneyiminizi kayda geçirin, resmi yanıt ve çözüm sürecini
-                uçtan uca şeffaf biçimde takip edin.
+                Markaları araştırın, deneyiminizi kayda geçirin, resmi yanıt ve
+                çözüm sürecini uçtan uca şeffaf biçimde takip edin.
               </motion.p>
 
-              <motion.div variants={fadeUp(reduceMotion, 0.18)} className="mt-9 flex flex-wrap gap-3">
-                <Link to="/sikayet-yaz" className="site-cta-btn shadow-lg shadow-brand/20">
+              <motion.div
+                variants={fadeUp(reduceMotion, 0.18)}
+                className="mt-9 flex flex-wrap gap-3"
+              >
+                <Link
+                  to="/sikayet-yaz"
+                  className="site-cta-btn shadow-lg shadow-brand/20"
+                >
                   Şikayet yaz <PenLine className="size-4" />
                 </Link>
                 <Link to="/markalar" className="site-cta-btn-ghost">
@@ -143,7 +173,10 @@ export function TepkimvarHowItWorksPage() {
               </motion.div>
             </motion.div>
 
-            <HeroFlowVisual reduceMotion={reduceMotion} className="hidden sm:block" />
+            <HeroFlowVisual
+              reduceMotion={reduceMotion}
+              className="hidden sm:block"
+            />
           </div>
         </div>
 
@@ -156,9 +189,15 @@ export function TepkimvarHowItWorksPage() {
                 return (
                   <motion.div
                     key={item.label}
-                    initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 12 }}
+                    initial={
+                      reduceMotion ? { opacity: 0 } : { opacity: 0, y: 12 }
+                    }
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.35 + i * 0.06, duration: 0.45, ease: EASE }}
+                    transition={{
+                      delay: 0.35 + i * 0.06,
+                      duration: 0.45,
+                      ease: EASE,
+                    }}
                     className="flex items-center gap-3 min-w-0"
                   >
                     <span className="grid place-items-center size-9 rounded-lg bg-white/8 ring-1 ring-white/10 shrink-0">
@@ -187,10 +226,11 @@ export function TepkimvarHowItWorksPage() {
                 altyapısı
               </h2>
               <p className="mt-6 text-[15px] sm:text-[16px] text-navy leading-[1.75] flex flex-wrap items-center gap-x-2 gap-y-1">
-                <SiteLogoInline size={26} tone="on-light" className="mr-0.5" />
+                <SiteLogoInline size={16} tone="on-light" className="mr-0.5" />
                 <span>
-                  oyuncuları, doğrulanmış markaları ve moderasyon ekibini tek çatı altında buluşturur.
-                  Gerçek deneyimler kayda geçer; markalar resmi yanıt verir.
+                  oyuncuları, doğrulanmış markaları ve moderasyon ekibini tek
+                  çatı altında buluşturur. Gerçek deneyimler kayda geçer;
+                  markalar resmi yanıt verir.
                 </span>
               </p>
               <div className="mt-10 grid grid-cols-2 gap-3">
@@ -204,8 +244,12 @@ export function TepkimvarHowItWorksPage() {
                     key={s.k}
                     className="rounded-xl bg-card ring-1 ring-rule px-4 py-3.5 shadow-[0_1px_0_rgba(0,0,0,0.03)]"
                   >
-                    <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-brand">{s.k}</div>
-                    <div className="text-[13px] font-semibold text-ink mt-1">{s.v}</div>
+                    <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-brand">
+                      {s.k}
+                    </div>
+                    <div className="text-[13px] font-semibold text-ink mt-1">
+                      {s.v}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -224,8 +268,10 @@ export function TepkimvarHowItWorksPage() {
                   <span className="size-2.5 rounded-full bg-amber-400/90" />
                   <span className="size-2.5 rounded-full bg-emerald-400/90" />
                   <div className="ml-2 flex items-center gap-2">
-                    <SiteLogoMark size={18} tone="on-light" />
-                    <span className="text-[11px] text-navy-mid font-medium">Platform önizleme</span>
+                    <SiteLogoMark size={14} tone="on-light" />
+                    <span className="text-[11px] text-navy-mid font-medium">
+                      Platform önizleme
+                    </span>
                   </div>
                 </div>
                 <img
@@ -251,13 +297,19 @@ export function TepkimvarHowItWorksPage() {
               Dakikalar içinde başlayın
             </h2>
             <p className="mt-4 text-[15px] text-navy-mid leading-relaxed">
-              Marka aramak için hesap gerekmez; şikayet yazmak için giriş yeterli.
+              Marka aramak için hesap gerekmez; şikayet yazmak için giriş
+              yeterli.
             </p>
           </Reveal>
 
           <div className="grid md:grid-cols-3 gap-5 lg:gap-6">
             {STEPS.map((step, i) => (
-              <StepCard key={step.n} step={step} index={i} reduceMotion={reduceMotion} />
+              <StepCard
+                key={step.n}
+                step={step}
+                index={i}
+                reduceMotion={reduceMotion}
+              />
             ))}
           </div>
 
@@ -284,7 +336,12 @@ export function TepkimvarHowItWorksPage() {
 
           <div className="grid sm:grid-cols-2 gap-4 lg:gap-5">
             {USER_FEATURES.map((item, i) => (
-              <FeatureCard key={item.t} {...item} index={i} reduceMotion={reduceMotion} />
+              <FeatureCard
+                key={item.t}
+                {...item}
+                index={i}
+                reduceMotion={reduceMotion}
+              />
             ))}
           </div>
         </div>
@@ -309,8 +366,8 @@ export function TepkimvarHowItWorksPage() {
               Güven inşa edin, çözüm oranınızı yükseltin
             </h2>
             <p className="mt-5 text-[15px] sm:text-[16px] text-navy leading-[1.75]">
-              Doğrulanmış profilinizle oyunculara güven verin. Resmi yanıtlar, SEAL rozeti ve
-              şeffaf metrikler tek panelde.
+              Doğrulanmış profilinizle oyunculara güven verin. Resmi yanıtlar,
+              SEAL rozeti ve şeffaf metrikler tek panelde.
             </p>
             <ul className="mt-9 space-y-4">
               {[
@@ -319,7 +376,10 @@ export function TepkimvarHowItWorksPage() {
                 "Profilde çözüm oranı ve puan",
                 "SEAL ile sahte profil koruması",
               ].map((line) => (
-                <li key={line} className="flex items-start gap-3 text-[14px] sm:text-[15px] text-navy">
+                <li
+                  key={line}
+                  className="flex items-start gap-3 text-[14px] sm:text-[15px] text-navy"
+                >
                   <span className="grid place-items-center size-6 rounded-full bg-brand-soft text-brand shrink-0 mt-0.5">
                     <CheckCircle2 className="size-3.5" />
                   </span>
@@ -359,13 +419,19 @@ export function TepkimvarHowItWorksPage() {
               Her şikayet kontrol edilir
             </h2>
             <p className="mt-4 text-[15px] site-cta-muted leading-relaxed">
-              Onay → yayın → marka yanıtı → çözüm. Süreç herkese açık ve izlenebilir.
+              Onay → yayın → marka yanıtı → çözüm. Süreç herkese açık ve
+              izlenebilir.
             </p>
           </Reveal>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {MOD_STEPS.map((item, i) => (
-              <ModStep key={item.t} {...item} index={i} reduceMotion={reduceMotion} />
+              <ModStep
+                key={item.t}
+                {...item}
+                index={i}
+                reduceMotion={reduceMotion}
+              />
             ))}
           </div>
         </div>
@@ -381,12 +447,12 @@ export function TepkimvarHowItWorksPage() {
                   <BadgeCheck className="size-3.5" /> Doğrulanmış markalar
                 </div>
                 <h2 className="font-display font-black text-[26px] sm:text-[32px] text-ink tracking-tight leading-tight flex flex-wrap items-center gap-3">
-                  <SiteLogoInline size={36} tone="on-light" />
+                  <SiteLogoInline size={22} tone="on-light" />
                   <span>SEAL nedir?</span>
                 </h2>
                 <p className="mt-5 text-[15px] text-navy leading-[1.75] max-w-md">
-                  Resmi temsil onayı, periyodik denetim ve QR kodlu rozet — oyuncular saniyeler
-                  içinde doğrulama yapar.
+                  Resmi temsil onayı, periyodik denetim ve QR kodlu rozet —
+                  oyuncular saniyeler içinde doğrulama yapar.
                 </p>
                 <Link
                   to="/tepkimvar-seal"
@@ -398,7 +464,12 @@ export function TepkimvarHowItWorksPage() {
               </Reveal>
               <Reveal>
                 <div className="rounded-2xl overflow-hidden ring-1 ring-rule bg-surface p-2 max-w-md mx-auto lg:ml-auto">
-                  <img src="/dogrulama-rozeti.jpg" alt="SEAL doğrulama rozeti" className="w-full h-auto rounded-xl" loading="lazy" />
+                  <img
+                    src="/dogrulama-rozeti.jpg"
+                    alt="SEAL doğrulama rozeti"
+                    className="w-full h-auto rounded-xl"
+                    loading="lazy"
+                  />
                 </div>
               </Reveal>
             </div>
@@ -417,17 +488,23 @@ export function TepkimvarHowItWorksPage() {
             transition={{ duration: 0.55, ease: EASE }}
           >
             <div className="flex justify-center mb-8">
-              <SiteLogoMark size={56} tone="on-dark" />
+              <SiteLogoMark size={30} tone="on-dark" />
             </div>
             <h2 className="font-display font-black text-[28px] sm:text-[40px] text-white tracking-tight leading-tight">
               Güven görünür.
-              <span className="block site-cta-gradient-text mt-2">Sesiniz duyulsun.</span>
+              <span className="block site-cta-gradient-text mt-2">
+                Sesiniz duyulsun.
+              </span>
             </h2>
             <p className="mt-5 text-[15px] sm:text-[16px] site-cta-muted leading-relaxed max-w-lg mx-auto">
-              Deneyiminizi paylaşın veya markanızı doğrulayarak oyuncu güvenini artırın.
+              Deneyiminizi paylaşın veya markanızı doğrulayarak oyuncu güvenini
+              artırın.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
-              <Link to="/sikayet-yaz" className="site-cta-btn w-full sm:w-auto justify-center">
+              <Link
+                to="/sikayet-yaz"
+                className="site-cta-btn w-full sm:w-auto justify-center"
+              >
                 Şikayet yaz <PenLine className="size-4" />
               </Link>
               <a
@@ -444,7 +521,15 @@ export function TepkimvarHowItWorksPage() {
   );
 }
 
-function SectionLabel({ children, center, dark }: { children: ReactNode; center?: boolean; dark?: boolean }) {
+function SectionLabel({
+  children,
+  center,
+  dark,
+}: {
+  children: ReactNode;
+  center?: boolean;
+  dark?: boolean;
+}) {
   return (
     <p
       className={`text-[11px] font-bold uppercase tracking-[0.18em] ${center ? "text-center" : ""} ${
@@ -456,7 +541,13 @@ function SectionLabel({ children, center, dark }: { children: ReactNode; center?
   );
 }
 
-function HeroFlowVisual({ reduceMotion, className = "" }: { reduceMotion: boolean; className?: string }) {
+function HeroFlowVisual({
+  reduceMotion,
+  className = "",
+}: {
+  reduceMotion: boolean;
+  className?: string;
+}) {
   return (
     <motion.div
       initial={reduceMotion ? { opacity: 0 } : { opacity: 0, x: 32 }}
@@ -466,8 +557,10 @@ function HeroFlowVisual({ reduceMotion, className = "" }: { reduceMotion: boolea
     >
       <div className="rounded-2xl overflow-hidden ring-1 ring-white/12 bg-white/[0.06] backdrop-blur-xl shadow-2xl">
         <div className="flex items-center justify-between px-4 py-3.5 border-b border-white/10 bg-white/[0.04]">
-          <SiteLogoMark size={28} tone="on-dark" />
-          <span className="text-[10px] font-semibold uppercase tracking-wider site-cta-muted">Canlı akış</span>
+          <SiteLogoMark size={22} tone="on-dark" />
+          <span className="text-[10px] font-semibold uppercase tracking-wider site-cta-muted">
+            Canlı akış
+          </span>
         </div>
 
         <div className="p-4 space-y-2.5">
@@ -478,15 +571,25 @@ function HeroFlowVisual({ reduceMotion, className = "" }: { reduceMotion: boolea
                 key={step.n}
                 initial={reduceMotion ? { opacity: 0 } : { opacity: 0, x: 16 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4 + i * 0.1, duration: 0.45, ease: EASE }}
+                transition={{
+                  delay: 0.4 + i * 0.1,
+                  duration: 0.45,
+                  ease: EASE,
+                }}
                 className="flex items-center gap-3 rounded-xl bg-white/[0.05] ring-1 ring-white/10 px-3.5 py-3"
               >
-                <span className="font-mono text-[10px] font-bold site-cta-accent w-5">{step.n}</span>
+                <span className="font-mono text-[10px] font-bold site-cta-accent w-5">
+                  {step.n}
+                </span>
                 <span className="grid place-items-center size-8 rounded-lg bg-brand/20 text-brand shrink-0">
                   <Icon className="size-3.5" />
                 </span>
-                <span className="text-[13px] font-medium text-white truncate flex-1">{step.t}</span>
-                {i === STEPS.length - 1 && <CheckCircle2 className="size-4 text-brand shrink-0" />}
+                <span className="text-[13px] font-medium text-white truncate flex-1">
+                  {step.t}
+                </span>
+                {i === STEPS.length - 1 && (
+                  <CheckCircle2 className="size-4 text-brand shrink-0" />
+                )}
               </motion.div>
             );
           })}
@@ -495,7 +598,9 @@ function HeroFlowVisual({ reduceMotion, className = "" }: { reduceMotion: boolea
         <div className="px-4 pb-4">
           <div className="rounded-xl bg-brand/12 ring-1 ring-brand/20 px-4 py-2.5 flex items-center gap-2.5">
             <span className="size-1.5 rounded-full bg-brand animate-pulse shrink-0" />
-            <span className="text-[12px] text-white/85 font-medium">Marka yanıtı bekleniyor</span>
+            <span className="text-[12px] text-white/85 font-medium">
+              Marka yanıtı bekleniyor
+            </span>
           </div>
         </div>
       </div>
@@ -522,13 +627,19 @@ function StepCard({
       className="group relative bg-card rounded-2xl p-6 sm:p-7 ring-1 ring-rule border-l-[3px] border-l-brand hover:shadow-lift transition-shadow duration-300"
     >
       <div className="flex items-center justify-between mb-5">
-        <span className="font-mono text-[12px] font-bold text-brand/70">{step.n}</span>
+        <span className="font-mono text-[12px] font-bold text-brand/70">
+          {step.n}
+        </span>
         <span className="grid place-items-center size-10 rounded-xl bg-brand-soft text-brand ring-1 ring-brand/10">
           <Icon className="size-[18px]" />
         </span>
       </div>
-      <h3 className="font-display font-bold text-[18px] text-ink leading-snug">{step.t}</h3>
-      <p className="mt-2.5 text-[14px] text-navy-mid leading-relaxed">{step.d}</p>
+      <h3 className="font-display font-bold text-[18px] text-ink leading-snug">
+        {step.t}
+      </h3>
+      <p className="mt-2.5 text-[14px] text-navy-mid leading-relaxed">
+        {step.d}
+      </p>
       <Link
         to={step.cta.to}
         className="mt-5 inline-flex items-center gap-1.5 text-[13px] font-semibold text-brand group/link"
@@ -568,10 +679,16 @@ function FeatureCard({
       <span className="inline-grid place-items-center size-10 rounded-xl bg-surface text-brand ring-1 ring-rule mb-4">
         <Icon className="size-5" />
       </span>
-      <h3 className={`font-display font-bold text-ink ${large ? "text-[19px] sm:text-[21px]" : "text-[16px]"}`}>
+      <h3
+        className={`font-display font-bold text-ink ${large ? "text-[19px] sm:text-[21px]" : "text-[16px]"}`}
+      >
         {t}
       </h3>
-      <p className={`mt-2 text-navy-mid leading-relaxed ${large ? "text-[14px] max-w-xl" : "text-[13px]"}`}>{d}</p>
+      <p
+        className={`mt-2 text-navy-mid leading-relaxed ${large ? "text-[14px] max-w-xl" : "text-[13px]"}`}
+      >
+        {d}
+      </p>
     </motion.div>
   );
 }
@@ -592,20 +709,34 @@ function StatusPipeline({ reduceMotion }: { reduceMotion: boolean }) {
       transition={{ duration: 0.6, ease: EASE }}
       className="relative rounded-2xl site-cta-panel p-6 sm:p-8 ring-1 ring-white/10"
     >
-      <div className="site-cta-panel-shine pointer-events-none absolute inset-0 rounded-2xl" aria-hidden />
+      <div
+        className="site-cta-panel-shine pointer-events-none absolute inset-0 rounded-2xl"
+        aria-hidden
+      />
       <div className="relative mb-6 flex items-center justify-between">
-        <span className="text-[13px] font-semibold text-white">Şikayet durumu</span>
-        <span className="text-[10px] font-bold uppercase tracking-wider site-cta-muted">Canlı</span>
+        <span className="text-[13px] font-semibold text-white">
+          Şikayet durumu
+        </span>
+        <span className="text-[10px] font-bold uppercase tracking-wider site-cta-muted">
+          Canlı
+        </span>
       </div>
       <div className="relative space-y-0">
         {rows.map((row, i) => (
           <div key={row.label} className="relative flex gap-3.5 pb-5 last:pb-0">
             {i < rows.length - 1 && (
-              <div className="absolute left-[6px] top-3.5 bottom-0 w-px bg-white/12" aria-hidden />
+              <div
+                className="absolute left-[6px] top-3.5 bottom-0 w-px bg-white/12"
+                aria-hidden
+              />
             )}
-            <span className={`relative z-[1] mt-1 size-3 rounded-full ${row.dot} ring-2 ring-white/15 shrink-0`} />
+            <span
+              className={`relative z-[1] mt-1 size-3 rounded-full ${row.dot} ring-2 ring-white/15 shrink-0`}
+            />
             <div className="flex-1 flex items-center justify-between gap-2 rounded-xl bg-white/[0.04] ring-1 ring-white/8 px-3.5 py-2.5 min-w-0">
-              <span className="text-[13px] font-medium text-white truncate">{row.label}</span>
+              <span className="text-[13px] font-medium text-white truncate">
+                {row.label}
+              </span>
               <span className="text-[10px] font-semibold uppercase tracking-wide site-cta-muted shrink-0 hidden sm:inline">
                 {row.status}
               </span>
@@ -638,11 +769,15 @@ function ModStep({
       transition={{ duration: 0.45, delay: index * 0.08, ease: EASE }}
       className="rounded-2xl bg-white/[0.05] ring-1 ring-white/10 p-5 sm:p-6 backdrop-blur-sm"
     >
-      <span className="font-mono text-[10px] font-bold site-cta-accent">0{index + 1}</span>
+      <span className="font-mono text-[10px] font-bold site-cta-accent">
+        0{index + 1}
+      </span>
       <span className="mt-3 inline-grid place-items-center size-10 rounded-xl bg-brand/15 text-brand">
         <Icon className="size-[18px]" />
       </span>
-      <div className="mt-4 font-semibold text-[14px] sm:text-[15px] text-white">{t}</div>
+      <div className="mt-4 font-semibold text-[14px] sm:text-[15px] text-white">
+        {t}
+      </div>
       <p className="mt-1.5 text-[13px] site-cta-muted leading-relaxed">{d}</p>
     </motion.div>
   );

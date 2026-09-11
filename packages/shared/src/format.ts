@@ -13,3 +13,20 @@ export function formatAgo(iso: string): string {
 export function formatCounter(n: number, locale = "bg-BG"): string {
   return n.toLocaleString(locale);
 }
+
+/**
+ * Marka puanı — 100 üzerinden.
+ *
+ * Yıldızlar yalnızca SONUÇLANAN şikayetlere verilir (memnun = 5, memnun
+ * değil = 1, orta = 3-4). Bu 1–5 notların ortalaması 100'lük skalaya
+ * çevrilir: skor = ortalama / 5 × 100. Hiç oy yoksa null → arayüz "—" gösterir.
+ */
+export function score100(
+  rating: number | null | undefined,
+  ratingCount: number | null | undefined,
+): number | null {
+  if (!ratingCount || ratingCount <= 0) return null;
+  const r = Number(rating ?? 0);
+  if (!Number.isFinite(r) || r <= 0) return null;
+  return Math.round(Math.min(5, Math.max(0, r)) * 20);
+}

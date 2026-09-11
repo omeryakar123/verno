@@ -3,13 +3,18 @@ import { and, asc, desc, eq, gt, ilike, sql, type SQL } from "drizzle-orm";
 import { db, schema } from "@/db";
 import { toDbBrand } from "@/lib/db-shapes";
 import { PRIORITY_BRAND_SLUGS } from "@/lib/featured-brands";
-import { applyLiveMetricsToBrand, fetchLiveBrandMetrics } from "@/lib/server/brand-stats";
+import {
+  applyLiveMetricsToBrand,
+  fetchLiveBrandMetrics,
+} from "@/lib/server/brand-stats";
 
 function brandPriorityOrder() {
   const cases = PRIORITY_BRAND_SLUGS.map(
     (slug, i) => `WHEN '${slug.replace(/'/g, "''")}' THEN ${i}`,
   ).join(" ");
-  return sql.raw(`CASE "brands"."slug" ${cases} ELSE ${PRIORITY_BRAND_SLUGS.length} END`);
+  return sql.raw(
+    `CASE "brands"."slug" ${cases} ELSE ${PRIORITY_BRAND_SLUGS.length} END`,
+  );
 }
 
 // Public: firma listesi.
@@ -40,13 +45,17 @@ export const Route = createFileRoute("/api/brands")({
           categoryId = cat?.id;
           if (!categoryId) return Response.json({ items: [], total: 0 });
         }
-        if (categoryId) conditions.push(eq(schema.brands.categoryId, categoryId));
+        if (categoryId)
+          conditions.push(eq(schema.brands.categoryId, categoryId));
         if (slugParam) conditions.push(eq(schema.brands.slug, slugParam));
         if (search) conditions.push(ilike(schema.brands.name, `%${search}%`));
-        if (sortBy === "resolution") conditions.push(gt(schema.brands.totalComplaints, 0));
+        if (sortBy === "resolution")
+          conditions.push(gt(schema.brands.totalComplaints, 0));
         // Footer/filtre linkleri için: yalnızca doğrulanmış ya da premium markalar.
-        if (p.get("verified") === "1") conditions.push(eq(schema.brands.verified, true));
-        if (p.get("premium") === "1") conditions.push(eq(schema.brands.premium, true));
+        if (p.get("verified") === "1")
+          conditions.push(eq(schema.brands.verified, true));
+        if (p.get("premium") === "1")
+          conditions.push(eq(schema.brands.premium, true));
 
         const where = and(...conditions);
         const secondaryOrder =
@@ -62,7 +71,11 @@ export const Route = createFileRoute("/api/brands")({
           .select()
           .from(schema.brands)
           .where(where)
-          .orderBy(...(search ? [secondaryOrder] : [asc(brandPriorityOrder()), secondaryOrder]))
+          .orderBy(
+            ...(search
+              ? [secondaryOrder]
+              : [asc(brandPriorityOrder()), secondaryOrder]),
+          )
           .$dynamic();
 
         let rows: (typeof schema.brands.$inferSelect)[];
@@ -86,15 +99,19 @@ export const Route = createFileRoute("/api/brands")({
 
         const liveMetrics = await fetchLiveBrandMetrics(rows.map((r) => r.id));
 
-        let items = rows.map((r) => {
+        const items = rows.map((r) => {
           const live = liveMetrics.get(r.id);
           return toDbBrand(applyLiveMetricsToBrand(r, live));
         });
 
         if (sortBy === "resolution") {
-          items.sort((a, b) => (b.resolution_rate ?? 0) - (a.resolution_rate ?? 0));
+          items.sort(
+            (a, b) => (b.resolution_rate ?? 0) - (a.resolution_rate ?? 0),
+          );
         } else if (sortBy === "complaints") {
-          items.sort((a, b) => (b.total_complaints ?? 0) - (a.total_complaints ?? 0));
+          items.sort(
+            (a, b) => (b.total_complaints ?? 0) - (a.total_complaints ?? 0),
+          );
         } else if (sortBy === "rating") {
           items.sort((a, b) => Number(b.rating ?? 0) - Number(a.rating ?? 0));
         }

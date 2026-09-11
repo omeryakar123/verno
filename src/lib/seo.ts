@@ -9,7 +9,7 @@ export const SITE_URL =
   (import.meta.env?.VITE_SITE_URL as string | undefined) ||
   "https://verno.bg";
 
-export const DEFAULT_OG_IMAGE = "/verno-logo.png";
+export const DEFAULT_OG_IMAGE = "/og-default.png";
 export const DEFAULT_OG_WIDTH = "1200";
 export const DEFAULT_OG_HEIGHT = "630";
 
@@ -55,7 +55,10 @@ export function seoHead(input: SeoInput) {
     { property: "og:type", content: input.type ?? "website" },
     { property: "og:site_name", content: SITE_NAME },
     { property: "og:locale", content: "bg_BG" },
-    { name: "twitter:card", content: image ? "summary_large_image" : "summary" },
+    {
+      name: "twitter:card",
+      content: image ? "summary_large_image" : "summary",
+    },
     { name: "twitter:title", content: input.title },
     { name: "twitter:description", content: input.description },
   ];
@@ -65,15 +68,24 @@ export function seoHead(input: SeoInput) {
     meta.push({ property: "og:image:secure_url", content: image });
     meta.push({ property: "og:image:width", content: DEFAULT_OG_WIDTH });
     meta.push({ property: "og:image:height", content: DEFAULT_OG_HEIGHT });
-    meta.push({ property: "og:image:alt", content: `${SITE_NAME} — ${SITE_TAGLINE}` });
+    meta.push({
+      property: "og:image:alt",
+      content: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    });
     meta.push({ name: "twitter:image", content: image });
   }
 
   if (input.publishedTime) {
-    meta.push({ property: "article:published_time", content: input.publishedTime });
+    meta.push({
+      property: "article:published_time",
+      content: input.publishedTime,
+    });
   }
   if (input.modifiedTime) {
-    meta.push({ property: "article:modified_time", content: input.modifiedTime });
+    meta.push({
+      property: "article:modified_time",
+      content: input.modifiedTime,
+    });
   }
   if (input.noindex) {
     meta.push({ name: "robots", content: "noindex, nofollow" });

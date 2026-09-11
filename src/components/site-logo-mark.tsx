@@ -2,15 +2,21 @@ import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-const LOGO_SRC = "/verno-logo.png";
-const LOGO_ASPECT = 1024 / 406;
+/**
+ * Transparent PNG logos: `mainlogo` has the dark wordmark (light backgrounds),
+ * `mainlogo-light` has the white wordmark (dark backgrounds). Sizes below are
+ * the real wordmark height — the asset carries no padding.
+ */
+const LOGO_DARK = "/mainlogo.png";
+const LOGO_LIGHT = "/mainlogo-light.png";
+const LOGO_W = 1542;
+const LOGO_H = 313;
+const LOGO_ASPECT = LOGO_W / LOGO_H;
 
 type LogoTone = "default" | "on-dark" | "on-light";
 
-function logoBlendClass(tone: LogoTone) {
-  // Logo asset has a black canvas; screen blend hides black on light backgrounds.
-  if (tone === "on-light" || tone === "default") return "mix-blend-screen";
-  return "";
+function srcForTone(tone: LogoTone) {
+  return tone === "on-dark" ? LOGO_LIGHT : LOGO_DARK;
 }
 
 function LogoImage({
@@ -22,17 +28,43 @@ function LogoImage({
   tone?: LogoTone;
   className?: string;
 }) {
-  const height = size;
-  const width = Math.round(size * LOGO_ASPECT);
-
   return (
     <img
-      src={LOGO_SRC}
+      src={srcForTone(tone)}
       alt="verno.bg"
-      width={width}
-      height={height}
-      className={cn("object-contain object-left shrink-0 select-none", logoBlendClass(tone), className)}
-      style={{ height, width: "auto", maxWidth: width }}
+      width={Math.round(size * LOGO_ASPECT)}
+      height={size}
+      className={cn(
+        "block w-auto shrink-0 select-none object-contain object-left",
+        className,
+      )}
+      style={{ height: size }}
+      decoding="async"
+    />
+  );
+}
+
+/**
+ * Logo whose height comes from Tailwind classes instead of an inline style —
+ * use when the size needs to change across breakpoints.
+ */
+export function SiteLogoResponsive({
+  className = "",
+  tone = "default",
+}: {
+  className?: string;
+  tone?: LogoTone;
+}) {
+  return (
+    <img
+      src={srcForTone(tone)}
+      alt="verno.bg"
+      width={LOGO_W}
+      height={LOGO_H}
+      className={cn(
+        "block w-auto shrink-0 select-none object-contain object-left",
+        className,
+      )}
       decoding="async"
     />
   );
@@ -40,7 +72,7 @@ function LogoImage({
 
 /** Site logo — navbar, footer, forms. */
 export function SiteLogoMark({
-  size = 36,
+  size = 26,
   linked = false,
   className = "",
   tone = "default",
@@ -66,7 +98,7 @@ export function SiteLogoMark({
 export function SiteLogoInline({
   className = "",
   tone = "default",
-  size = 24,
+  size = 18,
 }: {
   size?: number;
   className?: string;
@@ -87,7 +119,7 @@ export function SiteLogoTitle({
   dark = false,
   className = "",
   subtitleClassName = "",
-  logoSize = 40,
+  logoSize = 28,
 }: {
   subtitle?: ReactNode;
   logoSize?: number;
@@ -116,8 +148,12 @@ export function SiteLogoTitle({
 /** Form / auth header. */
 export function SiteLogoHeader({ badge }: { badge?: string }) {
   return (
-    <Link to="/" className="flex flex-col items-center gap-2.5 mb-8" aria-label="Начало">
-      <LogoImage size={44} tone="default" />
+    <Link
+      to="/"
+      className="flex flex-col items-center gap-2.5 mb-8"
+      aria-label="Начало"
+    >
+      <LogoImage size={28} tone="default" />
       {badge ? (
         <span className="text-[10px] uppercase tracking-wider font-bold bg-gradient-to-r from-brand/20 to-accent-purple/20 text-brand px-2.5 py-1 rounded-full ring-1 ring-brand/25">
           {badge}
@@ -128,10 +164,14 @@ export function SiteLogoHeader({ badge }: { badge?: string }) {
 }
 
 /** Navbar logo. */
-export function SiteLogoNav({ size = 48 }: { size?: number }) {
+export function SiteLogoNav({ className = "" }: { className?: string }) {
   return (
-    <Link to="/" className="flex shrink-0 items-center py-0.5" aria-label="Начало">
-      <LogoImage size={size} tone="default" className="h-[42px] w-auto min-w-[110px] max-w-[180px] sm:h-[46px]" />
+    <Link
+      to="/"
+      className="flex shrink-0 items-center py-0.5"
+      aria-label="Начало"
+    >
+      <SiteLogoResponsive className={cn("h-[26px] sm:h-[30px]", className)} />
     </Link>
   );
 }

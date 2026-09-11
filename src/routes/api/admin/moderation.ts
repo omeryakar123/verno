@@ -7,7 +7,10 @@ import { recordStatusChange } from "@/lib/server/history";
 import { notifyBrandFollowers } from "@/lib/server/notify";
 import { HttpError, errorResponse, requireStaff } from "@/lib/server/guard";
 import { ensureDbPatches } from "@/lib/server/ensure-db-patches";
-import { assertComplaintHasVisualEvidence, publishComplaintEvidence } from "@/lib/server/complaint-evidence";
+import {
+  assertComplaintHasVisualEvidence,
+  publishComplaintEvidence,
+} from "@/lib/server/complaint-evidence";
 import { syncPendingComplaintsToModerationQueue } from "@/lib/server/moderation-queue-sync";
 
 const KINDS = [
@@ -39,13 +42,17 @@ export const Route = createFileRoute("/api/admin/moderation")({
 
           const conditions: SQL[] = [];
           if (kind !== "all") {
-            if (!KINDS.includes(kind as Kind)) throw new HttpError(400, "Geçersiz tür");
+            if (!KINDS.includes(kind as Kind))
+              throw new HttpError(400, "Geçersiz tür");
             conditions.push(eq(schema.moderationQueue.kind, kind as Kind));
           }
           if (state === "open") {
-            conditions.push(inArray(schema.moderationQueue.state, ["open", "reviewing"]));
+            conditions.push(
+              inArray(schema.moderationQueue.state, ["open", "reviewing"]),
+            );
           } else if (state !== "all") {
-            if (!STATES.includes(state as State)) throw new HttpError(400, "Geçersiz durum");
+            if (!STATES.includes(state as State))
+              throw new HttpError(400, "Geçersiz durum");
             conditions.push(eq(schema.moderationQueue.state, state as State));
           }
 
@@ -65,7 +72,10 @@ export const Route = createFileRoute("/api/admin/moderation")({
             })
             .from(schema.moderationQueue)
             .where(conditions.length ? and(...conditions) : undefined)
-            .orderBy(desc(schema.moderationQueue.priority), desc(schema.moderationQueue.createdAt));
+            .orderBy(
+              desc(schema.moderationQueue.priority),
+              desc(schema.moderationQueue.createdAt),
+            );
 
           return Response.json({ items: rows });
         } catch (e) {
@@ -92,10 +102,15 @@ export const Route = createFileRoute("/api/admin/moderation")({
           if (!item) throw new HttpError(404, "Kayıt bulunamadı");
 
           let state = b.state as State | undefined;
-          if (b.complaintAction && item.targetType === "complaint" && item.targetId) {
+          if (
+            b.complaintAction &&
+            item.targetType === "complaint" &&
+            item.targetId
+          ) {
             state = b.complaintAction === "approve" ? "resolved" : "dismissed";
           }
-          if (!state || !STATES.includes(state)) throw new HttpError(400, "Geçersiz durum");
+          if (!state || !STATES.includes(state))
+            throw new HttpError(400, "Geçersiz durum");
 
           const done = state === "resolved" || state === "dismissed";
 
@@ -133,7 +148,7 @@ export const Route = createFileRoute("/api/admin/moderation")({
                 fromStatus: c.status,
                 toStatus: nextStatus,
                 changedBy: user.id,
-                actorRole: "staff",
+                actorRole: "admin",
                 note:
                   state === "resolved"
                     ? "Moderasyon onayı — yayına alındı"
@@ -152,7 +167,10 @@ export const Route = createFileRoute("/api/admin/moderation")({
                     brandSlug: schema.brands.slug,
                   })
                   .from(schema.complaints)
-                  .innerJoin(schema.brands, eq(schema.complaints.brandId, schema.brands.id))
+                  .innerJoin(
+                    schema.brands,
+                    eq(schema.complaints.brandId, schema.brands.id),
+                  )
                   .where(eq(schema.complaints.id, c.id))
                   .limit(1);
 
