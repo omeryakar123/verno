@@ -6,11 +6,12 @@ import { ComplaintSupportButton } from "@/components/complaint-support-button";
 
 type Props = {
   items: Complaint[];
+  compact?: boolean;
 };
 
 function AgendaCard({ complaint }: { complaint: Complaint }) {
   return (
-    <article className="relative mr-8 flex h-35 w-full shrink-0 gap-4 rounded-xl bg-white p-4.5 md:mr-8 md:w-1/2 lg:mr-10 lg:h-45 lg:w-[31vw]">
+    <article className="home-feed-card relative mr-8 h-35 w-full shrink-0 md:mr-8 md:w-1/2 lg:mr-10 lg:h-45 lg:w-[31vw]">
       <div className="flex flex-1 flex-col justify-center">
         <div className="pointer-events-none relative z-20 mb-2 flex items-center gap-2 text-sm lg:mb-4 lg:gap-3 lg:text-base [&_a]:pointer-events-auto">
           <span className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#ecfdf5] text-[11px] font-bold text-[#3ad08f] lg:size-10">
@@ -55,14 +56,26 @@ function AgendaCard({ complaint }: { complaint: Complaint }) {
   );
 }
 
-export function AgendaMarquee({ items }: Props) {
+export function AgendaMarquee({ items, compact = false }: Props) {
   const list = items.length > 0 ? items : [];
   const doubled = [...list, ...list];
 
   return (
-    <div className="space-y-6 pb-12 md:space-y-8 lg:pb-33">
+    <div
+      className={
+        compact
+          ? "space-y-5 pb-8 md:space-y-6 lg:pb-12"
+          : "space-y-6 pb-12 md:space-y-8 lg:pb-33"
+      }
+    >
       <div className="container mb-6 max-w-6xl px-4">
-        <h2 className="mb-8 font-semibold text-2xl text-[#85878e] lg:mb-28 lg:font-medium lg:text-3xl">
+        <h2
+          className={
+            compact
+              ? "mb-4 font-semibold text-xl text-[#85878e] lg:mb-8 lg:font-medium lg:text-2xl"
+              : "mb-8 font-semibold text-2xl text-[#85878e] lg:mb-28 lg:font-medium lg:text-3xl"
+          }
+        >
           Жалби в дневния ред
         </h2>
       </div>

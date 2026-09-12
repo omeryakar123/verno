@@ -38,7 +38,7 @@ export function ComplaintSupportButton({
     if (loading) return;
 
     if (!user) {
-      toast.error("Desteklemek için giriş yapın");
+      toast.error("Влезте, за да подкрепите жалбата");
       navigate({ to: "/login" });
       return;
     }
@@ -57,7 +57,7 @@ export function ComplaintSupportButton({
         error?: string;
       };
       if (!res.ok) {
-        toast.error(j.error ?? "Destek gönderilemedi");
+        toast.error(j.error ?? "Подкрепата не беше изпратена");
         return;
       }
       const nextVotes = j.votes ?? votes;
@@ -65,7 +65,7 @@ export function ComplaintSupportButton({
       setVotes(nextVotes);
       setSupported(nextSupported);
       onChange?.(nextVotes, nextSupported);
-      if (nextSupported) toast.success("Tepki desteklendi");
+      if (nextSupported) toast.success("Жалбата е подкрепена");
     } finally {
       setLoading(false);
     }
@@ -79,20 +79,20 @@ export function ComplaintSupportButton({
       onClick={toggle}
       disabled={loading}
       aria-pressed={supported}
-      aria-label={supported ? "Desteği geri al" : "Tepkiyi destekle"}
+      aria-label={supported ? "Премахни подкрепата" : "Подкрепи жалбата"}
       className={`inline-flex items-center gap-1.5 rounded-full font-semibold transition-all disabled:opacity-60 ${
         supported
-          ? "bg-brand text-brand-foreground ring-1 ring-brand shadow-sm"
-          : "bg-surface text-navy-mid ring-1 ring-rule hover:ring-brand/40 hover:text-brand"
+          ? "bg-[#3ad08f] text-white ring-1 ring-[#3ad08f] shadow-sm"
+          : "bg-[#f3f5fb] text-[#626692] ring-1 ring-[#e6e8f0] hover:ring-[#3ad08f]/40 hover:text-[#3ad08f]"
       } ${compact ? "px-2.5 h-7 text-[10.5px]" : "px-3.5 h-9 text-[12px]"} ${className}`}
     >
       <Megaphone className={compact ? "size-3" : "size-3.5"} />
-      <span>{supported ? "Desteklendi" : "Tepkiyi destekle"}</span>
+      <span>{supported ? "Подкрепена" : "Подкрепи"}</span>
       {votes > 0 && (
         <span
-          className={`tabular-nums ${supported ? "text-brand-foreground/90" : "text-navy-mid"}`}
+          className={`tabular-nums ${supported ? "text-white/90" : "text-[#85878e]"}`}
         >
-          · {votes.toLocaleString("tr-TR")}
+          · {votes.toLocaleString("bg-BG")}
         </span>
       )}
     </button>

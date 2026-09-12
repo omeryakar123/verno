@@ -136,7 +136,7 @@ export function HeroSection({ search, onSearchChange, onSubmit }: Props) {
                 aria-label="Търси марка, модел, продукт"
                 autoComplete="off"
                 spellCheck={false}
-                className="h-15 w-full min-w-0 overflow-hidden text-ellipsis rounded-4xl border-0 bg-white pr-24 pl-6 outline-none placeholder:truncate placeholder:text-gray-400 lg:pr-38 lg:pl-14 [&::-webkit-search-cancel-button]:appearance-none"
+                className="home-search-field placeholder:truncate"
               />
               <button
                 type="submit"

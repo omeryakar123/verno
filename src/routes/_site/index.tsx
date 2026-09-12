@@ -253,7 +253,12 @@ function Home() {
           <h2 className="text-center font-medium text-3xl text-white leading-snug lg:text-6xl">
             Успех в решаването
           </h2>
-          <p className="mx-auto mt-7.5 max-w-3xl px-2.5 text-center text-sm leading-5.5 tracking-wide text-zinc-500 lg:mt-15">
+          <div className="mt-7.5 flex flex-col items-center gap-7 lg:relative lg:mt-15 lg:flex-row">
+            <span className="relative pl-7 font-medium text-sm leading-none text-gray-100 before:absolute before:-top-0.5 before:left-1 before:size-3 before:rounded-full before:bg-emerald-400 before:content-[''] after:absolute after:-top-1.5 after:left-0 after:size-5 after:rounded-full after:border after:border-emerald-400 after:content-[''] lg:mx-auto lg:pl-7.5">
+              Последни 12 месеца
+            </span>
+          </div>
+          <p className="mx-auto mt-8.5 max-w-3xl px-2.5 text-center text-sm leading-5.5 tracking-wide text-zinc-500 lg:mt-16 lg:w-4/5">
             Класирането се базира единствено на удовлетвореността на
             потребителите — независимо от размера на фирмата или броя жалби.
           </p>
@@ -263,12 +268,22 @@ function Home() {
                 <Link
                   to="/firma/$slug"
                   params={{ slug: b.slug }}
-                  className="relative flex w-full rounded-2xl bg-gray-100 lg:rounded-3xl"
+                  className="relative flex w-full rounded-2xl bg-gray-100 transition-colors hover:bg-[#eef0f4] lg:rounded-3xl"
                 >
                   <div
                     className={`flex w-max min-w-7.5 flex-col items-center justify-center gap-0.5 rounded-3xl px-0.5 font-bold text-neutral-700 text-xs leading-3.5 tracking-tight lg:min-w-11 lg:gap-1 lg:text-[13px] ${i === 0 ? "bg-blue-100" : ""}`}
                   >
-                    <span className="block h-3 w-3 rounded-[1px] bg-[#4C698C]" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 492 492"
+                      className="w-3"
+                      aria-hidden
+                    >
+                      <path
+                        fill="#4C698C"
+                        d="M465 207.6H27a27 27 0 0 0-27 27v22.7c0 14.9 12 27.1 27 27.1h438c14.9 0 27-12.2 27-27v-22.9a27 27 0 0 0-27-27"
+                      />
+                    </svg>
                   </div>
                   <div className="ml-2.5 flex flex-1 items-center py-4 pr-2.5 lg:ml-7 lg:pr-7.5">
                     <div className="flex h-16 w-19 items-center justify-center rounded-xl bg-white px-1 py-2.5 lg:h-22 lg:w-27">
@@ -326,7 +341,8 @@ function Home() {
         <HomeDecorBlobs />
       </section>
 
-      <section className="container pt-12 pb-15 lg:pt-36 lg:pb-50">
+      <section className="home-stats-band">
+        <div className="container pt-12 pb-15 lg:pt-36 lg:pb-50">
         <h2 className="text-center font-semibold text-2xl text-zinc-500 leading-none lg:font-medium">
           {SITE_NAME} в цифри
         </h2>
@@ -346,7 +362,7 @@ function Home() {
             return (
               <li
                 key={s.k}
-                className="flex items-center gap-4 rounded-3xl bg-white py-7.5 pr-4 pl-6 lg:flex-col lg:items-start lg:justify-between lg:px-7.5 lg:pt-9 lg:pb-9.5"
+                className="flex items-center gap-4 rounded-3xl bg-white py-7.5 pr-4 pl-6 shadow-[0_8px_28px_rgba(47,44,105,0.06)] lg:flex-col lg:items-start lg:justify-between lg:px-7.5 lg:pt-9 lg:pb-9.5"
               >
                 <Icon className="h-16 w-11 text-[#3ad08f] lg:mb-9 lg:w-25" />
                 <div className="flex flex-col gap-2 font-medium text-xs text-zinc-500 leading-tight lg:text-base">
@@ -359,6 +375,7 @@ function Home() {
             );
           })}
         </ul>
+        </div>
       </section>
 
       <section className="bg-white py-15 md:py-20 lg:py-25">

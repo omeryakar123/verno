@@ -256,7 +256,9 @@ export async function fetchHomeTalked(opts: { limit?: number } = {}) {
   return items.map(dbComplaintToUi);
 }
 
-export async function fetchComplaintsList(opts: { limit?: number; brandSlug?: string; categorySlug?: string; sortBy?: "recent" | "trending"; search?: string } = {}) {
+export type ComplaintSort = "recent" | "trending" | "supported" | "viewed";
+
+export async function fetchComplaintsList(opts: { limit?: number; brandSlug?: string; categorySlug?: string; sortBy?: ComplaintSort; search?: string } = {}) {
   await ensureCategoryCache();
   const qs = buildQuery({
     limit: opts.limit,
@@ -269,7 +271,7 @@ export async function fetchComplaintsList(opts: { limit?: number; brandSlug?: st
   return items.map(dbComplaintToUi);
 }
 
-export async function fetchComplaintsPaged(opts: { page?: number; pageSize?: number; brandSlug?: string; categorySlug?: string; sortBy?: "recent" | "trending"; search?: string; durum?: string } = {}) {
+export async function fetchComplaintsPaged(opts: { page?: number; pageSize?: number; brandSlug?: string; categorySlug?: string; sortBy?: ComplaintSort; search?: string; durum?: string } = {}) {
   await ensureCategoryCache();
   const page = Math.max(1, opts.page ?? 1);
   const pageSize = opts.pageSize ?? PAGE_SIZE;

@@ -14,7 +14,7 @@ export function TrendSparkline({
     return 30 - wave - trend * 0.4;
   });
   const d = points
-    .map((y, i) => `${i === 0 ? "M" : "L"} ${(i / 7) * 112} ${y}`)
+    .map((y, i) => `${i === 0 ? "M" : "L"} ${((i / 7) * 112).toFixed(2)} ${y.toFixed(2)}`)
     .join(" ");
 
   return (

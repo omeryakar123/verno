@@ -8,7 +8,7 @@ import { refreshBrandAggregates } from "@/lib/server/brand-stats";
 import { ensureDbPatches } from "@/lib/server/ensure-db-patches";
 import { moderateAndScore } from "@/lib/server/moderation";
 import { looksLikeFakePlatformUsername } from "@/lib/platform-username";
-import { complaintRankOrder, complaintRecentOrder, complaintTrendingOrder } from "@/lib/server/complaint-sort";
+import { complaintRankOrder, complaintRecentOrder, complaintTrendingOrder, complaintViewedOrder } from "@/lib/server/complaint-sort";
 import { supportedComplaintIds } from "@/lib/server/complaint-support";
 import { loadAuthorProfiles } from "@/lib/server/author-profile";
 import { linkComplaintEvidence } from "@/lib/server/complaint-evidence";
@@ -88,7 +88,9 @@ export const Route = createFileRoute("/api/complaints")({
             ? base.orderBy(...complaintTrendingOrder())
             : sortBy === "supported"
               ? base.orderBy(...complaintRankOrder())
-              : base.orderBy(...complaintRecentOrder());
+              : sortBy === "viewed"
+                ? base.orderBy(...complaintViewedOrder())
+                : base.orderBy(...complaintRecentOrder());
 
         let total = 0;
         let rows: { c: typeof schema.complaints.$inferSelect; b: typeof schema.brands.$inferSelect }[];

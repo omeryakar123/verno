@@ -38,16 +38,16 @@ export function Pagination({
   const to = Math.min(total, page * pageSize);
 
   return (
-    <nav className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-3" aria-label="Sayfalama">
+    <nav className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-3" aria-label="Страници">
       <p className="text-[12px] text-navy-mid">
-        {total.toLocaleString("tr-TR")} kayıttan <strong className="text-ink">{from.toLocaleString("tr-TR")}-{to.toLocaleString("tr-TR")}</strong> gösteriliyor
+        Показани <strong className="text-ink">{from.toLocaleString("bg-BG")}-{to.toLocaleString("bg-BG")}</strong> от {total.toLocaleString("bg-BG")}
       </p>
       <div className="inline-flex items-center gap-1">
         <button
           onClick={() => go(page - 1)}
           disabled={page <= 1}
           className="inline-flex items-center justify-center size-9 rounded-lg ring-1 ring-rule bg-card text-navy disabled:opacity-40 disabled:cursor-not-allowed hover:ring-brand/40"
-          aria-label="Önceki sayfa"
+          aria-label="Предишна страница"
         >
           <ChevronLeft className="size-4" />
         </button>
@@ -73,7 +73,7 @@ export function Pagination({
           onClick={() => go(page + 1)}
           disabled={page >= totalPages}
           className="inline-flex items-center justify-center size-9 rounded-lg ring-1 ring-rule bg-card text-navy disabled:opacity-40 disabled:cursor-not-allowed hover:ring-brand/40"
-          aria-label="Sonraki sayfa"
+          aria-label="Следваща страница"
         >
           <ChevronRight className="size-4" />
         </button>

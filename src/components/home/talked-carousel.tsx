@@ -28,7 +28,7 @@ function TalkedCard({
       data-first-visible={active ? "true" : undefined}
       className={cn(
         "group relative flex w-full max-w-3xl shrink-0 snap-start flex-col justify-between gap-5 rounded-3xl border-2 border-white px-5 pt-7 pb-9 transition-all duration-300 md:w-[75vw] lg:w-[65vw] lg:px-12 lg:py-8",
-        active ? "bg-white" : "bg-transparent",
+        active ? "bg-white shadow-[0_16px_40px_rgba(47,44,105,0.12)]" : "bg-transparent",
       )}
     >
       <div className="flex items-center justify-between">

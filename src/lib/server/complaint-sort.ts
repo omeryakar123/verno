@@ -19,3 +19,8 @@ export function complaintTrendingOrder() {
     desc(schema.complaints.createdAt),
   ] as const;
 }
+
+/** En çok görüntülenen. */
+export function complaintViewedOrder() {
+  return [desc(schema.complaints.views), desc(schema.complaints.createdAt)] as const;
+}
