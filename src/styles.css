@@ -10,6 +10,8 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
   --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 16px);
+  --radius-4xl: 2rem;
 
   --font-sans: "Metropolis", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-display: "Metropolis", ui-sans-serif, system-ui, sans-serif;
@@ -194,6 +196,12 @@
     scroll-behavior: smooth;
     color-scheme: light;
     overflow-x: hidden;
+    --max-w-6xl-offset: max(1rem, calc((100vw - 72rem) / 2 + 1rem));
+  }
+
+  .container {
+    margin-inline: auto;
+    padding-inline: 1rem;
   }
 
   html.dark {
@@ -536,6 +544,13 @@
 }
 
 /* ── Ana sayfa (şikayetvar tarzı) ── */
+@utility container {
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
 @utility home-container {
   width: 100%;
   max-width: 72rem;
@@ -543,189 +558,11 @@
   padding-inline: 1rem;
 }
 
-@utility home-top-bar {
-  display: block;
-  background-color: var(--sv-dark);
-  color: #fff;
-  text-decoration: none;
-  transition: background-color 180ms ease;
-
-  &:hover {
-    background-color: var(--sv-dark-muted);
-  }
-}
-
-@utility home-hero-shell {
-  position: relative;
-  padding-top: 0.5rem;
-  padding-bottom: 3.5rem;
-
-  @media (min-width: 640px) {
-    padding-top: 1rem;
-    padding-bottom: 5rem;
-  }
-
-  @media (min-width: 1024px) {
-    padding-bottom: 15.4375rem;
-
-    &::before {
-      content: "";
-      position: absolute;
-      top: 1.9375rem;
-      right: 0;
-      display: block;
-      height: 16.875rem;
-      width: calc(50% - 45rem);
-      background: var(--sv-surface);
-    }
-  }
-}
-
-@utility home-feed-card {
-  border-radius: 0.75rem;
-  border: 1px solid #ebecef;
-  background: #fff;
-  padding: 1.125rem;
-  box-shadow: 0 4px 24px rgb(39 38 53 / 0.06);
-  transition:
-    box-shadow 180ms ease,
-    transform 180ms ease;
-
-  &:hover {
-    box-shadow: 0 8px 32px rgb(39 38 53 / 0.1);
-    transform: translateY(-1px);
-  }
-}
-
-@utility home-hero-search {
-  height: 3.75rem;
-  width: 100%;
-  border-radius: 2rem;
-  border: 0;
-  background: #fff;
-  padding-inline: 1.5rem 5.5rem;
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: 0.025em;
-  outline: none;
-  box-shadow: 0 4px 24px rgb(0 0 0 / 0.06);
-
-  &::placeholder {
-    color: #9ca3af;
-  }
-
-  @media (min-width: 1024px) {
-    height: 3.75rem;
-    padding-inline: 3.5rem 9.5rem;
-  }
-}
-
-@utility home-search-btn {
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 10;
-  display: none;
-  height: 100%;
-  width: 8rem;
-  cursor: pointer;
-  align-items: center;
-  justify-content: center;
-  border-radius: 9999px;
-  background: var(--brand);
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #fff;
-  transition: background-color 180ms ease;
-
-  &:hover {
-    background: var(--brand-hover);
-  }
-
-  @media (min-width: 1024px) {
-    display: flex;
-  }
-}
-
-@utility home-talked-shell {
-  position: relative;
-  overflow: hidden;
-  padding-bottom: 4.5rem;
-  background: #fff;
-
-  /* Лилава зона — дясно */
-  &::before {
-    content: "";
-    position: absolute;
-    top: 3.5rem;
-    right: 0;
-    z-index: 0;
-    height: calc(100% - 3.5rem);
-    width: 72%;
-    border-top-left-radius: 56px;
-    background: var(--sv-purple);
-  }
-
-  /* Тъмно лилаво — далеч дясно */
-  &::after {
-    content: "";
-    position: absolute;
-    top: 3.5rem;
-    right: 0;
-    z-index: 0;
-    height: calc(100% - 3.5rem);
-    width: 55%;
-    border-top-left-radius: 72px;
-    background: var(--sv-dark);
-  }
-
-  @media (min-width: 1024px) {
-    padding-bottom: 8.5rem;
-
-    &::before {
-      top: 5.5rem;
-      height: calc(100% - 5.5rem);
-      width: 58%;
-      border-top-left-radius: 90px;
-    }
-
-    &::after {
-      top: 5.5rem;
-      height: calc(100% - 5.5rem);
-      width: 42%;
-    }
-  }
-}
-
-@utility home-talked-green {
-  pointer-events: none;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  z-index: 1;
-  height: 7rem;
-  width: 9rem;
-  border-top-right-radius: 120px;
-  background: #3ad08f;
-
-  @media (min-width: 1024px) {
-    height: 10rem;
-    width: 13rem;
-    border-top-right-radius: 160px;
-  }
-}
-
-@utility home-talked-header {
-  position: relative;
-  z-index: 2;
-}
-
 @utility home-talked-track {
   position: relative;
   z-index: 2;
-  margin-inline-start: max(1rem, calc((100vw - 1170px) / 2 + 1rem));
-  padding-inline-end: max(1rem, calc((100vw - 1170px) / 2 + 1rem));
-  padding-block-end: 0.5rem;
+  margin-inline-start: var(--max-w-6xl-offset);
+  padding-inline-end: var(--max-w-6xl-offset);
 }
 
 @keyframes homeMarquee {

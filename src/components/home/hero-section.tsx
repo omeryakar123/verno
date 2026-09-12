@@ -1,65 +1,88 @@
 import { Search } from "lucide-react";
 
-const BANNER = {
-  mobile: {
-    frame: "/home-banner/mobile/banner.svg",
-    slots: [
-      {
-        src: "/home-banner/mobile/1.jpg",
-        left: "24.939%",
-        top: "0%",
-        width: "38.499%",
-        height: "46.377%",
-        borderRadius: undefined,
-      },
-      {
-        src: "/home-banner/mobile/3.jpg",
-        left: "0%",
-        top: "0%",
-        width: "24.939%",
-        height: "46.377%",
-        borderRadius: "70.874% 76.042% 0 0",
-      },
-      {
-        src: "/home-banner/mobile/2.jpg",
-        left: "63.438%",
-        top: "0%",
-        width: "36.562%",
-        height: "72.947%",
-        borderRadius: "9999px",
-      },
-    ],
+const MOBILE_SLOTS = [
+  {
+    src: "/home-banner/mobile/1.jpg",
+    left: "24.939%",
+    top: "0%",
+    width: "38.499%",
+    height: "46.377%",
   },
-  desktop: {
-    frame: "/home-banner/desktop/banner.svg",
-    slots: [
-      {
-        src: "/home-banner/desktop/1.jpg",
-        left: "24.939%",
-        top: "0%",
-        width: "38.499%",
-        height: "46.377%",
-        borderRadius: undefined,
-      },
-      {
-        src: "/home-banner/desktop/3.jpg",
-        left: "0%",
-        top: "0%",
-        width: "24.939%",
-        height: "46.377%",
-        borderRadius: "70.874% 76.042% 0 0",
-      },
-      {
-        src: "/home-banner/desktop/2.jpg",
-        left: "63.438%",
-        top: "0%",
-        width: "36.562%",
-        height: "72.947%",
-        borderRadius: "9999px",
-      },
-    ],
+  {
+    src: "/home-banner/mobile/3.jpg",
+    left: "0%",
+    top: "0%",
+    width: "24.939%",
+    height: "46.377%",
+    borderTopRightRadius: "70.874% 76.042%",
   },
-} as const;
+  {
+    src: "/home-banner/mobile/2.jpg",
+    left: "63.438%",
+    top: "0%",
+    width: "36.562%",
+    height: "72.947%",
+    rounded: true,
+  },
+] as const;
+
+const DESKTOP_SLOTS = [
+  {
+    src: "/home-banner/desktop/1.jpg",
+    left: "0%",
+    top: "0%",
+    width: "38.628%",
+    height: "38.824%",
+  },
+  {
+    src: "/home-banner/desktop/2.jpg",
+    left: "38.628%",
+    top: "16.471%",
+    width: "36.608%",
+    height: "35.556%",
+    rounded: true,
+  },
+  {
+    src: "/home-banner/desktop/3.jpg",
+    left: "25.168%",
+    top: "64.967%",
+    width: "26.918%",
+    height: "23.66%",
+    borderTopRightRadius: "36.5% 40.331%",
+  },
+] as const;
+
+type Slot = {
+  src: string;
+  left: string;
+  top: string;
+  width: string;
+  height: string;
+  rounded?: boolean;
+  borderTopRightRadius?: string;
+};
+
+function SlotImage({ slot }: { slot: Slot }) {
+  return (
+    <div
+      className={`absolute overflow-hidden${slot.rounded ? " rounded-full" : ""}`}
+      style={{
+        left: slot.left,
+        top: slot.top,
+        width: slot.width,
+        height: slot.height,
+        borderTopRightRadius: slot.borderTopRightRadius,
+      }}
+    >
+      <img
+        src={slot.src}
+        alt=""
+        fetchPriority="high"
+        className="absolute inset-0 size-full object-cover"
+      />
+    </div>
+  );
+}
 
 type Props = {
   search: string;
@@ -67,63 +90,42 @@ type Props = {
   onSubmit: (e: React.FormEvent) => void;
 };
 
-function BannerCollage({ variant }: { variant: "mobile" | "desktop" }) {
-  const data = variant === "mobile" ? BANNER.mobile : BANNER.desktop;
-  const visibility = variant === "mobile" ? "lg:hidden" : "hidden lg:block";
-
-  return (
-    <div
-      className={`relative mb-8 block h-[50.1vw] w-full ${visibility} ${variant === "desktop" ? "lg:absolute lg:inset-y-0 lg:right-0 lg:mb-0 lg:h-auto lg:w-[53.7%]" : ""}`}
-    >
-      <img
-        src={data.frame}
-        alt=""
-        fetchPriority="high"
-        className="absolute inset-0 h-full w-full"
-      />
-      {data.slots.map((slot) => (
-        <div
-          key={slot.src}
-          className="absolute overflow-hidden"
-          style={{
-            left: slot.left,
-            top: slot.top,
-            width: slot.width,
-            height: slot.height,
-            borderTopRightRadius: slot.borderRadius?.includes("70.874")
-              ? "70.874% 76.042%"
-              : undefined,
-            borderRadius: slot.borderRadius === "9999px" ? "9999px" : undefined,
-          }}
-        >
-          <img
-            src={slot.src}
-            alt=""
-            fetchPriority="high"
-            className="absolute inset-0 size-full object-cover"
-          />
-        </div>
-      ))}
-    </div>
-  );
-}
-
 export function HeroSection({ search, onSearchChange, onSubmit }: Props) {
   return (
-    <div className="home-hero-shell">
-      <BannerCollage variant="mobile" />
-      <BannerCollage variant="desktop" />
+    <div className="relative pt-4 pb-20 lg:pb-[247px] lg:before:absolute lg:before:top-[31px] lg:before:right-0 lg:before:bottom-auto lg:before:block lg:before:h-[270px] lg:before:w-[calc(50%-720px)] lg:before:bg-[#e4e7f3] lg:before:content-['']">
+      <div className="relative mb-8 block h-[50.1vw] w-full lg:hidden">
+        <img
+          src="/home-banner/mobile/banner.svg"
+          alt=""
+          fetchPriority="high"
+          className="absolute inset-0 h-full w-full"
+        />
+        {MOBILE_SLOTS.map((slot) => (
+          <SlotImage key={slot.src} slot={slot} />
+        ))}
+      </div>
 
-      <div className="home-container relative z-10 px-4 lg:max-w-6xl lg:px-0">
+      <div className="absolute inset-0 -top-24 mx-auto hidden max-w-[1440px] justify-end lg:flex">
+        <div className="relative h-[648px] w-[630px] xl:h-[765px] xl:w-[743px]">
+          <img
+            src="/home-banner/desktop/banner.svg"
+            alt=""
+            fetchPriority="high"
+            className="absolute inset-0 h-full w-full"
+          />
+          {DESKTOP_SLOTS.map((slot) => (
+            <SlotImage key={slot.src} slot={slot} />
+          ))}
+        </div>
+      </div>
+
+      <div className="relative z-10 container px-4 lg:max-w-6xl lg:px-0">
         <div className="lg:w-[46.3%] lg:pt-20">
-          <div className="mb-5 lg:mb-28">
-            <h1 className="whitespace-pre-line font-normal text-[#383838] text-[43px] leading-tight tracking-[1px] lg:text-[61px] lg:leading-[1.12]">
-              <strong className="font-semibold">За решение</strong>
-              {"\n"}
-              verno.bg
-            </h1>
-          </div>
-
+          <h1 className="mb-5 whitespace-pre-line font-normal text-[#383838] text-[43px] leading-tight tracking-[1px] lg:mb-28 lg:text-[61px] lg:leading-[1.12]">
+            <strong className="font-semibold">За решение</strong>
+            {"\n"}
+            verno.bg
+          </h1>
           <form onSubmit={onSubmit}>
             <div className="relative font-semibold text-base tracking-wide">
               <input
@@ -132,16 +134,21 @@ export function HeroSection({ search, onSearchChange, onSubmit }: Props) {
                 onChange={(e) => onSearchChange(e.target.value)}
                 placeholder="Търси марка, модел, продукт"
                 aria-label="Търси марка, модел, продукт"
-                className="home-hero-search pr-14 lg:pr-38"
+                autoComplete="off"
+                spellCheck={false}
+                className="h-15 w-full min-w-0 overflow-hidden text-ellipsis rounded-4xl border-0 bg-white pr-24 pl-6 outline-none placeholder:truncate placeholder:text-gray-400 lg:pr-38 lg:pl-14 [&::-webkit-search-cancel-button]:appearance-none"
               />
               <button
                 type="submit"
                 aria-label="Търси"
-                className="absolute top-0 right-0 flex h-full w-14 items-center justify-center rounded-[2rem] bg-brand text-white lg:pointer-events-none lg:right-auto lg:left-4 lg:w-auto lg:bg-transparent lg:text-[#626692]"
+                className="absolute top-0 right-0 flex h-full w-22 rounded-4xl bg-[#3ad08f] text-white lg:pointer-events-none lg:right-auto lg:left-4 lg:w-auto lg:bg-transparent lg:text-[#626692]"
               >
                 <Search className="m-auto size-6" aria-hidden />
               </button>
-              <button type="submit" className="home-search-btn">
+              <button
+                type="submit"
+                className="absolute top-0 right-0 z-10 hidden h-full w-32 cursor-pointer items-center justify-center rounded-full bg-[#3ad08f] font-semibold text-lg text-white transition-opacity hover:bg-[#42e29d] lg:flex"
+              >
                 Търси
               </button>
             </div>

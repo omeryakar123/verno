@@ -1,19 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { seoHead, jsonLd, absUrl, SITE_NAME } from "@/lib/seo";
 import { useEffect, useState } from "react";
-import {
-  ArrowRight,
-  Eye,
-  FileText,
-  MessageCircle,
-  Play,
-  Shield,
-  Sparkles,
-  Users,
-  Zap,
-} from "lucide-react";
+import { Eye, FileText, MessageCircle, Users } from "lucide-react";
 import { type Company, type Complaint } from "@/lib/mock-data";
-import { formatResolutionRate } from "@/lib/display-brand-metrics";
 import {
   fetchBrandsList,
   fetchBrandsTrend,
@@ -22,16 +11,18 @@ import {
   fetchLiveFeed,
   fetchPlatformStats,
 } from "@/lib/data";
-import type { TrendBrand } from "@/lib/trend-brand";
-import { TrendBrandMobileCard } from "@/components/trend-brand-row";
-import { PRIORITY_BRAND_LINKS } from "@/lib/featured-brands";
+import { trendGrowthPct, type TrendBrand } from "@/lib/trend-brand";
 import { publicPlatformStats } from "@/lib/public-stats";
-import { SITE_CONTACT_EMAIL, siteContactMailto } from "@/lib/contact";
-import { BrandRankLogo } from "@/components/cards";
+import { SITE_CONTACT_EMAIL } from "@/lib/contact";
+import { BrandListLogo } from "@/components/cards";
 import { HeroSection } from "@/components/home/hero-section";
 import { AgendaMarquee } from "@/components/home/agenda-marquee";
 import { TalkedCarousel } from "@/components/home/talked-carousel";
-import { LatestResolvedCarousel } from "@/components/home/latest-resolved-carousel";
+import {
+  HomeDecorBlobs,
+  HomeMediaBlock,
+} from "@/components/home/home-media-block";
+import { TrendSparkline } from "@/components/home/trend-sparkline";
 
 const HOME_REFRESH_MS = 30 * 60 * 1000;
 
@@ -117,10 +108,6 @@ const FALLBACK_STATS = publicPlatformStats({
   resolvedComplaints: 0,
   resolutionRate: 0,
 });
-
-function formatCounter(n: number): string {
-  return n.toLocaleString("bg-BG").replace(/\s/g, ".");
-}
 
 export const Route = createFileRoute("/_site/")({
   loader: async () => {
@@ -247,64 +234,26 @@ function Home() {
       data-page="home"
       className="isolate min-h-screen overflow-x-hidden bg-white"
     >
-      {/* Горна лента — общ брой решения */}
-      <Link
-        to="/sikayetler"
-        search={{ durum: "cozuldu" }}
-        className="home-top-bar z-10 flex h-[4.125rem] items-center lg:h-[4.375rem]"
-      >
-        <div className="home-container flex h-full w-full max-w-6xl items-center justify-between gap-3 px-4">
-          <div className="flex min-w-0 items-center gap-2 lg:gap-7">
-            <p className="shrink-0 font-medium text-[13px] text-white max-[361px]:text-[11px] lg:text-lg">
-              Общ брой решения
-            </p>
-            <div className="font-bold text-[#3ad08f] text-[15px] tabular-nums max-[361px]:text-[13px] lg:text-[26px]">
-              {formatCounter(stats.resolvedComplaints)}
-            </div>
-          </div>
-          <span className="hidden truncate text-[13px] text-white/70 sm:inline lg:text-base">
-            Проверете оценката на марката преди покупка →
-          </span>
-        </div>
-      </Link>
-
       <HeroSection
         search={search}
         onSearchChange={setSearch}
         onSubmit={doSearch}
       />
 
-      {/* Популярни марки */}
-      <div className="home-container max-w-6xl px-4 pb-8 lg:pb-12">
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-[#626692] lg:text-[13px]">
-          <span className="font-semibold text-[#85878e]">Популярни:</span>
-          {PRIORITY_BRAND_LINKS.slice(0, 6).map((b) => (
-            <Link
-              key={b.slug}
-              to="/firma/$slug"
-              params={{ slug: b.slug }}
-              className="hover:text-brand transition-colors"
-            >
-              {b.name}
-            </Link>
-          ))}
-        </div>
-      </div>
-
-      <LatestResolvedCarousel
-        items={(latest.length > 0 ? latest : PLACEHOLDER_LATEST).slice(0, 8)}
+      <AgendaMarquee
+        items={agenda.length > 0 ? agenda : latest.length > 0 ? latest : PLACEHOLDER_LATEST}
+      />
+      <TalkedCarousel
+        items={talked.length > 0 ? talked : latest}
+        updatedAt={talkedUpdatedAt}
       />
 
-      <AgendaMarquee items={agenda} />
-      <TalkedCarousel items={talked} updatedAt={talkedUpdatedAt} />
-
-      {/* Успех в решаването */}
-      <section className="home-solution-shell">
-        <div className="home-container max-w-6xl px-4 pt-[4.375rem] pb-24 lg:px-[8.75rem] lg:pt-[6.75rem] lg:pb-[6.5rem]">
-          <h2 className="text-center font-medium text-3xl leading-snug text-white lg:text-6xl">
+      <section className="bg-[#272635]">
+        <div className="container pt-17.5 pb-24 lg:max-w-6xl lg:px-35 lg:pt-27 lg:pb-26">
+          <h2 className="text-center font-medium text-3xl text-white leading-snug lg:text-6xl">
             Успех в решаването
           </h2>
-          <p className="mx-auto mt-8.5 max-w-3xl px-2.5 text-center text-sm leading-5.5 tracking-wide text-zinc-500 lg:mt-16">
+          <p className="mx-auto mt-7.5 max-w-3xl px-2.5 text-center text-sm leading-5.5 tracking-wide text-zinc-500 lg:mt-15">
             Класирането се базира единствено на удовлетвореността на
             потребителите — независимо от размера на фирмата или броя жалби.
           </p>
@@ -314,37 +263,35 @@ function Home() {
                 <Link
                   to="/firma/$slug"
                   params={{ slug: b.slug }}
-                  className="home-solution-row group"
+                  className="relative flex w-full rounded-2xl bg-gray-100 lg:rounded-3xl"
                 >
                   <div
-                    className={`home-solution-rank ${i === 0 ? "home-solution-rank--first" : ""}`}
+                    className={`flex w-max min-w-7.5 flex-col items-center justify-center gap-0.5 rounded-3xl px-0.5 font-bold text-neutral-700 text-xs leading-3.5 tracking-tight lg:min-w-11 lg:gap-1 lg:text-[13px] ${i === 0 ? "bg-blue-100" : ""}`}
                   >
-                    {i + 1}
+                    <span className="block h-3 w-3 rounded-[1px] bg-[#4C698C]" />
                   </div>
                   <div className="ml-2.5 flex flex-1 items-center py-4 pr-2.5 lg:ml-7 lg:pr-7.5">
-                    <BrandRankLogo
-                      name={b.name}
-                      slug={b.slug}
-                      logoUrl={b.logoUrl}
-                      website={b.website}
-                    />
-                    <div className="ml-3 min-w-0 flex-1 lg:ml-5">
-                      <div className="truncate font-semibold text-[14px] text-neutral-800 lg:text-[16px]">
-                        {b.name}
-                      </div>
-                      <div className="truncate text-[11px] text-neutral-500 lg:text-[12px]">
-                        {b.categoryName}
-                      </div>
+                    <div className="flex h-16 w-19 items-center justify-center rounded-xl bg-white px-1 py-2.5 lg:h-22 lg:w-27">
+                      <BrandListLogo
+                        name={b.name}
+                        slug={b.slug}
+                        logoUrl={b.logoUrl}
+                        website={b.website}
+                        size={64}
+                        className="size-full object-contain"
+                      />
                     </div>
-                    <div className="shrink-0 pr-3 text-right lg:pr-5">
-                      <div className="font-bold text-[#3ad08f] text-[13px] tabular-nums lg:text-[15px]">
-                        {formatResolutionRate(
-                          b.resolutionRate,
-                          b.totalComplaints,
-                        )}
+                    <div className="ml-3.5 flex w-full flex-col gap-1.5 text-neutral-700 lg:ml-7 lg:flex-row lg:items-center lg:justify-between lg:gap-0">
+                      <div className="lg:grow">
+                        <span className="mr-1 align-baseline font-bold lg:text-xl">
+                          {i + 1}.
+                        </span>
+                        <h3 className="mr-1 inline align-baseline font-medium leading-tight [word-break:break-word] lg:max-w-72 lg:truncate lg:text-xl">
+                          {b.name}
+                        </h3>
                       </div>
-                      <div className="text-[10px] text-neutral-500">
-                        решение
+                      <div className="text-sm text-zinc-500 lg:text-base">
+                        {b.categoryName}
                       </div>
                     </div>
                   </div>
@@ -352,149 +299,61 @@ function Home() {
               </li>
             ))}
           </ul>
-          <div className="mt-8 text-center">
-            <Link
-              to="/markalar"
-              className="inline-flex items-center gap-2 rounded-full border border-white/20 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10 transition"
-            >
-              Всички марки <ArrowRight className="size-4" />
-            </Link>
-          </div>
         </div>
       </section>
 
-      {/* Видео — navbar anchor */}
       <section
         id="video"
-        className="home-container relative max-w-6xl scroll-mt-24 px-4 py-12 lg:py-20"
+        className="relative overflow-hidden bg-white pt-10 lg:pt-33 lg:pb-48"
       >
-        <div className="pointer-events-none absolute -right-8 top-8 hidden size-48 rounded-full bg-[#695de9]/15 lg:block" />
-        <div className="pointer-events-none absolute right-24 top-32 hidden size-32 rounded-full bg-[#3ad08f]/20 lg:block" />
-        <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
-          <div>
-            <h2 className="font-semibold text-2xl text-[#383838] lg:text-[42px] lg:leading-[1.15]">
-              Как работи {SITE_NAME}?
-            </h2>
-            <p className="mt-4 max-w-md text-[15px] leading-relaxed text-[#85878e] lg:text-base">
-              Подайте жалба, получете официален отговор от марката и проследете
-              процеса прозрачно — както правят хиляди потребители всеки ден.
-            </p>
-            <Link
-              to="/info/$slug"
-              params={{ slug: "how-it-works" }}
-              className="mt-6 inline-flex items-center gap-2 text-[13px] font-semibold text-brand hover:gap-3 transition-all"
-            >
-              Научете повече <ArrowRight className="size-4" />
-            </Link>
-          </div>
-          <div className="relative aspect-[4/3] overflow-hidden rounded-[32px] bg-[#272635] shadow-[0_24px_64px_rgba(39,38,53,0.18)]">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#695de9]/50 via-[#272635] to-[#3ad08f]/35" />
-            <div className="absolute -right-10 -top-10 size-40 rounded-full bg-[#695de9]/30" />
-            <div className="absolute -bottom-8 -left-8 size-32 rounded-full bg-[#3ad08f]/25" />
-            <div className="absolute inset-0 grid place-items-center">
-              <span className="grid size-16 place-items-center rounded-full bg-white/95 text-[#695de9] shadow-lg">
-                <Play className="ml-1 size-7 fill-current" />
-              </span>
-            </div>
-            <span className="absolute bottom-5 left-5 text-[12px] font-medium text-white/80">
-              Видео — скоро
-            </span>
-          </div>
-        </div>
-      </section>
-
-      {/* Характеристики */}
-      <section className="home-container max-w-6xl px-4 pb-12 lg:pb-20">
-        <ul className="flex flex-wrap items-start justify-center gap-x-8 gap-y-6 lg:gap-x-14">
-          {[
-            { icon: Shield, label: "Сигурна услуга" },
-            { icon: Zap, label: "Бързо решение" },
-            { icon: Sparkles, label: "Прозрачен процес" },
-            { icon: MessageCircle, label: "Официален отговор" },
-            { icon: Users, label: "Общност" },
-          ].map(({ icon: Icon, label }) => (
-            <li
-              key={label}
-              className="flex w-[calc(50%-1rem)] max-w-[140px] flex-col items-center text-center lg:w-auto"
-            >
-              <span className="mb-2.5 grid size-14 place-items-center rounded-full bg-[#f3f4f8] text-[#626692]">
-                <Icon className="size-7" strokeWidth={1.5} />
-              </span>
-              <span className="text-[13px] font-semibold leading-snug text-[#383838]">
-                {label}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      {/* Награди */}
-      <section className="relative overflow-hidden bg-white pt-10 lg:pt-[8.25rem] lg:pb-48">
-        <div className="relative flex flex-col lg:container lg:z-10 lg:mx-auto lg:max-w-6xl lg:flex-row lg:justify-center lg:gap-10">
-          <div className="home-container flex flex-col justify-center text-zinc-500">
+        <div className="relative flex flex-col lg:container lg:z-10 lg:max-w-6xl lg:flex-row lg:justify-center lg:gap-10">
+          <div className="container flex flex-col justify-center text-zinc-500">
             <h2 className="font-semibold text-2xl leading-7 lg:text-[42px] lg:leading-[52px]">
-              <span className="font-normal">Наградите на</span>
-              <br className="hidden lg:block" /> {SITE_NAME}
+              <span className="font-normal">{SITE_NAME}</span>
+              <br className="hidden lg:block" /> Награди
             </h2>
             <p className="mt-7.5 text-lg leading-6.5 lg:pr-10">
               Всяка година награждаваме марките, които правят разлика в
-              удовлетвореността на клиентите.
-              {SITE_NAME} продължава да свързва марки и потребители с фокус
-              върху решенията.
+              удовлетвореността на клиентите. {SITE_NAME} продължава да свързва
+              марки и потребители с фокус върху решенията.
             </p>
-            <Link
-              to="/hakkimizda"
-              className="mt-6 inline-flex items-center gap-2 text-[13px] font-semibold text-brand hover:gap-3 transition-all"
-            >
-              Verno SEAL & Верификация <ArrowRight className="size-4" />
-            </Link>
           </div>
-          <div className="relative mx-auto mt-[4.5rem] w-full max-w-[420px] px-4 lg:mt-0 lg:w-[420px] lg:shrink-0 lg:px-0">
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#272635] via-[#3a384a] to-brand/30 p-1.5 shadow-lift ring-1 ring-white/10">
-              <div className="overflow-hidden rounded-[14px] bg-[#272635] p-8 text-center text-white ring-1 ring-white/10">
-                <div className="mx-auto mb-4 grid size-20 place-items-center rounded-full bg-brand/20 text-brand text-3xl font-black">
-                  ✓
-                </div>
-                <p className="font-semibold text-lg">Верифицирана марка</p>
-                <p className="mt-2 text-sm text-white/70">
-                  QR код · Оценка на доверие · Официален отговор
-                </p>
-              </div>
-            </div>
-          </div>
+          <HomeMediaBlock
+            src="/home/video-cover-awards.jpg"
+            alt={`${SITE_NAME} награди`}
+          />
         </div>
+        <HomeDecorBlobs />
       </section>
 
-      {/* Статистика */}
-      <section className="home-container max-w-6xl pt-12 pb-[3.75rem] lg:pt-36 lg:pb-[12.5rem]">
-        <h2 className="text-center font-semibold text-2xl leading-none text-zinc-500 lg:font-medium lg:text-3xl">
+      <section className="container pt-12 pb-15 lg:pt-36 lg:pb-50">
+        <h2 className="text-center font-semibold text-2xl text-zinc-500 leading-none lg:font-medium">
           {SITE_NAME} в цифри
         </h2>
-        <ul className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:mt-25 lg:grid-cols-4 lg:gap-7.5">
+        <ul className="mt-12 grid grid-cols-1 gap-5 lg:mt-25 lg:grid-cols-5 lg:gap-7.5">
           {[
-            { k: "Потребители", v: stats.totalUsers, i: Users },
-            { k: "Жалби", v: stats.totalComplaints, i: FileText },
+            { k: "Потребители", v: stats.totalUsers.toLocaleString("bg-BG"), i: Users },
+            { k: "Жалби", v: stats.totalComplaints.toLocaleString("bg-BG"), i: FileText },
+            { k: "Марки", v: stats.totalCompanies.toLocaleString("bg-BG"), i: MessageCircle },
+            { k: "Решени жалби", v: stats.resolvedComplaints.toLocaleString("bg-BG"), i: Eye },
             {
-              k: "Регистрирани марки",
-              v: stats.totalCompanies,
-              i: MessageCircle,
+              k: "Процент решение",
+              v: `${Math.round(stats.resolutionRate)}%`,
+              i: Eye,
             },
-            { k: "Решени жалби", v: stats.resolvedComplaints, i: Eye },
           ].map((s) => {
             const Icon = s.i;
             return (
               <li
                 key={s.k}
-                className="flex items-center gap-4 rounded-3xl bg-white py-7.5 pr-4 pl-6 shadow-sm ring-1 ring-gray-100 lg:flex-col lg:items-start lg:justify-between lg:px-7.5 lg:pt-9 lg:pb-9.5"
+                className="flex items-center gap-4 rounded-3xl bg-white py-7.5 pr-4 pl-6 lg:flex-col lg:items-start lg:justify-between lg:px-7.5 lg:pt-9 lg:pb-9.5"
               >
-                <span className="grid size-10 place-items-center rounded-xl bg-brand/10 text-brand lg:mb-4">
-                  <Icon className="size-5" />
-                </span>
-                <div>
-                  <div className="font-black text-[26px] text-[#383838] tabular-nums lg:text-[32px]">
-                    {s.v.toLocaleString("bg-BG")}
-                  </div>
-                  <div className="mt-1 text-[13px] text-[#85878e]">{s.k}</div>
+                <Icon className="h-16 w-11 text-[#3ad08f] lg:mb-9 lg:w-25" />
+                <div className="flex flex-col gap-2 font-medium text-xs text-zinc-500 leading-tight lg:text-base">
+                  <span>{s.k}</span>
+                  <span className="font-bold text-2xl text-neutral-700 leading-tight lg:text-3xl">
+                    {s.v}
+                  </span>
                 </div>
               </li>
             );
@@ -502,79 +361,141 @@ function Home() {
         </ul>
       </section>
 
-      {/* Trend 100 */}
-      <section className="bg-white py-[3.75rem] md:py-20 lg:py-[6.25rem]">
-        <header className="home-container text-center">
-          <h2 className="inline-flex items-center font-semibold text-3xl leading-snug text-slate-800 lg:text-6xl lg:tracking-wide">
-            Trend<span className="sr-only">100</span>
-            <span className="ml-1 inline-flex text-brand lg:ml-2">
-              <span className="font-black">100</span>
-            </span>
+      <section className="bg-white py-15 md:py-20 lg:py-25">
+        <header className="container text-center">
+          <h2 className="inline-flex items-center font-semibold text-3xl text-slate-800 leading-snug lg:text-6xl lg:tracking-wide">
+            Trend
+            <span className="sr-only">100</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 42 21"
+              className="w-8 lg:ml-1 lg:w-15"
+              aria-hidden
+            >
+              <path fill="#03E5B6" d="M3.8.4V21h3V.4z" />
+              <path
+                fill="#03E5B6"
+                d="M3.5.4 0 5.7h3.5L6.9.4zM23 20.6a10.3 10.3 0 1 1 7.4-8.8l-3.1-.4a7.2 7.2 0 1 0-5.2 6.2z"
+              />
+              <path
+                fill="#03E5B6"
+                d="M28.1 1A10.3 10.3 0 1 1 22 7.3l3.4 1.2a6.7 6.7 0 1 0 4-4.1z"
+              />
+            </svg>
           </h2>
-          <p className="mx-auto mt-[35px] mb-5.5 max-w-xl font-normal text-lg leading-6.5 text-neutral-400 lg:mt-9 lg:text-xl">
-            Марки с най-голям ръст през последните 7 дни — изчислено от реални
-            данни.
+          <p className="mt-[35px] mb-5.5 font-normal text-lg text-neutral-400 leading-6.5 lg:mt-9 lg:text-xl">
+            Марки с растяща посещаемост и популярност — следвайте тренда днес.
           </p>
         </header>
-
-        <div className="home-container mt-8 rounded-[40px] bg-gray-100 px-2 py-8 lg:mt-12 lg:rounded-[64px] lg:p-8">
-          <ul className="flex flex-col gap-2.5 lg:gap-1.5">
-            {trend100.slice(0, 6).map((b, i) => (
-              <li key={b.slug}>
-                <TrendBrandMobileCard brand={b} rank={i + 1} />
-              </li>
-            ))}
+        <ul className="container mt-15 hidden font-semibold text-[#afb0b6] text-sm leading-none lg:flex">
+          <li className="w-5/10 lg:ml-10 lg:w-[46%] xl:w-[50%]">Марка</li>
+          <li className="ml-6.5 w-1/6 lg:ml-0 lg:w-[12%]">Тренд</li>
+          <li className="ml-5.5 w-[14.5%] lg:ml-15 lg:w-[10%]">Ръст</li>
+        </ul>
+        <section className="mt-8 rounded-[40px] bg-gray-100 px-2 py-8 lg:container lg:mt-12 lg:rounded-[64px] lg:p-8">
+          <ul className="flex flex-col gap-2.5 lg:max-w-none lg:gap-1.5">
+            {trend100.slice(0, 8).map((b, i) => {
+              const growth = trendGrowthPct(b.recentComplaints, b.priorComplaints);
+              return (
+                <li
+                  key={b.slug}
+                  className="group rounded-4xl transition-colors hover:bg-gray-50"
+                >
+                  <Link
+                    to="/firma/$slug"
+                    params={{ slug: b.slug }}
+                    className="relative flex rounded-4xl bg-white p-5 transition-colors group-hover:bg-gray-50 lg:p-6"
+                  >
+                    <div className="mt-4 min-w-9 font-semibold text-lg text-zinc-400 leading-6 lg:text-2xl">
+                      {i + 1}.
+                    </div>
+                    <div className="ml-5 flex w-full flex-col overflow-hidden lg:flex-row lg:items-center lg:gap-2">
+                      <div className="flex w-full justify-between lg:w-1/2 lg:flex-row-reverse lg:items-center lg:gap-5">
+                        <div className="mt-3.5 w-[calc(100%-105px)] lg:mt-0">
+                          <div className="inline-flex w-full items-center gap-0.5 font-semibold text-lg text-neutral-700 leading-5.5">
+                            <span className="truncate">{b.name}</span>
+                          </div>
+                          <div className="mt-1.5 truncate text-sm text-zinc-500 leading-4">
+                            {b.categoryName}
+                          </div>
+                        </div>
+                        <div className="inline-flex h-18 w-23 items-center justify-center rounded-2xl border border-[#dcdde1] bg-white px-3.5 py-3 lg:h-22 lg:w-27 lg:p-4">
+                          <BrandListLogo
+                            name={b.name}
+                            slug={b.slug}
+                            logoUrl={b.logoUrl}
+                            website={b.website}
+                            size={56}
+                            className="size-full object-contain"
+                          />
+                        </div>
+                      </div>
+                      <div className="mt-2.5 h-11 w-28 lg:mt-0">
+                        <TrendSparkline
+                          seed={b.slug}
+                          rising={(growth ?? 0) >= 0}
+                        />
+                      </div>
+                      <div className="hidden items-center lg:ml-24 lg:flex lg:w-[14.5%]">
+                        <span className="font-semibold text-[#7c7b85] text-lg leading-none">
+                          {growth != null ? `% ${growth}` : "—"}
+                        </span>
+                      </div>
+                      <div className="mt-12 flex flex-col gap-3 lg:hidden">
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold text-sm text-zinc-400 leading-6.5">
+                            Ръст
+                          </span>
+                          <span className="font-semibold text-[#7c7b85] text-lg leading-none">
+                            {growth != null ? `% ${growth}` : "—"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
-          <div className="mt-6 text-center">
-            <Link
-              to="/trend-100"
-              className="inline-flex items-center gap-2 rounded-full border border-brand px-5 py-2.5 text-[13px] font-semibold text-brand hover:bg-brand/5 transition"
-            >
-              Виж повече
-            </Link>
-          </div>
-        </div>
+        </section>
+        <Link
+          to="/trend-100"
+          className="mx-auto mt-20 block w-fit rounded-full border border-emerald-400 px-12 py-5 text-center font-semibold text-emerald-400 leading-none tracking-wide hover:bg-emerald-400 hover:text-white lg:min-w-77 lg:py-6"
+        >
+          Виж повече
+        </Link>
       </section>
 
-      {/* Марка CTA */}
-      <section className="home-brand-cta py-[3.75rem] lg:py-28">
-        <div className="home-container text-center">
-          <h2 className="font-semibold text-4xl leading-tight tracking-wide lg:font-medium lg:text-5xl">
-            Потребителско изживяване, вашият бранд
-          </h2>
-          <p className="mx-auto mt-11 max-w-2xl px-2 font-medium leading-tight tracking-wide lg:mt-7.5 lg:text-xl">
-            Негативният опит се споделя сред средно 250 души.
-            <br className="hidden sm:block" />
-            Станете част от култура, ориентирана към клиента:
-          </p>
-          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row lg:mt-13">
-            <a
-              href={siteContactMailto("Pro membership")}
-              className="inline-flex w-max items-center justify-center rounded-[50px] border border-zinc-400 bg-white px-5 py-3.5 font-semibold text-slate-800 leading-none hover:border-slate-800 hover:bg-slate-800 hover:text-white transition"
-            >
-              Свържете се за Pro
-            </a>
+      <section className="bg-[#695de9] pt-15 pb-20 lg:py-28">
+        <div className="container">
+          <div className="mx-auto text-center text-white">
+            <h2 className="font-semibold text-4xl leading-tight tracking-wide lg:font-medium">
+              Потребителско изживяване, вашият бранд
+            </h2>
+            <p className="mt-11 px-2 font-medium leading-tight tracking-wide lg:mt-7.5 lg:px-0 lg:text-xl">
+              Негативният опит се споделя сред средно 250 души.
+              <br />
+              Станете част от култура, ориентирана към клиента:
+            </p>
             <Link
               to="/register/marka-basvuru"
-              className="inline-flex w-max items-center justify-center rounded-[50px] border border-white/30 px-5 py-3.5 font-semibold leading-none hover:bg-white/10 transition"
+              className="mx-auto mt-16 block w-max rounded-[50px] border border-zinc-400 bg-white px-5 py-3.5 font-semibold text-slate-800 leading-none hover:border-slate-800 hover:bg-slate-800 hover:text-white lg:mt-13 lg:px-7.5 lg:py-5 lg:text-xl"
             >
-              Кандидатствай като марка
+              Нека работим заедно
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Trust / Seal CTA */}
-      <section className="relative overflow-hidden bg-white pt-10 lg:pt-[8.25rem] lg:pb-48">
-        <div className="relative flex flex-col lg:container lg:z-10 lg:mx-auto lg:max-w-6xl lg:flex-row lg:justify-center lg:gap-10">
-          <div className="home-container flex flex-col justify-center text-zinc-500">
+      <section className="relative overflow-hidden bg-white pt-10 lg:pt-33 lg:pb-48">
+        <div className="relative flex flex-col lg:container lg:z-10 lg:max-w-6xl lg:flex-row lg:justify-center lg:gap-10">
+          <div className="container flex flex-col justify-center text-zinc-500">
             <h2 className="font-semibold text-2xl leading-7 lg:text-3xl lg:leading-9">
               Проверете Trust Score на марката преди покупка
             </h2>
             <div className="mt-7.5 space-y-3 text-lg leading-6.5 lg:mt-6 lg:space-y-2.5 lg:pr-10 lg:text-base lg:leading-6">
-              <p>
-                {SITE_NAME} е адресът на потребителското доверие в България.
-              </p>
+              <p>{SITE_NAME} е адресът на потребителското доверие в България.</p>
               <p>
                 <strong>Trust Score</strong> прави нивото на доверие на марките
                 видимо за вас.
@@ -583,44 +504,17 @@ function Home() {
                 Преди да пазарувате, проверете оценката, скоростта на отговор и
                 реалните отзиви.
               </p>
-            </div>
-            <Link
-              to="/markalar"
-              className="mt-8 inline-flex w-max items-center gap-2 rounded-full bg-brand px-6 py-3 text-sm font-semibold text-white hover:bg-brand-hover transition"
-            >
-              Без колебание — провери <ArrowRight className="size-4" />
-            </Link>
-          </div>
-          <div className="home-container mt-12 lg:mt-0 lg:max-w-md">
-            <div className="rounded-3xl bg-gradient-to-br from-brand/10 to-[#695de9]/10 p-6 ring-1 ring-brand/20">
-              <div className="grid grid-cols-2 gap-4">
-                {[
-                  { label: "Решени жалби", value: stats.resolvedComplaints },
-                  { label: "Марки", value: stats.totalCompanies },
-                  {
-                    label: "Процент решение",
-                    value: `${Math.round(stats.resolutionRate)}%`,
-                  },
-                  { label: "Жалби", value: stats.totalComplaints },
-                ].map((item) => (
-                  <div
-                    key={item.label}
-                    className="rounded-2xl bg-white p-4 text-center shadow-sm"
-                  >
-                    <div className="font-black text-xl text-[#383838] tabular-nums">
-                      {typeof item.value === "number"
-                        ? item.value.toLocaleString("bg-BG")
-                        : item.value}
-                    </div>
-                    <div className="mt-1 text-[11px] text-[#85878e]">
-                      {item.label}
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <p>
+                <strong>Открийте новия стандарт за сигурни покупки.</strong>
+              </p>
             </div>
           </div>
+          <HomeMediaBlock
+            src="/home/video-cover-trust.jpg"
+            alt="Trust Score"
+          />
         </div>
+        <HomeDecorBlobs />
       </section>
     </div>
   );

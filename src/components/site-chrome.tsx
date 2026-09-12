@@ -39,14 +39,14 @@ export function SiteNav() {
   // Router rotaları ve hash bağlantısı ayrı: `Link to` yalnızca gerçek rotaları kabul eder.
   const navLinks = [
     { to: "/sikayetler" as const, label: "Жалби" },
-    { to: "/trendler" as const, label: "Trend", badge: "100" },
+    { to: "/trend-100" as const, label: "Trend", badge: "100" },
   ];
   const videoLink = { href: "/#video", label: "Видео" };
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-[#ebecef] bg-white">
-        <div className="mx-auto flex h-[60px] max-w-[1170px] items-center px-4 sm:h-[70px] sm:px-6">
+      <header className="sticky top-0 z-50 border-b border-[#ebecef] bg-white">
+        <div className="container relative flex h-[67px] items-center justify-between">
           {/* Mobile — logo + compact CTA + search + menu */}
           <div className="flex min-w-0 flex-1 items-center gap-2.5 md:hidden">
             <SiteLogoNav className="h-[24px]" />
@@ -76,16 +76,16 @@ export function SiteNav() {
           {/* Desktop — logo + nav | spacer | login + CTA */}
           <div className="hidden min-w-0 flex-1 items-center md:flex md:flex-initial">
             <SiteLogoNav className="h-[28px] lg:h-[32px]" />
-            <nav className="ml-6 hidden items-center gap-8 text-[15px] font-medium tracking-[0.01em] text-[#626692] md:flex lg:ml-9 lg:gap-10">
+            <nav className="ml-4 hidden items-center whitespace-nowrap font-semibold text-gray-400 md:flex lg:gap-5 xl:ml-8 xl:gap-8">
               {navLinks.map((l) => (
                 <Link
                   key={l.to}
                   to={l.to}
-                  className="inline-flex items-baseline gap-0.5 whitespace-nowrap transition-colors hover:text-[#272635]"
+                  className="inline-flex items-baseline gap-1 whitespace-nowrap hover:text-gray-800"
                 >
                   <span>{l.label}</span>
                   {l.badge ? (
-                    <span className="font-bold text-[#272635]">{l.badge}</span>
+                    <span className="font-normal text-xs text-gray-800">{l.badge}</span>
                   ) : null}
                 </Link>
               ))}

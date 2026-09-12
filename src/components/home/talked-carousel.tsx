@@ -11,56 +11,70 @@ type Props = {
   updatedAt?: Date;
 };
 
-const AVATAR_TONES = [
-  "bg-[#dbeafe] text-[#3b82c4]",
-  "bg-[#d1fae5] text-[#059669]",
-  "bg-[#ede9fe] text-[#7c3aed]",
-  "bg-[#ffedd5] text-[#ea580c]",
-] as const;
-
 function commentLabel(n: number) {
   if (n === 1) return "1 коментар";
   return `${n} коментара`;
 }
 
-function TalkedCard({ complaint, active, toneIdx }: { complaint: Complaint; active: boolean; toneIdx: number }) {
-  const avatarTone = AVATAR_TONES[toneIdx % AVATAR_TONES.length];
-
+function TalkedCard({
+  complaint,
+  active,
+}: {
+  complaint: Complaint;
+  active: boolean;
+}) {
   return (
     <article
+      data-first-visible={active ? "true" : undefined}
       className={cn(
-        "relative flex w-[min(88vw,540px)] shrink-0 snap-start flex-col justify-between rounded-[20px] px-6 py-7 transition-all duration-300 lg:w-[540px] lg:min-h-[300px] lg:px-8 lg:py-8",
-        active
-          ? "bg-white shadow-[0_8px_40px_rgba(39,38,53,0.12)]"
-          : "border-2 border-white/90 bg-transparent",
+        "group relative flex w-full max-w-3xl shrink-0 snap-start flex-col justify-between gap-5 rounded-3xl border-2 border-white px-5 pt-7 pb-9 transition-all duration-300 md:w-[75vw] lg:w-[65vw] lg:px-12 lg:py-8",
+        active ? "bg-white" : "bg-transparent",
       )}
     >
-      {active ? (
-        <span className="pointer-events-none absolute left-0 top-0 h-14 w-1.5 rounded-br-md rounded-tl-[20px] bg-[#3ad08f]" aria-hidden />
-      ) : null}
-      <div className="mb-5 flex items-start justify-between gap-4">
-        <div className="flex min-w-0 items-center gap-3">
-          <span className={cn("grid size-11 shrink-0 place-items-center rounded-full text-[13px] font-bold lg:size-12", avatarTone)}>
+      <div className="flex items-center justify-between">
+        <div
+          className={cn(
+            "flex items-center gap-2 text-base lg:gap-3 lg:text-xl",
+            active ? "text-neutral-800" : "text-white",
+          )}
+        >
+          <span
+            className={cn(
+              "relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full text-[13px] font-bold transition-all duration-300 lg:size-20 lg:text-2xl",
+              active ? "bg-[#ecfdf5] text-[#059669]" : "bg-white/15 text-white",
+            )}
+          >
             {complaint.userInitials.slice(0, 1)}
           </span>
-          <div className="min-w-0">
-            <div className={cn("truncate font-bold text-[15px] lg:text-base", active ? "text-[#272635]" : "text-white")}>
-              {complaint.userName}
+          <div className="min-w-0 flex-1">
+            <div
+              className={cn(
+                "flex flex-wrap items-center gap-x-1.5 lg:gap-x-3",
+                active ? "text-neutral-800" : "text-white",
+              )}
+            >
+              <span className="font-bold lg:text-2xl">{complaint.userName}</span>
             </div>
-            <div className={cn("mt-0.5 flex items-center gap-1 text-[12px]", active ? "text-[#a0a4b8]" : "text-white/65")}>
-              <Eye className="size-3.5 shrink-0" aria-hidden />
-              {(complaint.views ?? 0).toLocaleString("bg-BG")}
+            <div
+              className={cn(
+                "mt-0 flex text-xs",
+                active ? "text-[#b9b9b9]" : "text-white",
+              )}
+            >
+              <span className="flex items-center gap-1 lg:text-base">
+                <Eye className="size-3.5 shrink-0" aria-hidden />
+                {(complaint.views ?? 0).toLocaleString("bg-BG")}
+              </span>
             </div>
           </div>
         </div>
-
         <span
           className={cn(
-            "inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-semibold",
-            active ? "bg-[#ecfdf5] text-[#059669]" : "bg-white/12 text-white",
+            "flex items-center gap-1 font-semibold text-base leading-none lg:text-xl",
+            active ? "text-[#3ad08f]" : "text-white",
           )}
         >
-          <MessageCircle className={cn("size-3.5", active ? "fill-[#059669]/20" : "fill-white/20")} />
+          <MessageCircle className="size-4" />
           {commentLabel(complaint.comments ?? 0)}
         </span>
       </div>
@@ -68,28 +82,28 @@ function TalkedCard({ complaint, active, toneIdx }: { complaint: Complaint; acti
       <Link
         to="/sikayet/$id"
         params={{ id: complaintLinkId(complaint) }}
-        className={cn("block flex-1", active ? "text-[#272635]" : "text-white")}
+        className={cn(
+          "line-clamp-3 font-semibold text-xl leading-snug lg:text-3xl",
+          active ? "text-neutral-800" : "text-white",
+        )}
       >
-        <h3 className="line-clamp-2 font-bold text-[18px] leading-snug lg:text-[22px] lg:leading-tight">{complaint.title}</h3>
+        {complaint.title}
       </Link>
 
       <Link
         to="/firma/$slug"
         params={{ slug: complaint.companySlug }}
         className={cn(
-          "mt-6 inline-flex max-w-full items-center gap-2.5 text-[13px] font-semibold transition-opacity hover:opacity-80",
-          active ? "text-[#626692]" : "text-white/90",
+          "inline-flex max-w-full items-center gap-2.5 text-[13px] font-semibold lg:text-base",
+          active ? "text-[#626692]" : "text-white",
         )}
       >
-        <span
-          className={cn(
-            "grid size-8 shrink-0 place-items-center rounded-lg",
-            active ? "bg-[#f3f4f8] text-[#85878e]" : "bg-white/10 text-white/80",
-          )}
-        >
-          <ChevronRight className="size-4" aria-hidden />
-        </span>
-        <BrandListLogo name={complaint.companyName} slug={complaint.companySlug} size={32} className="rounded-lg" />
+        <BrandListLogo
+          name={complaint.companyName}
+          slug={complaint.companySlug}
+          size={36}
+          className="rounded-lg"
+        />
         <span className="truncate">{complaint.companyName}</span>
       </Link>
     </article>
@@ -126,17 +140,18 @@ export function TalkedCarousel({ items, updatedAt }: Props) {
   };
 
   return (
-    <div className="home-talked-shell">
-      <div className="home-talked-green" aria-hidden />
-      <section aria-roledescription="carousel" className="relative z-10">
-        <div className="home-talked-header mx-auto flex max-w-[1170px] items-center justify-between px-4 pb-8 pt-6 lg:pb-12 lg:pt-10">
-          <h2 className="font-medium text-2xl text-[#85878e] lg:text-[30px]">Най-обсъждани</h2>
-          <div className="flex items-center gap-2.5 lg:gap-3">
+    <div className="relative overflow-hidden pt-13 pb-24 md:pb-48 before:absolute before:right-0 before:bottom-0 before:-z-[1] before:-mr-16 before:h-48 before:w-48 before:rounded-tr-full before:bg-[#3ad08f] md:before:left-[44%] md:before:h-1/2 md:before:w-1/4 after:absolute after:top-0 after:right-0 after:-z-[2] after:h-full after:w-32 after:rounded-tl-[90px] after:bg-[#695de9] md:after:w-[56%]">
+      <section aria-roledescription="carousel">
+        <div className="container mb-12 flex max-w-6xl items-center justify-between px-4 lg:mb-24 lg:justify-start">
+          <h2 className="font-semibold text-[#85878e] text-xl lg:font-medium lg:text-[30px]">
+            Най-обсъждани
+          </h2>
+          <div className="flex items-center gap-3 text-white lg:ml-[15%]">
             <button
               type="button"
               aria-label="Предишна"
               onClick={() => scrollBy(-1)}
-              className="inline-flex size-10 shrink-0 items-center justify-center rounded-full border-2 border-[#e8eaef] text-[#626692] transition hover:bg-[#f3f4f8] lg:size-[52px] lg:border-white/25 lg:text-white lg:hover:bg-white/10"
+              className="inline-flex size-9 shrink-0 items-center justify-center rounded-full border-2 border-current/20 text-sm shadow-sm outline-none transition-all hover:scale-110 hover:bg-current/10 lg:size-13"
             >
               <ChevronLeft className="size-5" aria-hidden />
             </button>
@@ -144,7 +159,7 @@ export function TalkedCarousel({ items, updatedAt }: Props) {
               type="button"
               aria-label="Следваща"
               onClick={() => scrollBy(1)}
-              className="inline-flex size-10 shrink-0 items-center justify-center rounded-full border-2 border-[#e8eaef] text-[#626692] transition hover:bg-[#f3f4f8] lg:size-[52px] lg:border-white/25 lg:text-white lg:hover:bg-white/10"
+              className="inline-flex size-9 shrink-0 items-center justify-center rounded-full border-2 border-current/20 text-sm shadow-sm outline-none transition-all hover:scale-110 hover:bg-current/10 lg:size-13"
             >
               <ChevronRight className="size-5" aria-hidden />
             </button>
@@ -155,21 +170,25 @@ export function TalkedCarousel({ items, updatedAt }: Props) {
           ref={trackRef}
           role="region"
           aria-live="off"
-          className="home-talked-track flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth pb-4 [scrollbar-width:none] lg:gap-6 [&::-webkit-scrollbar]:hidden"
+          className="home-talked-track flex snap-x snap-mandatory flex-nowrap gap-x-20 overflow-x-auto scroll-smooth [scrollbar-width:none] md:after:block md:after:w-1/4 md:after:shrink-0 [&::-webkit-scrollbar]:hidden"
         >
           {list.map((c, i) => (
-            <TalkedCard key={c.id} complaint={c} active={i === index} toneIdx={i} />
+            <TalkedCard key={c.id} complaint={c} active={i === index} />
           ))}
           {list.length === 0 && (
             <p className="px-4 text-sm text-white/70">Все още няма данни.</p>
           )}
         </div>
 
-        {updatedAt && (
-          <p className="relative z-10 mx-auto mt-4 max-w-[1170px] px-4 text-right text-[11px] text-white/50 tabular-nums lg:text-xs">
-            {updatedAt.toLocaleTimeString("bg-BG", { hour: "2-digit", minute: "2-digit" })} · обновяване на 30 мин
+        {updatedAt ? (
+          <p className="container mt-4 max-w-6xl px-4 text-right text-[11px] text-white/50 tabular-nums lg:text-xs">
+            {updatedAt.toLocaleTimeString("bg-BG", {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}{" "}
+            · обновяване на 30 мин
           </p>
-        )}
+        ) : null}
       </section>
     </div>
   );
