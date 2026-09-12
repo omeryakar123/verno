@@ -1,5 +1,4 @@
 import { Search } from "lucide-react";
-import { SiteLogoResponsive } from "@/components/site-logo-mark";
 
 const BANNER = {
   mobile: {
@@ -120,10 +119,11 @@ export function HeroSection({ search, onSearchChange, onSubmit }: Props) {
       <div className="home-container relative z-10 px-4 lg:max-w-6xl lg:px-0">
         <div className="lg:w-[46.3%] lg:pt-20">
           <div className="mb-5 lg:mb-28">
-            <h1 className="font-semibold text-[#383838] text-[36px] leading-[1.08] tracking-[0.5px] sm:text-[43px] sm:leading-tight sm:tracking-[1px] lg:text-[61px] lg:leading-[1.12]">
-              За решение
+            <h1 className="font-semibold text-[#383838] text-[36px] leading-[1.12] tracking-[0.5px] sm:text-[43px] sm:leading-tight sm:tracking-[1px] lg:text-[56px] lg:leading-[1.15]">
+              Сподели проблема.
+              <br />
+              <span className="text-brand">Намери решение.</span>
             </h1>
-            <SiteLogoResponsive className="mt-2 h-[34px] sm:mt-3 sm:h-[40px] lg:h-[56px]" />
           </div>
 
           <form onSubmit={onSubmit}>
