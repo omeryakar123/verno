@@ -104,7 +104,7 @@ export function seoHead(input: SeoInput) {
 export function privateHead(title: string, path = "/") {
   return seoHead({
     title,
-    description: "Bu sayfa arama motorlarında listelenmez.",
+    description: "Тази страница не се индексира от търсачките.",
     path,
     noindex: true,
   });

@@ -43,20 +43,20 @@ type AssistResponse = {
 };
 
 const STEPS: { n: WizardStep; label: string; short: string }[] = [
-  { n: 1, label: "Şikayet Detayı", short: "Detay" },
-  { n: 2, label: "Marka", short: "Marka" },
-  { n: 3, label: "Belge", short: "Belge" },
+  { n: 1, label: "Детайли на жалбата", short: "Детайли" },
+  { n: 2, label: "Марка", short: "Марка" },
+  { n: 3, label: "Документи", short: "Документи" },
 ];
 
 const MORE_PROMPT =
-  "Başka eklemek istediğiniz bir detay var mı? Yoksa «Hayır» yazarak düzenlenmiş özeti hazırlayabilirim.";
+  "Има ли още детайли, които искате да добавите? Или напишете «Не», за да подготвя редактираното резюме.";
 
 function isDecliningMore(text: string): boolean {
-  const t = text.toLowerCase().trim().replace(/[.!?,]/g, "");
+  const t = text.toLowerCase().trim().replace(/[.!?,«»]/g, "");
   if (t.length > 100) return false;
   return (
-    /^(hayır|hayir|yok|tamam|devam|onay|onaylıyorum|onayliyorum|bu kadar|yeter|ok|olur|istemiyorum|gerek yok|teşekkürler|tesekkurler|hayır teşekkür|hayir tesekkur)/.test(t) ||
-    /eklemek istemiyorum|başka (bir )?şey yok|baska (bir )?sey yok|^(hayır|hayir) .*(yok|gerek)/.test(t)
+    /^(hayır|hayir|yok|tamam|devam|onay|onaylıyorum|onayliyorum|bu kadar|yeter|ok|olur|istemiyorum|gerek yok|teşekkürler|tesekkurler|hayır teşekkür|hayir tesekkur|не|няма|добре|ок|окей|потвърждавам|съгласен|това е всичко|благодаря)/.test(t) ||
+    /eklemek istemiyorum|başka (bir )?şey yok|baska (bir )?sey yok|^(hayır|hayir) .*(yok|gerek)|не искам да добавя|няма (нищо )?друго|^(не) .*(няма|искам)/.test(t)
   );
 }
 
@@ -148,7 +148,7 @@ export function ComplaintWizard({
         if (cancelled) return;
         const text =
           j?.greeting?.trim() ||
-          "Merhaba. Hangi site veya markayla sorun yaşadınız? Kısaca anlatın.";
+          "Здравейте. С кой сайт или марка имате проблем? Разкажете накратко.";
         setMessages((prev) => (prev.length === 0 ? [{ role: "bot", text }] : prev));
         setGreetingLoaded(true);
       })
@@ -159,7 +159,7 @@ export function ComplaintWizard({
               ? [
                   {
                     role: "bot",
-                    text: "Merhaba. Hangi site veya markayla sorun yaşadınız? Kısaca anlatın.",
+                    text: "Здравейте. С кой сайт или марка имате проблем? Разкажете накратко.",
                   },
                 ]
               : prev,
@@ -271,7 +271,7 @@ export function ComplaintWizard({
       });
 
       const json = (await res.json().catch(() => ({}))) as AssistResponse & { error?: string };
-      if (!res.ok) throw new Error(json.error ?? "Asistan yanıt veremedi");
+      if (!res.ok) throw new Error(json.error ?? "Асистентът не отговори");
 
       if (json.title?.trim()) setTitle(json.title.trim());
       if (json.body?.trim()) setBody(json.body.trim());
@@ -308,12 +308,12 @@ export function ComplaintWizard({
         setMessages((prev) => [...prev, { role: "bot", text: json.reply }]);
       }
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Asistan hatası");
+      toast.error(e instanceof Error ? e.message : "Грешка на асистента");
       setMessages((prev) => [
         ...prev,
         {
           role: "bot",
-          text: "Bağlantı sorunu yaşadım. Lütfen sorununuzu biraz daha detaylı yazın.",
+          text: "Имам проблем с връзката. Моля, опишете проблема си малко по-подробно.",
         },
       ]);
     } finally {
@@ -344,7 +344,7 @@ export function ComplaintWizard({
       chatInputRef.current?.focus({ preventScroll: true });
     });
 
-    if (step1Phase === "summary" && /^(onay|onaylıyorum|onayliyorum|evet|tamam|kabul|uygun)/i.test(text)) {
+    if (step1Phase === "summary" && /^(onay|onaylıyorum|onayliyorum|evet|tamam|kabul|uygun|да|потвърждавам|съгласен|добре|ок)/i.test(text)) {
       if (validateStep1()) setStep(2);
       return;
     }
@@ -373,21 +373,21 @@ export function ComplaintWizard({
       ...prev,
       {
         role: "bot",
-        text: "Tamam, eklemek veya değiştirmek istediğiniz bir şey varsa yazabilirsiniz.",
+        text: "Добре, ако искате да добавите или промените нещо, можете да го напишете.",
       },
     ]);
   }
 
   function validateStep1(): boolean {
     if (body.trim().length < 20) {
-      toast.error("Şikayet detayı en az 20 karakter olmalı.");
+      toast.error("Детайлите на жалбата трябва да са поне 20 символа.");
       return false;
     }
     if (title.trim().length < 6) {
       const auto = body.trim().slice(0, 80).split(/[.!?\n]/)[0]?.trim();
       if (auto && auto.length >= 6) setTitle(auto);
       else {
-        toast.error("Kısa bir başlık girin (en az 6 karakter).");
+        toast.error("Въведете кратко заглавие (поне 6 символа).");
         return false;
       }
     }
@@ -396,19 +396,19 @@ export function ComplaintWizard({
 
   function validateStep2(): boolean {
     if (!brandId) {
-      toast.error("Lütfen bir firma seçin.");
+      toast.error("Моля, изберете марка.");
       return false;
     }
     if (!platformUsername.trim() || platformUsername.trim().length < 2) {
-      toast.error("Platform kullanıcı adınızı girin.");
+      toast.error("Въведете потребителското си име в платформата.");
       return false;
     }
     if (looksLikeFakePlatformUsername(platformUsername)) {
-      toast.error("Lütfen bahis/casino sitesindeki gerçek kullanıcı adınızı yazın.");
+      toast.error("Моля, въведете реалното си потребителско име.");
       return false;
     }
     if (rating < 1) {
-      toast.error("Lütfen 1–5 yıldız puan verin.");
+      toast.error("Моля, дайте оценка от 1 до 5 звезди.");
       return false;
     }
     return true;
@@ -416,15 +416,15 @@ export function ComplaintWizard({
 
   function validateStep3(): boolean {
     if (files.length === 0) {
-      toast.error("En az bir kanıt dosyası zorunludur.");
+      toast.error("Поне един документ за доказателство е задължителен.");
       return false;
     }
     if (!hasRequiredVisualEvidence(files)) {
-      toast.error("En az bir ekran görüntüsü veya video yüklemelisiniz.");
+      toast.error("Трябва да качите поне един екранен снимка или видео.");
       return false;
     }
     if (!kvkk) {
-      toast.error("KVKK onayı zorunludur.");
+      toast.error("Съгласието за лични данни е задължително.");
       return false;
     }
     return true;
@@ -511,7 +511,7 @@ export function ComplaintWizard({
           error?: string;
         };
 
-        if (!res.ok || !json.id) throw new Error(json.error ?? "Şikayet oluşturulamadı.");
+        if (!res.ok || !json.id) throw new Error(json.error ?? "Жалбата не можа да бъде създадена.");
 
         onSuccess({
           id: json.id,
@@ -520,7 +520,7 @@ export function ComplaintWizard({
           issues: json.issues ?? [],
         });
       } catch (e) {
-        toast.error(e instanceof Error ? e.message : "Şikayet oluşturulamadı.");
+        toast.error(e instanceof Error ? e.message : "Жалбата не можа да бъде създадена.");
       } finally {
         setSubmitting(false);
       }
@@ -536,7 +536,7 @@ export function ComplaintWizard({
           <div className="flex items-center justify-between gap-2 mb-2">
             <SiteLogoMark tone="on-dark" linked />
             <span className="text-[12px] font-semibold text-white/70">
-              {writeMode ? `Adım ${step}/3` : "Başlangıç"}
+              {writeMode ? `Стъпка ${step}/3` : "Начало"}
             </span>
           </div>
           <div className="flex gap-2">
@@ -557,7 +557,7 @@ export function ComplaintWizard({
             })}
           </div>
           <p className="mt-2 text-[13px] font-semibold text-white">
-            {writeMode ? STEPS.find((s) => s.n === step)?.label : "Nasıl oluşturmak istersiniz?"}
+            {writeMode ? STEPS.find((s) => s.n === step)?.label : "Как искате да създадете жалбата?"}
           </p>
         </div>
 
@@ -571,10 +571,10 @@ export function ComplaintWizard({
             </div>
 
             {sidebarBrandLabel ? (
-              <p className="text-[13px] text-white/70 mb-1">{sidebarBrandLabel} ile ilgili</p>
+              <p className="text-[13px] text-white/70 mb-1">Свързано с {sidebarBrandLabel}</p>
             ) : null}
             <h1 className="font-display text-2xl lg:text-[1.65rem] font-black tracking-tight leading-tight">
-              {writeMode === "manual" ? "Kendin Yaz" : writeMode === "assistant" ? "Asistan ile Oluştur" : "Şikayet Oluştur"}
+              {writeMode === "manual" ? "Напиши сам" : writeMode === "assistant" ? "С AI асистент" : "Напиши жалба"}
             </h1>
 
             <ol className="mt-10 space-y-5 flex-1">
@@ -607,7 +607,7 @@ export function ComplaintWizard({
             </ol>
 
             <p className="mt-6 text-[11px] text-white/40 leading-relaxed">
-              Şikayetiniz moderasyon onayından sonra yayına alınır. Kanıt dosyası zorunludur.
+              Жалбата ви се публикува след модерация. Документ за доказателство е задължителен.
             </p>
           </aside>
 
@@ -619,9 +619,9 @@ export function ComplaintWizard({
             <header className="hidden sm:flex items-center justify-between gap-4 px-5 sm:px-8 py-3 sm:py-4 border-b border-rule shrink-0">
               <SiteLogoTitle className="text-[15px] lg:hidden gap-0" />
               <div className="flex items-center gap-4 text-[13px] text-navy-mid ml-auto">
-                <Link to="/sikayetler" className="hover:text-brand">Şikayetler</Link>
+                <Link to="/sikayetler" className="hover:text-brand">Жалби</Link>
                 <span className="text-rule">|</span>
-                <Link to="/markalar" className="hover:text-brand">Markalar</Link>
+                <Link to="/markalar" className="hover:text-brand">Марки</Link>
               </div>
             </header>
 
@@ -712,7 +712,7 @@ export function ComplaintWizard({
                   disabled={submitting}
                   className="inline-flex items-center gap-2 h-10 sm:h-11 px-4 sm:px-5 rounded-full ring-1 ring-rule text-[13px] font-semibold text-navy hover:bg-surface disabled:opacity-50"
                 >
-                  <ArrowLeft className="size-4" /> Geri
+                  <ArrowLeft className="size-4" /> Назад
                 </button>
               ) : writeMode === "manual" ? (
                 <button
@@ -721,7 +721,7 @@ export function ComplaintWizard({
                   disabled={submitting}
                   className="inline-flex items-center gap-2 h-10 sm:h-11 px-4 sm:px-5 rounded-full ring-1 ring-rule text-[13px] font-semibold text-navy hover:bg-surface disabled:opacity-50"
                 >
-                  <ArrowLeft className="size-4" /> Yöntem seç
+                  <ArrowLeft className="size-4" /> Избор на метод
                 </button>
               ) : step1Phase === "summary" ? (
                 <button
@@ -730,7 +730,7 @@ export function ComplaintWizard({
                   disabled={submitting || aiLoading}
                   className="inline-flex items-center gap-2 h-10 sm:h-11 px-4 sm:px-5 rounded-full ring-1 ring-rule text-[13px] font-semibold text-navy hover:bg-surface disabled:opacity-50"
                 >
-                  <ArrowLeft className="size-4" /> Düzenle
+                  <ArrowLeft className="size-4" /> Редактирай
                 </button>
               ) : (
                 <button
@@ -739,7 +739,7 @@ export function ComplaintWizard({
                   disabled={submitting || aiLoading}
                   className="inline-flex items-center gap-2 h-10 sm:h-11 px-4 sm:px-5 rounded-full ring-1 ring-rule text-[13px] font-semibold text-navy hover:bg-surface disabled:opacity-50"
                 >
-                  <ArrowLeft className="size-4" /> Yöntem seç
+                  <ArrowLeft className="size-4" /> Избор на метод
                 </button>
               )}
 
@@ -752,13 +752,13 @@ export function ComplaintWizard({
                 >
                   {submitting && <Loader2 className="size-4 animate-spin" />}
                   {step === 3 ? (
-                    <>Gönder <Send className="size-4" /></>
+                    <>Изпрати <Send className="size-4" /></>
                   ) : step === 1 && writeMode === "manual" ? (
-                    <>Devam Et <ArrowRight className="size-4" /></>
+                    <>Продължи <ArrowRight className="size-4" /></>
                   ) : step === 1 ? (
-                    <>Onaylıyorum <Check className="size-4" /></>
+                    <>Потвърждавам <Check className="size-4" /></>
                   ) : (
-                    <>Devam Et <ArrowRight className="size-4" /></>
+                    <>Продължи <ArrowRight className="size-4" /></>
                   )}
                 </button>
               )}
@@ -775,10 +775,10 @@ function ModeChooser({ onSelect }: { onSelect: (mode: WriteMode) => void }) {
     <div className="max-w-2xl mx-auto w-full py-2 sm:py-4">
       <div className="text-center mb-6 sm:mb-8">
         <h2 className="font-display text-xl sm:text-2xl font-bold text-ink tracking-tight">
-          Şikayetinizi nasıl oluşturmak istersiniz?
+          Как искате да създадете жалбата си?
         </h2>
         <p className="mt-2 text-[13px] sm:text-[14px] text-navy-mid leading-relaxed max-w-md mx-auto">
-          Yapay zeka asistanı metni sizin için düzenler veya kendi metninizi doğrudan yazarsınız.
+          AI асистентът ще подготви текста за вас или можете да напишете сами.
         </p>
       </div>
 
@@ -791,12 +791,12 @@ function ModeChooser({ onSelect }: { onSelect: (mode: WriteMode) => void }) {
           <div className="size-12 rounded-xl bg-brand/15 grid place-items-center mb-4 group-hover:bg-brand/25 transition">
             <Sparkles className="size-6 text-brand" />
           </div>
-          <h3 className="font-display text-[17px] font-bold text-ink">Şikayet asistanı ile oluştur</h3>
+          <h3 className="font-display text-[17px] font-bold text-ink">С AI асистент</h3>
           <p className="mt-2 text-[13px] text-navy-mid leading-relaxed">
-            Sorununuzu sohbet ederek anlatın; asistan özet başlık ve metni sizin için hazırlasın.
+            Опишете проблема си в чат; асистентът ще подготви заглавие и текст.
           </p>
           <span className="mt-4 inline-flex items-center gap-1.5 text-[13px] font-semibold text-brand">
-            Asistanla başla <ArrowRight className="size-4" />
+            Започни с асистента <ArrowRight className="size-4" />
           </span>
         </button>
 
@@ -808,12 +808,12 @@ function ModeChooser({ onSelect }: { onSelect: (mode: WriteMode) => void }) {
           <div className="size-12 rounded-xl bg-surface grid place-items-center mb-4 ring-1 ring-rule group-hover:ring-brand/30 transition">
             <FileText className="size-6 text-navy" />
           </div>
-          <h3 className="font-display text-[17px] font-bold text-ink">Kendin yaz</h3>
+          <h3 className="font-display text-[17px] font-bold text-ink">Напиши сам</h3>
           <p className="mt-2 text-[13px] text-navy-mid leading-relaxed">
-            Şikayet metnini ve özet başlığı kendiniz yazın; ardından marka, kullanıcı adı ve kanıt ekleyin.
+            Напишете текста и заглавието сами; след това добавете марка, потребителско име и доказателства.
           </p>
           <span className="mt-4 inline-flex items-center gap-1.5 text-[13px] font-semibold text-brand">
-            Kendin yaz <ArrowRight className="size-4" />
+            Напиши сам <ArrowRight className="size-4" />
           </span>
         </button>
       </div>
@@ -836,49 +836,49 @@ function StepManualWrite({
     <div className="max-w-2xl mx-auto w-full space-y-6">
       <div>
         <div className="inline-flex items-center gap-2 rounded-full bg-surface px-3 py-1.5 text-[12px] font-semibold text-navy ring-1 ring-rule">
-          <PenLine className="size-3.5" /> Kendin yaz
+          <PenLine className="size-3.5" /> Напиши сам
         </div>
-        <h2 className="mt-3 font-display text-xl font-bold text-ink">Şikayetinizi yazın</h2>
+        <h2 className="mt-3 font-display text-xl font-bold text-ink">Напишете жалбата си</h2>
         <p className="mt-1 text-[13px] text-navy-mid leading-relaxed">
-          Yaşadığınız sorunu müşteri şikayeti formatında anlatın. Sonraki adımda marka ve platform
-          kullanıcı adınızı gireceksiniz.
+          Опишете проблема си като потребителска жалба. На следващата стъпка ще изберете марка и
+          потребителско име.
         </p>
       </div>
 
       <div className="rounded-2xl ring-1 ring-rule bg-surface/40 p-4 sm:p-5 space-y-4">
         <div>
           <label htmlFor="complaint-title" className="text-[12px] font-medium text-navy-mid">
-            Kısa başlık / özet <span className="text-danger">*</span>
+            Кратко заглавие / резюме <span className="text-danger">*</span>
           </label>
           <input
             id="complaint-title"
             value={title}
             onChange={(e) => onTitle(e.target.value)}
-            placeholder="Örn: Yatırım hesaba geçmedi, 3 gündür bekliyorum"
+            placeholder="Напр.: Плащането не е постъпило, чакам 3 дни"
             maxLength={120}
             className="mt-1.5 w-full h-11 rounded-xl ring-1 ring-rule px-3 text-sm bg-card focus:outline-none focus:ring-2 focus:ring-brand/40"
           />
-          <p className="mt-1 text-[11px] text-navy-mid">En az 6 karakter</p>
+          <p className="mt-1 text-[11px] text-navy-mid">Поне 6 символа</p>
         </div>
 
         <div>
           <label htmlFor="complaint-body" className="text-[12px] font-medium text-navy-mid">
-            Şikayet detayı <span className="text-danger">*</span>
+            Детайли на жалбата <span className="text-danger">*</span>
           </label>
           <textarea
             id="complaint-body"
             value={body}
             onChange={(e) => onBody(e.target.value)}
-            placeholder="Ne oldu, ne zaman oldu, ne kadar tutar, site ne yanıt verdi… Mümkün olduğunca net yazın."
+            placeholder="Какво се случи, кога, каква сума, какво отговори марката… Бъдете възможно най-ясни."
             rows={8}
             className="mt-1.5 w-full rounded-xl ring-1 ring-rule px-3 py-3 text-sm bg-card focus:outline-none focus:ring-2 focus:ring-brand/40 resize-y min-h-[160px] leading-relaxed"
           />
-          <p className="mt-1 text-[11px] text-navy-mid">En az 20 karakter · {body.trim().length} karakter</p>
+          <p className="mt-1 text-[11px] text-navy-mid">Поне 20 символа · {body.trim().length} символа</p>
         </div>
       </div>
 
       <p className="text-[12px] text-navy-mid text-center px-2">
-        «Devam Et» ile marka seçimi ve kullanıcı adı adımına geçersiniz; kanıt yükleme son adımda.
+        С «Продължи» преминавате към избор на марка и потребителско име; качването на доказателства е на последната стъпка.
       </p>
     </div>
   );
@@ -921,24 +921,24 @@ function StepDetail({
             <div className="flex items-center gap-2 mb-3">
               <Sparkles className="size-4 text-brand shrink-0" />
               <p className="text-[12px] font-semibold uppercase tracking-wider text-brand">
-                Düzenlenmiş şikayet özeti
+                Редактирано резюме на жалбата
               </p>
             </div>
             <h3 className="font-display text-[17px] sm:text-[18px] font-bold text-ink leading-snug">
-              {title || "Başlık hazırlanıyor…"}
+              {title || "Заглавието се подготвя…"}
             </h3>
             <p className="mt-3 text-[14px] text-navy leading-relaxed whitespace-pre-wrap">
-              {body || "Metin hazırlanıyor…"}
+              {body || "Текстът се подготвя…"}
             </p>
             {draftQuality === "excellent" && (
               <p className="mt-3 text-[12px] text-brand font-medium">
-                Detaylı ve yayına hazır bir özet.
+                Подробно резюме, готово за публикуване.
               </p>
             )}
           </div>
 
           <p className="text-[13px] text-navy-mid text-center px-2">
-            Özet uygunsa «Onaylıyorum» ile marka adımına geçin veya «Düzenle» ile sohbete dönün.
+            Ако резюмето е подходящо, натиснете «Потвърждавам» за стъпката с марката или «Редактирай» за чата.
           </p>
         </div>
       </div>
@@ -949,10 +949,10 @@ function StepDetail({
     <div className="flex-1 flex flex-col max-w-2xl mx-auto w-full min-h-0 px-3 sm:px-8 py-3 sm:py-4">
       <div className="shrink-0 mb-3 sm:mb-4">
         <div className="inline-flex items-center gap-2 rounded-full bg-brand-soft px-3 py-1.5 text-[12px] font-semibold text-brand ring-1 ring-brand/15">
-          <Sparkles className="size-3.5" /> Yapay zeka asistanı
+          <Sparkles className="size-3.5" /> AI асистент
         </div>
         <p className="mt-2 text-[13px] text-navy-mid leading-relaxed">
-          Sorununuzu doğal bir dille anlatın; asistan metni sizin için düzenleyecek.
+          Опишете проблема си естествено; асистентът ще подготви текста за вас.
         </p>
       </div>
 
@@ -983,14 +983,14 @@ function StepDetail({
         {aiLoading && (
           <div className="flex items-center gap-2 text-[13px] text-navy-mid pl-10">
             <Loader2 className="size-4 animate-spin text-brand" />
-            Yanıt hazırlanıyor…
+            Отговорът се подготвя…
           </div>
         )}
         <div ref={chatEndRef} />
       </div>
 
       <div className="shrink-0 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] bg-card border-t border-rule/60 -mx-3 sm:-mx-8 px-3 sm:px-8">
-        <label className="sr-only" htmlFor="complaint-chat-input">Mesajınız</label>
+        <label className="sr-only" htmlFor="complaint-chat-input">Вашето съобщение</label>
         <div className="rounded-2xl border-2 border-brand bg-white shadow-[0_8px_32px_rgba(15,23,42,0.14)] flex items-end gap-2 px-3 py-2.5">
           <textarea
             ref={chatInputRef}
@@ -1003,7 +1003,7 @@ function StepDetail({
                 onChatSend();
               }
             }}
-            placeholder="Mesajınızı yazın…"
+            placeholder="Напишете съобщението си…"
             disabled={aiLoading}
             rows={2}
             className="flex-1 bg-white text-[15px] sm:text-[14px] text-[#1a2332] placeholder:text-[#64748b] focus:outline-none min-w-0 disabled:opacity-60 py-1.5 resize-none leading-relaxed caret-brand"
@@ -1013,7 +1013,7 @@ function StepDetail({
             type="button"
             disabled={aiLoading || !chatInput.trim()}
             onClick={onChatSend}
-            aria-label="Gönder"
+            aria-label="Изпрати"
             className="size-11 rounded-xl bg-brand text-brand-foreground grid place-items-center shrink-0 hover:brightness-105 disabled:opacity-50 mb-0.5"
           >
             <Send className="size-4" />
@@ -1060,7 +1060,7 @@ function StepBrand({
       {/* Şikayet özeti kartı */}
       {title.trim() && (
         <div className="rounded-2xl ring-1 ring-brand/20 bg-brand-soft/30 p-4 sm:p-5">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-brand mb-2">Şikayet özeti</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-brand mb-2">Резюме на жалбата</p>
           <h3 className="font-display text-[16px] font-bold text-ink leading-snug">{title}</h3>
           {body.trim() && (
             <p className="mt-2 text-[13px] text-navy line-clamp-4 leading-relaxed whitespace-pre-wrap">{body}</p>
@@ -1070,29 +1070,29 @@ function StepBrand({
 
       <div>
         <h2 className="font-display text-xl font-bold text-ink">
-          {selected?.name ?? detectedBrandName ?? "Marka"} bilgileri
+          Информация за {selected?.name ?? detectedBrandName ?? "марката"}
         </h2>
         <p className="mt-1 text-[13px] text-navy-mid leading-relaxed">
-          Şikayetinizin doğru firmaya ulaşması için markayı onaylayın ve platform bilgilerinizi girin.
+          Потвърдете марката и въведете данните си, за да стигне жалбата до правилната марка.
         </p>
       </div>
 
       <div className="rounded-2xl ring-1 ring-rule bg-surface/40 p-4 sm:p-5 space-y-4">
         <div>
-          <label className="text-[12px] font-medium text-navy-mid">Firma</label>
+          <label className="text-[12px] font-medium text-navy-mid">Марка</label>
           <div className="mt-1.5">
             <Combobox
               options={brands.map((b) => ({ value: b.id, label: b.name }))}
               value={brandId}
               onChange={onBrandId}
-              placeholder="Şikayet ettiğiniz firmayı seçin"
-              searchPlaceholder="Firma ara…"
-              emptyText="Firma bulunamadı."
+              placeholder="Изберете марката, за която подавате жалба"
+              searchPlaceholder="Търсене на марка…"
+              emptyText="Марката не е намерена."
             />
           </div>
           {detectedBrandName && !brandId && (
             <p className="mt-1.5 text-[12px] text-brand">
-              AI önerisi: <button type="button" className="font-semibold underline" onClick={() => {
+              AI предложение: <button type="button" className="font-semibold underline" onClick={() => {
                 const m = brands.find((b) => b.name.toLowerCase() === detectedBrandName.toLowerCase());
                 if (m) onBrandId(m.id);
               }}>{detectedBrandName}</button>
@@ -1101,36 +1101,36 @@ function StepBrand({
         </div>
 
         <div>
-          <label className="text-[12px] font-medium text-navy-mid">Kategori</label>
+          <label className="text-[12px] font-medium text-navy-mid">Категория</label>
           <div className="mt-1.5">
             <Combobox
               options={cats.map((c) => ({ value: c.id, label: c.name }))}
               value={categoryId}
               onChange={onCategoryId}
-              placeholder="Kategori seçin"
-              searchPlaceholder="Kategori ara…"
-              emptyText="Kategori bulunamadı."
+              placeholder="Изберете категория"
+              searchPlaceholder="Търсене на категория…"
+              emptyText="Категорията не е намерена."
             />
           </div>
         </div>
 
         <div>
           <label className="text-[12px] font-medium text-navy-mid">
-            Platform kullanıcı adınız <span className="text-danger">*</span>
+            Вашето потребителско име <span className="text-danger">*</span>
           </label>
           <input
             value={platformUsername}
             onChange={(e) => onPlatformUsername(e.target.value)}
-            placeholder="Bahis/casino sitesindeki kullanıcı adınız"
+            placeholder="Потребителско име в платформата на марката"
             className="mt-1.5 w-full h-11 rounded-xl ring-1 ring-rule px-3 text-sm bg-card focus:outline-none focus:ring-2 focus:ring-brand/40"
           />
         </div>
 
         <div>
           <label className="text-[12px] font-medium text-navy-mid">
-            Deneyim puanınız <span className="text-danger">*</span>
+            Вашата оценка на опита <span className="text-danger">*</span>
           </label>
-          <p className="text-[11px] text-navy-mid mt-0.5">1 = çok kötü, 5 = kabul edilebilir</p>
+          <p className="text-[11px] text-navy-mid mt-0.5">1 = много лошо, 5 = приемливо</p>
           <div className="mt-2 flex gap-1">
             {[1, 2, 3, 4, 5].map((n) => (
               <button
@@ -1138,7 +1138,7 @@ function StepBrand({
                 type="button"
                 onClick={() => onRating(n)}
                 className="p-1 rounded hover:bg-surface transition"
-                aria-label={`${n} yıldız`}
+                aria-label={`${n} звезди`}
               >
                 <Star
                   className={cn(
@@ -1173,15 +1173,16 @@ function StepEvidence({
   return (
     <div className="max-w-xl mx-auto space-y-6 px-3 sm:px-0 py-2 sm:py-0">
       <div>
-        <h2 className="font-display text-xl font-bold text-ink">Kanıt ekleyin</h2>
+        <h2 className="font-display text-xl font-bold text-ink">Добавете доказателства</h2>
         <p className="mt-1 text-[13px] text-navy-mid leading-relaxed">
           {selectedBrand ? (
             <>
-              <span className="font-semibold text-ink">{selectedBrand.name}</span> ile ilgili ekran
-              görüntüsü veya video yükleyin. Moderasyon sonrası kanıtlar herkese açık yayınlanır.
+              Качете екранна снимка или видео, свързано с{" "}
+              <span className="font-semibold text-ink">{selectedBrand.name}</span>. След модерация
+              доказателствата се публикуват публично.
             </>
           ) : (
-            <>Sorunu kanıtlayan ekran görüntüsü veya video ekleyin. Onay sonrası herkese açık olur.</>
+            <>Добавете екранна снимка или видео, доказващо проблема. След одобрение ще бъде публично.</>
           )}
         </p>
       </div>
@@ -1191,10 +1192,10 @@ function StepEvidence({
         {files.length === 0 && (
           <div className="mt-4 flex flex-col items-center gap-2 text-center">
             <span className="inline-flex items-center gap-2 rounded-full bg-brand text-brand-foreground px-5 h-11 text-[13px] font-semibold pointer-events-none">
-              <ImagePlus className="size-4" /> Görsel veya video ekle
+              <ImagePlus className="size-4" /> Добави изображение или видео
             </span>
             <p className="text-[12px] text-navy-mid max-w-xs">
-              Ekran görüntüsü, dekont veya video — en az bir görsel zorunlu
+              Екранна снимка, разписка или видео — поне едно изображение е задължително
             </p>
           </div>
         )}
@@ -1202,8 +1203,8 @@ function StepEvidence({
 
       {files.length > 0 && (
         <div className="rounded-xl bg-surface ring-1 ring-rule px-4 py-3 text-[12px] text-navy-mid leading-relaxed">
-          Kanıtlar moderasyon onayından sonra şikayet sayfasında herkese açık görünür. Kişisel
-          veriler moderasyon ekibi tarafından gizlenebilir.
+          Доказателствата се виждат публично на страницата на жалбата след модерация. Личните
+          данни могат да бъдат скрити от екипа за модерация.
         </div>
       )}
 
@@ -1215,11 +1216,11 @@ function StepEvidence({
           className="mt-0.5 size-4 accent-brand"
         />
         <span>
-          KVKK kapsamında{" "}
+          Прочетох{" "}
           <Link to="/kvkk" className="text-brand underline">
-            aydınlatma metnini
+            информацията за личните данни
           </Link>{" "}
-          okudum, kişisel verilerimin işlenmesini onaylıyorum.
+          и одобрявам обработката на личните ми данни.
         </span>
       </label>
     </div>

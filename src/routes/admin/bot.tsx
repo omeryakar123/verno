@@ -169,7 +169,7 @@ const EMPTY_FILTERS: Filters = {
 };
 
 const fmtDate = (v: string | null) =>
-  v ? new Date(v).toLocaleString("tr-TR", { dateStyle: "short", timeStyle: "short" }) : "—";
+  v ? new Date(v).toLocaleString("bg-BG", { dateStyle: "short", timeStyle: "short" }) : "—";
 
 function AdminBotPage() {
   const [brands, setBrands] = useState<Brand[]>([]);
@@ -270,7 +270,7 @@ function AdminBotPage() {
   /* -------------------------------- İşlemler ------------------------------ */
 
   async function runMaintenance() {
-    if (!confirm("Migration + marka seed + cevap temizliği çalıştırılsın mı?")) return;
+    if (!confirm("Да се стартират ли миграция + seed на марки + изчистване на отговори?")) return;
     setBusy(true);
     const res = await apiSendJson<{ ok: boolean; seed: { out: string }; clear: { out: string } }>(
       "/api/cron/maintenance",
@@ -280,10 +280,10 @@ function AdminBotPage() {
     setBusy(false);
     if (!res) return;
     if (res.ok) {
-      toast.success(`Bakım tamam. ${res.seed.out} | ${res.clear.out}`);
+      toast.success(`Поддръжката приключи. ${res.seed.out} | ${res.clear.out}`);
       loadOverview();
     } else {
-      toast.error("Bakım kısmen başarısız — logları kontrol edin");
+      toast.error("Поддръжката е частично неуспешна — проверете логовете");
     }
   }
 
@@ -295,7 +295,7 @@ function AdminBotPage() {
     );
     setBusy(false);
     if (res) {
-      toast.success(`${res.complaintsGenerated} şikayet üretildi (${res.brands} marka)`);
+      toast.success(`Генерирани са ${res.complaintsGenerated} жалби (${res.brands} марки)`);
       loadOverview();
       loadComplaints(1);
     }
@@ -320,7 +320,7 @@ function AdminBotPage() {
     });
     setBusy(false);
     if (ok) {
-      toast.success("Bot ayarları kaydedildi");
+      toast.success("Настройките на бота са запазени");
       loadOverview();
     }
   }
@@ -342,7 +342,7 @@ function AdminBotPage() {
     });
     setBusy(false);
     if (ok) {
-      toast.success("Yanıt güncellendi");
+      toast.success("Отговорът е обновен");
       setDetail(null);
       loadComplaints(page);
       loadOverview();
@@ -350,9 +350,9 @@ function AdminBotPage() {
   }
 
   async function removeComplaint(id: string) {
-    if (!confirm("Bu bot şikayeti silinsin mi?")) return;
+    if (!confirm("Да се изтрие ли тази бот жалба?")) return;
     if (await apiSend("/api/admin/bot/complaints", "DELETE", { id })) {
-      toast.success("Silindi");
+      toast.success("Изтрито");
       setDetail(null);
       loadComplaints(page);
       loadOverview();
@@ -365,7 +365,7 @@ function AdminBotPage() {
     <div className="px-6 lg:px-10 py-8 space-y-6">
       <div className="flex items-start gap-4 flex-wrap">
         <div className="flex-1 min-w-[220px]">
-          <div className="eyebrow text-navy-mid">Otomasyon</div>
+          <div className="eyebrow text-navy-mid">Автоматизация</div>
           <h1 className="mt-1 font-display text-3xl font-black tracking-tight text-ink flex items-center gap-2">
             <Bot className="size-7 text-brand" /> Complaint Bot
           </h1>
@@ -376,7 +376,7 @@ function AdminBotPage() {
             onChange={(e) => setScopeBrand(e.target.value)}
             className="h-10 rounded-lg ring-1 ring-rule px-3 text-sm bg-card"
           >
-            <option value="">Tüm markalar</option>
+            <option value="">Всички марки</option>
             {brands.map((b) => (
               <option key={b.id} value={b.id}>
                 {b.name}
@@ -388,20 +388,20 @@ function AdminBotPage() {
             disabled={busy}
             className="h-10 rounded-lg ring-1 ring-rule px-4 text-sm font-semibold inline-flex items-center gap-2 hover:bg-surface disabled:opacity-60"
           >
-            <RefreshCw className="size-4" /> Prod bakımı
+            <RefreshCw className="size-4" /> Prod поддръжка
           </button>
           <button
             onClick={runNow}
             disabled={busy}
             className="h-10 rounded-lg ring-1 ring-rule px-4 text-sm font-semibold inline-flex items-center gap-2 hover:bg-surface disabled:opacity-60"
           >
-            <Play className="size-4" /> Şimdi çalıştır
+            <Play className="size-4" /> Стартирай сега
           </button>
           <button
             onClick={() => setGenerateOpen(true)}
             className="h-10 rounded-lg bg-brand text-brand-foreground px-4 text-sm font-semibold inline-flex items-center gap-2"
           >
-            <Sparkles className="size-4" /> Şikayet Üret (çoklu)
+            <Sparkles className="size-4" /> Генерирай жалби (масово)
           </button>
         </div>
       </div>
@@ -424,12 +424,11 @@ function AdminBotPage() {
             <span>
               {ai.configured ? (
                 <>
-                  AI sağlayıcısı bağlı — model: <b>{ai.provider}</b>
+                  AI доставчикът е свързан — модел: <b>{ai.provider}</b>
                 </>
               ) : (
                 <>
-                  <b>AI_API_KEY tanımlı değil.</b> Bot çalışır ama metinler şablon üreticiden
-                  gelir. fal.ai (uuid:secret) veya OpenRouter (sk-or-v1-…) anahtarını <b>AI_API_KEY</b> ile girin.
+                  <b>AI_API_KEY не е зададен.</b> Ботът работи, но текстовете идват от шаблонен генератор. Въведете fal.ai (uuid:secret) или OpenRouter (sk-or-v1-…) ключ в <b>AI_API_KEY</b>.
                 </>
               )}
             </span>
@@ -441,13 +440,11 @@ function AdminBotPage() {
             <span>
               {ai.synthetic_public ? (
                 <>
-                  <b>Sentetik içerik YAYINDA:</b> bot şikayetleri herkese açık listelerde görünür
-                  ve marka puan ortalamasına girer.
+                  <b>Синтетично съдържание НА ЖИВО:</b> бот жалбите се виждат в публичните списъци и влизат в средната оценка на марката.
                 </>
               ) : (
                 <>
-                  Sentetik içerik yalnızca panelde görünür; herkese açık listelere ve puan
-                  ortalamasına <b>girmez</b> (SYNTHETIC_CONTENT_PUBLIC).
+                  Синтетичното съдържание се вижда само в панела; не влиза в публичните списъци и средната оценка <b>(SYNTHETIC_CONTENT_PUBLIC)</b>.
                 </>
               )}
             </span>
@@ -458,22 +455,22 @@ function AdminBotPage() {
       {/* Pano */}
       {stats && (
         <div className="grid gap-3 grid-cols-2 md:grid-cols-3 xl:grid-cols-5">
-          <StatCard label="Toplam şikayet" value={stats.total.toLocaleString("tr-TR")} />
-          <StatCard label="Bugün" value={stats.today.toLocaleString("tr-TR")} />
+          <StatCard label="Общо жалби" value={stats.total.toLocaleString("bg-BG")} />
+          <StatCard label="Днес" value={stats.today.toLocaleString("bg-BG")} />
           <StatCard
-            label="Ortalama puan"
+            label="Средна оценка"
             value={stats.avg_rating !== null ? stats.avg_rating.toFixed(2) : "—"}
             icon={<Star className="size-4 fill-amber-400 text-amber-400" />}
           />
-          <StatCard label="Yanıt oranı" value={`${stats.response_rate}%`} />
-          <StatCard label="Aktif bot" value={String(stats.active_bots)} />
+          <StatCard label="Процент отговори" value={`${stats.response_rate}%`} />
+          <StatCard label="Активни ботове" value={String(stats.active_bots)} />
         </div>
       )}
 
       {stats && (
         <div className="bg-card rounded-2xl ring-1 ring-rule p-4">
           <div className="text-[12px] font-semibold uppercase tracking-wider text-navy-mid mb-3">
-            Yıldız dağılımı
+            Разпределение на звездите
           </div>
           <div className="space-y-2">
             {[5, 4, 3, 2, 1].map((n) => {
@@ -488,7 +485,7 @@ function AdminBotPage() {
                     <div className="h-full rounded-full bg-brand" style={{ width: `${pct}%` }} />
                   </div>
                   <span className="w-20 shrink-0 text-right text-navy-mid">
-                    {count.toLocaleString("tr-TR")} ({pct}%)
+                    {count.toLocaleString("bg-BG")} ({pct}%)
                   </span>
                 </div>
               );
@@ -496,8 +493,7 @@ function AdminBotPage() {
           </div>
           {stats.failed > 0 && (
             <div className="mt-3 text-[12.5px] text-danger inline-flex items-center gap-1.5">
-              <AlertTriangle className="size-3.5" /> {stats.failed} şikayette yanıt üretilemedi —
-              sonraki çalıştırmada yeniden denenecek.
+              <AlertTriangle className="size-3.5" /> {stats.failed} жалби без генериран отговор — ще се опита отново при следващо изпълнение.
             </div>
           )}
         </div>
@@ -507,22 +503,22 @@ function AdminBotPage() {
       <div className="bg-card rounded-2xl ring-1 ring-rule p-4 md:p-5">
         <div className="flex flex-col sm:flex-row sm:items-end gap-4">
           <div className="flex-1 min-w-0">
-            <div className="font-display font-bold text-ink mb-1">Marka bot ayarları</div>
+            <div className="font-display font-bold text-ink mb-1">Настройки на бота за марка</div>
             <p className="text-[12px] text-navy-mid mb-2">
-              Marka seçin; ayarları kaydedin. Cevapsız modda yalnızca şikayet + yıldız üretilir.
+              Изберете марка и запазете настройките. В режим без отговор се генерират само жалба + звезди.
             </p>
             <Combobox
               options={brands.map((b) => ({ value: b.id, label: b.name }))}
               value={configBrand}
               onChange={setConfigBrand}
-              placeholder="Marka ara ve seç…"
-              searchPlaceholder="Marka adı…"
-              emptyText="Marka bulunamadı"
+              placeholder="Търсене и избор на марка…"
+              searchPlaceholder="Име на марка…"
+              emptyText="Марката не е намерена"
             />
           </div>
           {config && (
             <div className="text-[12px] text-navy-mid shrink-0">
-              Son çalışma: {fmtDate(config.last_run_at)}
+              Последно изпълнение: {fmtDate(config.last_run_at)}
             </div>
           )}
         </div>
@@ -537,7 +533,7 @@ function AdminBotPage() {
                 className="size-4 accent-[var(--brand)]"
               />
               <span className="text-[13.5px] font-semibold text-ink">
-                Complaint Bot açık (günlük cron bu markayı işler)
+                Complaint Bot е включен (дневният cron обработва тази марка)
               </span>
             </label>
 
@@ -551,11 +547,11 @@ function AdminBotPage() {
                 className="size-4 accent-[var(--brand)]"
               />
               <span className="text-[13.5px] font-semibold text-ink">
-                Marka yanıtı üret (kapalıysa yalnızca cevapsız şikayet yazılır)
+                Генерирай отговор от марката (ако е изключено — само жалба без отговор)
               </span>
             </label>
 
-            <Field label="Günlük hedef">
+            <Field label="Дневна цел">
               <input
                 type="number"
                 min={0}
@@ -565,7 +561,7 @@ function AdminBotPage() {
                 className={INPUT}
               />
             </Field>
-            <Field label="Min yıldız">
+            <Field label="Мин. звезди">
               <select
                 value={config.min_rating}
                 onChange={(e) => setConfig({ ...config, min_rating: Number(e.target.value) })}
@@ -578,7 +574,7 @@ function AdminBotPage() {
                 ))}
               </select>
             </Field>
-            <Field label="Max yıldız">
+            <Field label="Макс. звезди">
               <select
                 value={config.max_rating}
                 onChange={(e) => setConfig({ ...config, max_rating: Number(e.target.value) })}
@@ -591,7 +587,7 @@ function AdminBotPage() {
                 ))}
               </select>
             </Field>
-            <Field label="Dil">
+            <Field label="Език">
               <select
                 value={config.language}
                 onChange={(e) => setConfig({ ...config, language: e.target.value })}
@@ -604,7 +600,7 @@ function AdminBotPage() {
                 ))}
               </select>
             </Field>
-            <Field label="Şikayet tonu">
+            <Field label="Тон на жалбата">
               <select
                 value={config.complaint_tone}
                 onChange={(e) => setConfig({ ...config, complaint_tone: e.target.value })}
@@ -617,7 +613,7 @@ function AdminBotPage() {
                 ))}
               </select>
             </Field>
-            <Field label="Yanıt tonu">
+            <Field label="Тон на отговора">
               <select
                 value={config.response_tone}
                 onChange={(e) => setConfig({ ...config, response_tone: e.target.value })}
@@ -630,7 +626,7 @@ function AdminBotPage() {
                 ))}
               </select>
             </Field>
-            <Field label={`Benzerlik eşiği (${config.similarity_threshold})`}>
+            <Field label={`Праг на сходство (${config.similarity_threshold})`}>
               <input
                 type="range"
                 min={0.5}
@@ -646,7 +642,7 @@ function AdminBotPage() {
 
             <div className="md:col-span-2 xl:col-span-3">
               <div className="text-[12px] font-medium text-navy-mid mb-2">
-                Senaryolar (hiçbiri seçilmezse tümü kullanılır)
+                Сценарии (ако нито един не е избран — всички)
               </div>
               <div className="flex flex-wrap gap-2">
                 {options.scenarios.map((s) => {
@@ -678,14 +674,14 @@ function AdminBotPage() {
 
             <div className="md:col-span-2 xl:col-span-3">
               <div className="text-[12px] font-medium text-navy-mid mb-1">
-                Markaya özel talimatlar (AI promptuna eklenir)
+                Специални инструкции за марката (добавят се към AI prompt)
               </div>
               <textarea
                 rows={3}
                 maxLength={1200}
                 value={config.custom_instructions ?? ""}
                 onChange={(e) => setConfig({ ...config, custom_instructions: e.target.value })}
-                placeholder="Örn: ödeme yöntemi olarak yalnızca havale ve kripto kullan, bonus kampanyası adı vermeyin."
+                placeholder="Напр.: използвай само банков превод, не споменавай имена на промо кампании."
                 className="w-full rounded-lg ring-1 ring-rule p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40"
               />
             </div>
@@ -696,22 +692,22 @@ function AdminBotPage() {
                 disabled={busy}
                 className="h-10 rounded-lg bg-brand text-brand-foreground px-5 text-sm font-semibold disabled:opacity-60"
               >
-                Kaydet
+                Запази
               </button>
             </div>
           </div>
         ) : (
           <div className="mt-4 pt-4 border-t border-rule text-[13.5px] text-navy-mid">
-            Ayarları görmek için yukarıdan bir marka seçin.
+            Изберете марка отгоре, за да видите настройките.
           </div>
         )}
 
         {bots.length > 0 && (
           <div className="border-t border-rule px-4 py-3 flex flex-wrap items-center gap-2 text-[12px] text-navy-mid">
             <span className="font-semibold text-ink">{bots.filter((b) => b.enabled).length}</span>
-            aktif bot ·
+            активни бота ·
             <span className="font-semibold text-ink">{bots.length}</span>
-            yapılandırılmış marka
+            конфигурирани марки
             {bots.filter((b) => b.enabled).slice(0, 6).map((b) => (
               <button
                 key={b.brand_id}
@@ -740,7 +736,7 @@ function AdminBotPage() {
             <input
               value={filters.q}
               onChange={(e) => updateFilter({ q: e.target.value }, false)}
-              placeholder="Şikayet veya yanıt ara…"
+              placeholder="Търсене на жалба или отговор…"
               className="w-full h-10 rounded-lg ring-1 ring-rule pl-10 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40"
             />
           </div>
@@ -749,10 +745,10 @@ function AdminBotPage() {
             onChange={(e) => updateFilter({ rating: e.target.value })}
             className="h-10 rounded-lg ring-1 ring-rule px-3 text-sm bg-card"
           >
-            <option value="">Tüm puanlar</option>
+            <option value="">Всички оценки</option>
             {[1, 2, 3, 4, 5].map((n) => (
               <option key={n} value={n}>
-                {n} yıldız
+                {n} звезди
               </option>
             ))}
           </select>
@@ -761,7 +757,7 @@ function AdminBotPage() {
             onChange={(e) => updateFilter({ scenario: e.target.value })}
             className="h-10 rounded-lg ring-1 ring-rule px-3 text-sm bg-card"
           >
-            <option value="">Tüm kategoriler</option>
+            <option value="">Всички категории</option>
             {(options?.scenarios ?? []).map((s) => (
               <option key={s.key} value={s.key}>
                 {s.label}
@@ -773,7 +769,7 @@ function AdminBotPage() {
             onChange={(e) => updateFilter({ language: e.target.value })}
             className="h-10 rounded-lg ring-1 ring-rule px-3 text-sm bg-card"
           >
-            <option value="">Tüm diller</option>
+            <option value="">Всички езици</option>
             {(options?.languages ?? []).map((l) => (
               <option key={l} value={l}>
                 {l.toUpperCase()}
@@ -785,7 +781,7 @@ function AdminBotPage() {
             onChange={(e) => updateFilter({ status: e.target.value })}
             className="h-10 rounded-lg ring-1 ring-rule px-3 text-sm bg-card"
           >
-            <option value="">Tüm durumlar</option>
+            <option value="">Всички статуси</option>
             {STATUS_OPTIONS.map((s) => (
               <option key={s} value={s}>
                 {s}
@@ -805,10 +801,10 @@ function AdminBotPage() {
             className="h-10 rounded-lg ring-1 ring-rule px-3 text-sm bg-card"
           />
           <button className="h-10 rounded-lg bg-ink text-paper px-4 text-sm font-semibold inline-flex items-center gap-2">
-            <RefreshCw className="size-4" /> Filtrele
+            <RefreshCw className="size-4" /> Филтрирай
           </button>
           <div className="text-[12px] text-navy-mid ml-auto">
-            {total.toLocaleString("tr-TR")} kayıt
+            {total.toLocaleString("bg-BG")} записа
           </div>
         </form>
 
@@ -816,15 +812,15 @@ function AdminBotPage() {
           <table className="w-full text-[13.5px]">
             <thead className="bg-surface text-navy-mid text-left text-[11.5px] uppercase tracking-wider">
               <tr>
-                <th className="px-4 py-3 font-semibold">Marka</th>
-                <th className="px-4 py-3 font-semibold min-w-[220px]">Şikayet</th>
-                <th className="px-4 py-3 font-semibold">Puan</th>
-                <th className="px-4 py-3 font-semibold">Kategori</th>
-                <th className="px-4 py-3 font-semibold">Dil</th>
-                <th className="px-4 py-3 font-semibold">Yanıt</th>
-                <th className="px-4 py-3 font-semibold">Durum</th>
-                <th className="px-4 py-3 font-semibold">Tarih</th>
-                <th className="px-4 py-3 text-right font-semibold">İşlem</th>
+                <th className="px-4 py-3 font-semibold">Марка</th>
+                <th className="px-4 py-3 font-semibold min-w-[220px]">Жалба</th>
+                <th className="px-4 py-3 font-semibold">Оценка</th>
+                <th className="px-4 py-3 font-semibold">Категория</th>
+                <th className="px-4 py-3 font-semibold">Език</th>
+                <th className="px-4 py-3 font-semibold">Отговор</th>
+                <th className="px-4 py-3 font-semibold">Статус</th>
+                <th className="px-4 py-3 font-semibold">Дата</th>
+                <th className="px-4 py-3 text-right font-semibold">Действие</th>
               </tr>
             </thead>
             <tbody>
@@ -839,7 +835,7 @@ function AdminBotPage() {
                       {c.title}
                     </button>
                     {c.bot_error && (
-                      <div className="text-[11.5px] text-danger mt-0.5">Yanıt üretilemedi</div>
+                      <div className="text-[11.5px] text-danger mt-0.5">Отговорът не е генериран</div>
                     )}
                   </td>
                   <td className="px-4 py-3">
@@ -861,20 +857,20 @@ function AdminBotPage() {
                   </td>
                   <td className="px-4 py-3 text-navy-mid">{c.status}</td>
                   <td className="px-4 py-3 text-navy-mid whitespace-nowrap">
-                    {new Date(c.created_at).toLocaleDateString("tr-TR")}
+                    {new Date(c.created_at).toLocaleDateString("bg-BG")}
                   </td>
                   <td className="px-4 py-3 text-right whitespace-nowrap">
                     <button
                       onClick={() => openDetail(c.id)}
                       className="text-navy-mid hover:text-brand p-1"
-                      aria-label="Detay"
+                      aria-label="Детайли"
                     >
                       <Eye className="size-4" />
                     </button>
                     <button
                       onClick={() => removeComplaint(c.id)}
                       className="text-navy-mid hover:text-danger p-1"
-                      aria-label="Sil"
+                      aria-label="Изтрий"
                     >
                       <Trash2 className="size-4" />
                     </button>
@@ -884,7 +880,7 @@ function AdminBotPage() {
               {items.length === 0 && (
                 <tr>
                   <td colSpan={9} className="px-4 py-10 text-center text-navy-mid">
-                    Kayıt bulunamadı. Bot ayarlarını açıp "Şikayet Üret" ile başlayabilirsiniz.
+                    Няма записи. Включете настройките на бота и започнете с „Генерирай жалби“.
                   </td>
                 </tr>
               )}
@@ -907,20 +903,20 @@ function AdminBotPage() {
       {/* Son çalıştırmalar */}
       <div className="bg-card rounded-2xl ring-1 ring-rule">
         <div className="p-4 border-b border-rule font-display font-bold text-ink">
-          Son bot çalıştırmaları
+          Последни изпълнения на бота
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-[13.5px]">
             <thead className="bg-surface text-navy-mid text-left text-[11.5px] uppercase tracking-wider">
               <tr>
-                <th className="px-4 py-3 font-semibold">Marka</th>
-                <th className="px-4 py-3 font-semibold">Tetik</th>
-                <th className="px-4 py-3 font-semibold">Durum</th>
-                <th className="px-4 py-3 font-semibold">Şikayet</th>
-                <th className="px-4 py-3 font-semibold">Yanıt</th>
-                <th className="px-4 py-3 font-semibold">Kopya</th>
-                <th className="px-4 py-3 font-semibold">Hata</th>
-                <th className="px-4 py-3 font-semibold">Başlangıç</th>
+                <th className="px-4 py-3 font-semibold">Марка</th>
+                <th className="px-4 py-3 font-semibold">Тригер</th>
+                <th className="px-4 py-3 font-semibold">Статус</th>
+                <th className="px-4 py-3 font-semibold">Жалби</th>
+                <th className="px-4 py-3 font-semibold">Отговор</th>
+                <th className="px-4 py-3 font-semibold">Дубликати</th>
+                <th className="px-4 py-3 font-semibold">Грешки</th>
+                <th className="px-4 py-3 font-semibold">Начало</th>
               </tr>
             </thead>
             <tbody>
@@ -949,7 +945,7 @@ function AdminBotPage() {
                   <td className="px-4 py-3">
                     {r.error_count > 0 ? (
                       <details className="text-[12px] text-danger">
-                        <summary className="cursor-pointer">{r.error_count} hata</summary>
+                        <summary className="cursor-pointer">{r.error_count} грешки</summary>
                         <ul className="mt-1 space-y-1 max-w-md">
                           {(r.errors ?? []).map((e, i) => (
                             <li key={i} className="text-navy-mid break-words">
@@ -970,7 +966,7 @@ function AdminBotPage() {
               {runs.length === 0 && (
                 <tr>
                   <td colSpan={8} className="px-4 py-8 text-center text-navy-mid">
-                    Henüz çalıştırma kaydı yok.
+                    Все още няма записи за изпълнение.
                   </td>
                 </tr>
               )}
@@ -1086,8 +1082,8 @@ function DetailModal({
             <Chip>{c.scenario ? (scenarioLabels.get(c.scenario) ?? c.scenario) : "—"}</Chip>
             <Chip>{c.language.toUpperCase()}</Chip>
             <Chip>{c.status}</Chip>
-            <Chip>{c.generated_by ?? "insan"}</Chip>
-            <Chip>{c.is_public ? "yayında" : "yayında değil"}</Chip>
+            <Chip>{c.generated_by ?? "човек"}</Chip>
+            <Chip>{c.is_public ? "публикувано" : "не е публикувано"}</Chip>
           </div>
 
           <div className="rounded-xl bg-surface p-4 text-[13.5px] text-navy whitespace-pre-line">
@@ -1096,15 +1092,15 @@ function DetailModal({
 
           <div className="grid grid-cols-2 gap-3 text-[12.5px] text-navy-mid">
             <div>
-              Yazar: <span className="text-ink">{c.anon_name ?? "—"}</span>
+              Автор: <span className="text-ink">{c.anon_name ?? "—"}</span>
             </div>
             <div>
-              Oluşturma: <span className="text-ink">{fmtDate(c.created_at)}</span>
+              Създадено: <span className="text-ink">{fmtDate(c.created_at)}</span>
             </div>
             <div>
-              İlk yanıt süresi:{" "}
+              Време до първи отговор:{" "}
               <span className="text-ink">
-                {c.first_response_minutes ? `${c.first_response_minutes} dk` : "—"}
+                {c.first_response_minutes ? `${c.first_response_minutes} мин` : "—"}
               </span>
             </div>
             <div>
@@ -1115,19 +1111,19 @@ function DetailModal({
 
           {c.bot_error && (
             <div className="rounded-xl bg-danger-soft/40 ring-1 ring-danger/30 p-3 text-[12.5px] text-ink">
-              <b>Son hata:</b> {c.bot_error}
+              <b>Son грешки:</b> {c.bot_error}
             </div>
           )}
 
           <div>
             <div className="text-[12px] font-medium text-navy-mid mb-1">
-              Marka yanıtı (elle düzenlenebilir)
+              Отговор от марката (редактируем ръчно)
             </div>
             <textarea
               rows={5}
               value={responseDraft}
               onChange={(e) => setResponseDraft(e.target.value)}
-              placeholder="Yanıt üretilmedi — buraya yazıp kaydedebilirsiniz."
+              placeholder="Отговорът не е генериран — напишете тук и запазете."
               className="w-full rounded-lg ring-1 ring-rule p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40"
             />
           </div>
@@ -1138,13 +1134,13 @@ function DetailModal({
               disabled={busy}
               className="h-10 rounded-lg bg-brand text-brand-foreground px-5 text-sm font-semibold disabled:opacity-60"
             >
-              Yanıtı kaydet
+              Запази отговора
             </button>
             <button
               onClick={() => onDelete(c.id)}
               className="h-10 rounded-lg ring-1 ring-rule px-4 text-sm font-semibold text-danger hover:bg-danger-soft/40"
             >
-              Sil
+              Изтрий
             </button>
           </div>
         </div>
@@ -1211,7 +1207,7 @@ function GenerateModal({
   }
 
   async function submit() {
-    if (!selected.length) return toast.error("En az bir marka seçin");
+    if (!selected.length) return toast.error("Изберете поне една марка");
     setBusy(true);
     const res = await apiSendJson<{
       brands: number;
@@ -1231,14 +1227,14 @@ function GenerateModal({
     setBusy(false);
     if (!res) return;
     if (res.complaints === 0) {
-      toast.warning(res.reason ?? "Şikayet üretilemedi (kopya tespiti olabilir)");
+      toast.warning(res.reason ?? "Жалбите не са генерирани (възможно откриване на дубликат)");
     } else if (res.brands > 1) {
       const ok = res.results?.filter((r) => r.complaints > 0).length ?? 0;
       toast.success(
-        `${res.brands} markadan ${ok} tanesine toplam ${res.complaints} şikayet, ${res.responses} yanıt üretildi`,
+        `${res.complaints} жалби и ${res.responses} отговора за ${ok} от ${res.brands} марки`,
       );
     } else {
-      toast.success(`${res.complaints} şikayet, ${res.responses} yanıt üretildi`);
+      toast.success(`${res.complaints} жалби, ${res.responses} отговора генерирани`);
     }
     onDone();
     onClose();
@@ -1248,7 +1244,7 @@ function GenerateModal({
     <Modal open={open} onClose={onClose} className="max-w-lg bg-card rounded-2xl p-6 shadow-lift">
       <div className="flex items-center gap-2 mb-4">
         <Sparkles className="size-5 text-brand" />
-        <h3 className="font-display text-lg font-bold text-ink">Manuel şikayet üret</h3>
+        <h3 className="font-display text-lg font-bold text-ink">Ръчно генериране на жалби</h3>
         <button onClick={onClose} className="ml-auto text-navy-mid hover:text-ink">
           <X className="size-4" />
         </button>
@@ -1258,14 +1254,14 @@ function GenerateModal({
         <div>
           <div className="flex items-center justify-between gap-2 mb-2">
             <span className="text-[12px] font-medium text-navy-mid">
-              Markalar ({selected.length} seçili)
+              Марки ({selected.length} избрани)
             </span>
             <div className="flex gap-2 text-[11px]">
               <button type="button" onClick={selectAllVisible} className="text-brand hover:underline">
-                Görünenleri seç
+                Избери видимите
               </button>
               <button type="button" onClick={clearAll} className="text-navy-mid hover:underline">
-                Temizle
+                Изчисти
               </button>
             </div>
           </div>
@@ -1273,12 +1269,12 @@ function GenerateModal({
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Marka ara…"
+            placeholder="Търсене на марка…"
             className="w-full h-9 rounded-lg ring-1 ring-rule px-3 text-sm bg-card mb-2"
           />
           <div className="max-h-44 overflow-y-auto rounded-lg ring-1 ring-rule divide-y divide-rule">
             {filtered.length === 0 ? (
-              <p className="px-3 py-4 text-sm text-navy-mid text-center">Marka bulunamadı</p>
+              <p className="px-3 py-4 text-sm text-navy-mid text-center">Марката не е намерена</p>
             ) : (
               filtered.map((b) => (
                 <label
@@ -1298,7 +1294,7 @@ function GenerateModal({
           </div>
           {selected.length > 1 && (
             <p className="mt-1.5 text-[11px] text-navy-mid">
-              Seçili {selected.length} markaya aynı anda şikayet yazılır (marka başına {count} adet).
+              За избраните {selected.length} марки се пишат жалби едновременно (по {count} на марка).
             </p>
           )}
         </div>
@@ -1307,7 +1303,7 @@ function GenerateModal({
           onChange={(e) => setScenario(e.target.value)}
           className="w-full h-10 rounded-lg ring-1 ring-rule px-3 text-sm bg-card"
         >
-          <option value="">Kategori: rastgele</option>
+          <option value="">Категория: произволна</option>
           {(options?.scenarios ?? []).map((s) => (
             <option key={s.key} value={s.key}>
               {s.label}
@@ -1319,10 +1315,10 @@ function GenerateModal({
           onChange={(e) => setRating(e.target.value)}
           className="w-full h-10 rounded-lg ring-1 ring-rule px-3 text-sm bg-card"
         >
-          <option value="">Puan: ayarlara göre</option>
+          <option value="">Оценка: според настройките</option>
           {[1, 2, 3, 4, 5].map((n) => (
             <option key={n} value={n}>
-              {n} yıldız
+              {n} звезди
             </option>
           ))}
         </select>
@@ -1331,7 +1327,7 @@ function GenerateModal({
           onChange={(e) => setLanguage(e.target.value)}
           className="w-full h-10 rounded-lg ring-1 ring-rule px-3 text-sm bg-card"
         >
-          <option value="">Dil: ayarlara göre</option>
+          <option value="">Език: според настройките</option>
           {(options?.languages ?? []).map((l) => (
             <option key={l} value={l}>
               {l.toUpperCase()}
@@ -1345,11 +1341,11 @@ function GenerateModal({
             onChange={(e) => setWithResponse(e.target.checked)}
             className="size-4 accent-[var(--brand)]"
           />
-          <span className="text-[13.5px] font-medium text-ink">Marka yanıtı da üret</span>
+          <span className="text-[13.5px] font-medium text-ink">Генерирай и отговор от марката</span>
         </label>
         <label className="block">
           <span className="text-[12px] font-medium text-navy-mid">
-            Marka başına adet (en fazla 10)
+            Брой на марка (макс. 10)
           </span>
           <input
             type="number"
@@ -1369,11 +1365,11 @@ function GenerateModal({
       >
         {busy
           ? selected.length > 1
-            ? `${selected.length} markaya yazılıyor…`
-            : "Üretiliyor…"
+            ? `Пишене за ${selected.length} марки…`
+            : "Генериране…"
           : selected.length > 1
-            ? `${selected.length} markaya üret`
-            : "Üret"}
+            ? `Генерирай за ${selected.length} марки`
+            : "Генерирай"}
       </button>
     </Modal>
   );

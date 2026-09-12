@@ -76,7 +76,7 @@ function VerificationsPage() {
     };
     if (approve && active.request_type === "brand_application") {
       if (createNewBrand) {
-        if (!newBrandName.trim()) return toast.error("Yeni marka adı girin");
+        if (!newBrandName.trim()) return toast.error("Въведете име на новата марка");
         body.createBrand = {
           name: newBrandName.trim(),
           slug: newBrandSlug.trim() || null,
@@ -96,9 +96,9 @@ function VerificationsPage() {
 
     if (approve && res.credentials) {
       setCredentials(res.credentials);
-      toast.success("Onaylandı — giriş bilgileri oluşturuldu");
+      toast.success("Одобрено — създадени са данни за вход");
     } else {
-      toast.success(approve ? "Onaylandı" : "Reddedildi");
+      toast.success(approve ? "Одобрено" : "Отхвърлено");
       setActive(null);
     }
     load();
@@ -110,8 +110,8 @@ function VerificationsPage() {
 
   function copyCredentials() {
     if (!credentials) return;
-    const text = `E-posta: ${credentials.email}\nŞifre: ${credentials.password}`;
-    navigator.clipboard.writeText(text).then(() => toast.success("Panoya kopyalandı"));
+    const text = `Имейл: ${credentials.email}\nПарола: ${credentials.password}`;
+    navigator.clipboard.writeText(text).then(() => toast.success("Копирано в клипборда"));
   }
 
   return (
@@ -119,8 +119,8 @@ function VerificationsPage() {
       <aside className="bg-card rounded-2xl ring-1 ring-rule overflow-hidden flex flex-col max-h-[calc(100vh-4rem)]">
         <div className="p-4 border-b border-rule">
           <div className="eyebrow text-navy-mid">Super Admin</div>
-          <h2 className="font-display text-xl font-bold text-ink mt-1">Marka Başvuruları</h2>
-          <p className="text-[12px] text-navy-mid mt-1">{filtered.length} kayıt</p>
+          <h2 className="font-display text-xl font-bold text-ink mt-1">Заявки от марки</h2>
+          <p className="text-[12px] text-navy-mid mt-1">{filtered.length} записа</p>
           <div className="flex gap-1 mt-3">
             {(["all", "brand_application", "verification"] as const).map((f) => (
               <button
@@ -130,7 +130,7 @@ function VerificationsPage() {
                   filter === f ? "bg-brand text-brand-foreground" : "bg-surface text-navy-mid"
                 }`}
               >
-                {f === "all" ? "Tümü" : f === "brand_application" ? "Başvuru" : "Doğrulama"}
+                {f === "all" ? "Всички" : f === "brand_application" ? "Заявка" : "Верификация"}
               </button>
             ))}
           </div>
@@ -143,7 +143,7 @@ function VerificationsPage() {
                   <BadgeCheck className="size-3.5 text-info" />
                   <span className={`text-[10px] uppercase tracking-wider font-bold ${statusTone(it.status)}`}>{it.status}</span>
                   {it.request_type === "brand_application" && (
-                    <span className="text-[9px] bg-brand-soft text-brand px-1.5 py-0.5 rounded font-bold">BAŞVURU</span>
+                    <span className="text-[9px] bg-brand-soft text-brand px-1.5 py-0.5 rounded font-bold">ЗАЯВКА</span>
                   )}
                 </div>
                 <div className="mt-1 text-[13.5px] font-semibold text-ink line-clamp-1">{it.company_name}</div>
@@ -151,18 +151,18 @@ function VerificationsPage() {
               </button>
             </li>
           ))}
-          {filtered.length === 0 && <li className="p-8 text-center text-navy-mid text-[13px]">Başvuru yok.</li>}
+          {filtered.length === 0 && <li className="p-8 text-center text-navy-mid text-[13px]">Заявка yok.</li>}
         </ul>
       </aside>
 
       <section className="bg-card rounded-2xl ring-1 ring-rule p-6">
         {credentials ? (
           <div className="space-y-4 max-w-md mx-auto py-8">
-            <h2 className="font-display text-xl font-bold text-ink">Portal Giriş Bilgileri</h2>
-            <p className="text-[13px] text-navy-mid">Bu bilgileri marka yetkilisine iletin. Şifre bir daha gösterilmeyecek.</p>
+            <h2 className="font-display text-xl font-bold text-ink">Данни за вход в портала</h2>
+            <p className="text-[13px] text-navy-mid">Предайте тези данни на представителя на марката. Паролата няма да се покаже отново.</p>
             <div className="bg-surface rounded-xl p-4 font-mono text-[13px] space-y-2">
-              <div><span className="text-navy-mid">E-posta:</span> {credentials.email}</div>
-              <div><span className="text-navy-mid">Şifre:</span> {credentials.password}</div>
+              <div><span className="text-navy-mid">Имейл:</span> {credentials.email}</div>
+              <div><span className="text-navy-mid">Парола:</span> {credentials.password}</div>
             </div>
             <div className="flex gap-2">
               <button onClick={copyCredentials} className="flex-1 h-10 rounded-lg bg-brand text-brand-foreground text-sm font-semibold inline-flex items-center justify-center gap-2">
@@ -179,7 +179,7 @@ function VerificationsPage() {
               <h1 className="font-display text-2xl font-black text-ink">{active.company_name}</h1>
               {active.brands && (
                 <Link to="/firma/$slug" params={{ slug: active.brands.slug }} className="text-[12px] text-brand inline-flex items-center gap-0.5">
-                  Firma sayfası <ExternalLink className="size-3" />
+                  Страница на марката <ExternalLink className="size-3" />
                 </Link>
               )}
             </div>
@@ -192,9 +192,9 @@ function VerificationsPage() {
             </div>
             {active.photo_url && (
               <div>
-                <h3 className="font-display text-sm font-bold text-ink mb-2">Başvuru Fotoğrafı</h3>
+                <h3 className="font-display text-sm font-bold text-ink mb-2">Заявка Fotoğrafı</h3>
                 <a href={active.photo_url} target="_blank" rel="noreferrer" className="inline-block">
-                  <img src={active.photo_url} alt="Başvuru fotoğrafı" className="max-h-48 rounded-xl ring-1 ring-rule object-cover" />
+                  <img src={active.photo_url} alt="Заявка fotoğrafı" className="max-h-48 rounded-xl ring-1 ring-rule object-cover" />
                 </a>
               </div>
             )}
@@ -202,14 +202,14 @@ function VerificationsPage() {
 
             {active.request_type === "brand_application" && active.status === "pending" && (
               <div className="border border-rule rounded-xl p-4 space-y-3">
-                <h3 className="font-display text-sm font-bold text-ink">Marka Ataması</h3>
+                <h3 className="font-display text-sm font-bold text-ink">Назначаване на марка</h3>
                 <label className="flex items-center gap-2 text-[13px]">
                   <input type="checkbox" checked={createNewBrand} onChange={(e) => setCreateNewBrand(e.target.checked)} />
-                  Listede yok — yeni marka oluştur
+                  Няма в списъка — създай нова марка
                 </label>
                 {createNewBrand ? (
                   <div className="grid grid-cols-2 gap-2">
-                    <input value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} placeholder="Marka adı" className="col-span-2 rounded-lg ring-1 ring-rule px-3 h-10 text-sm" />
+                    <input value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} placeholder="Име на марка" className="col-span-2 rounded-lg ring-1 ring-rule px-3 h-10 text-sm" />
                     <input value={newBrandSlug} onChange={(e) => setNewBrandSlug(e.target.value)} placeholder="Slug (opsiyonel)" className="rounded-lg ring-1 ring-rule px-3 h-10 text-sm" />
                     <input value={newBrandWebsite} onChange={(e) => setNewBrandWebsite(e.target.value)} placeholder="Website" className="rounded-lg ring-1 ring-rule px-3 h-10 text-sm" />
                   </div>
@@ -220,7 +220,7 @@ function VerificationsPage() {
                       <input
                         value={brandSearch}
                         onChange={(e) => setBrandSearch(e.target.value)}
-                        placeholder="Marka ara…"
+                        placeholder="Търсене на марка…"
                         className="w-full rounded-lg ring-1 ring-rule pl-10 pr-3 h-10 text-sm"
                       />
                     </div>
@@ -239,13 +239,13 @@ function VerificationsPage() {
             )}
 
             <div>
-              <h3 className="font-display text-sm font-bold text-ink mb-2">Yüklenen Belgeler ({docs.length})</h3>
-              {docs.length === 0 ? <p className="text-[13px] text-navy-mid">Bu firma henüz belge yüklememiş.</p> : (
+              <h3 className="font-display text-sm font-bold text-ink mb-2">Качени документи ({docs.length})</h3>
+              {docs.length === 0 ? <p className="text-[13px] text-navy-mid">Тази марка все още не е качила документи.</p> : (
                 <ul className="space-y-1.5">
                   {docs.map((d) => (
                     <li key={d.id} className="flex items-center justify-between bg-surface rounded-lg px-3 py-2 text-[13px]">
                       <span><b>{d.doc_type}</b> · {new Date(d.created_at).toLocaleDateString("tr-TR")}</span>
-                      <button onClick={() => viewDoc(d.storage_path)} className="text-brand hover:underline inline-flex items-center gap-0.5">Görüntüle <ExternalLink className="size-3" /></button>
+                      <button onClick={() => viewDoc(d.storage_path)} className="text-brand hover:underline inline-flex items-center gap-0.5">Преглед <ExternalLink className="size-3" /></button>
                     </li>
                   ))}
                 </ul>
@@ -253,7 +253,7 @@ function VerificationsPage() {
             </div>
 
             <div>
-              <label className="text-[12px] font-medium text-navy-mid">İnceleme notu</label>
+              <label className="text-[12px] font-medium text-navy-mid">Бележка от прегледа</label>
               <textarea value={reviewerNote} onChange={(e) => setReviewerNote(e.target.value)} rows={3} className="mt-1 w-full rounded-lg ring-1 ring-rule p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40" />
             </div>
 
@@ -264,16 +264,16 @@ function VerificationsPage() {
                 </button>
                 <button onClick={() => decide(true)} className="flex-1 h-10 rounded-lg bg-brand text-brand-foreground text-sm font-semibold hover:brightness-110 inline-flex items-center justify-center gap-2">
                   <Check className="size-4" />
-                  {active.request_type === "brand_application" ? "Onayla & Giriş Ver" : "Onayla & Rozeti Ver"}
+                  {active.request_type === "brand_application" ? "Одобри и дай достъп" : "Одобри и дай значка"}
                 </button>
               </div>
             )}
             {active.status !== "pending" && (
-              <p className="text-[13px] text-navy-mid">Bu başvuru zaten {active.status === "approved" ? "onaylanmış" : "reddedilmiş"}.</p>
+              <p className="text-[13px] text-navy-mid">Bu başvuru zaten {active.status === "approved" ? "одобрена" : "отхвърлена"}.</p>
             )}
           </div>
         ) : (
-          <div className="h-full grid place-items-center text-navy-mid">Soldan bir başvuru seçin.</div>
+          <div className="h-full grid place-items-center text-navy-mid">Изберете заявка отляво.</div>
         )}
       </section>
     </div>

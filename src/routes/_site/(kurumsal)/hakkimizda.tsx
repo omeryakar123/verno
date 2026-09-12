@@ -28,15 +28,15 @@ export const Route = createFileRoute("/_site/(kurumsal)/hakkimizda")({
   loader: async () => ({ stats: await fetchPlatformStats().catch(() => null) }),
   head: () => ({
     ...seoHead({
-      title: `About Us — ${SITE_NAME} | Independent Complaint Platform`,
+      title: `За нас — ${SITE_NAME} | Независима платформа за жалби`,
       description:
-        `${SITE_NAME} is an independent complaint resolution platform connecting consumers and brands. Submit a complaint, get an official response, and track the process transparently.`,
+        `${SITE_NAME} е независима платформа за решаване на жалби, която свързва потребители и марки. Подайте жалба, получете официален отговор и проследете процеса прозрачно.`,
       path: "/hakkimizda",
     }),
     scripts: [
       breadcrumbLd([
-        { name: "Home", path: "/" },
-        { name: "About Us", path: "/hakkimizda" },
+        { name: "Начало", path: "/" },
+        { name: "За нас", path: "/hakkimizda" },
       ]),
     ],
   }),
@@ -44,149 +44,178 @@ export const Route = createFileRoute("/_site/(kurumsal)/hakkimizda")({
 });
 
 function Page() {
-  // Gerçek platform verisi; uydurma sayı kullanılmıyor.
   const s = Route.useLoaderData().stats;
-  const nf = (n: number) => n.toLocaleString("en-GB");
+  const nf = (n: number) => n.toLocaleString("bg-BG");
   const stats = [
-    { icon: Users, label: "Registered members", value: s ? nf(s.totalUsers) : "—" },
-    { icon: ShieldCheck, label: "Registered brands", value: s ? nf(s.totalCompanies) : "—" },
-    { icon: TrendingUp, label: "Resolved complaints", value: s ? nf(s.resolvedComplaints) : "—" },
-    { icon: Sparkles, label: "Resolution rate", value: s ? `%${Math.round(s.resolutionRate)}` : "—" },
+    { icon: Users, label: "Регистрирани членове", value: s ? nf(s.totalUsers) : "—" },
+    { icon: ShieldCheck, label: "Регистрирани марки", value: s ? nf(s.totalCompanies) : "—" },
+    { icon: TrendingUp, label: "Решени жалби", value: s ? nf(s.resolvedComplaints) : "—" },
+    { icon: Sparkles, label: "Процент решение", value: s ? `%${Math.round(s.resolutionRate)}` : "—" },
   ];
 
   const steps = [
     {
       icon: PenLine,
-      t: "1. Submit your complaint",
-      p: "Describe your issue in minutes; add documents and photos, or post anonymously if you prefer. After moderation, your complaint goes public and receives a unique tracking code.",
+      t: "1. Подайте жалба",
+      p: "Опишете проблема за минути; добавете документи и снимки или публикувайте анонимно. След модерация жалбата става публична и получава уникален код за проследяване.",
     },
     {
       icon: MessageCircle,
-      t: "2. The brand responds",
-      p: "The relevant brand sees your complaint and posts an official reply on your page. They can also reach you via private messages when needed. The entire process is transparent.",
+      t: "2. Марката отговаря",
+      p: "Съответната марка вижда жалбата и публикува официален отговор на страницата ви. При нужда може да ви пише и на лични съобщения. Целият процес е прозрачен.",
     },
     {
       icon: CheckCircle2,
-      t: "3. Confirm resolution and rate",
-      p: "If your issue is resolved, only YOU can mark the complaint as resolved; rate the brand and optionally leave a thank-you note. Your rating directly affects the brand score.",
+      t: "3. Потвърдете решението и оценете",
+      p: "Ако проблемът е решен, само ВИЕ маркирате жалбата като решена; оценявате марката и по желание оставяте благодарност. Оценката ви директно влияе на рейтинга на марката.",
     },
   ];
 
   const values = [
     {
       icon: Scale,
-      t: "Independence",
-      p: "We do not take any brand's side. Rankings are driven by real resolution performance, not payments. No brand can pay to remove complaints or change their score.",
+      t: "Независимост",
+      p: "Не заемаме страната на никоя марка. Класирането се базира на реални резултати при решаване, не на плащания. Никоя марка не може да плати за премахване на жалби или промяна на оценката си.",
     },
     {
       icon: Eye,
-      t: "Transparency",
-      p: "Brand scores, resolution rates, and response times are calculated from real data. We publish our processes regularly in the Transparency Report.",
+      t: "Прозрачност",
+      p: "Оценките на марките, процентът на решение и времето за отговор се изчисляват от реални данни. Редовно публикуваме процесите си в Доклада за прозрачност.",
     },
     {
       icon: HeartHandshake,
-      t: "Resolution-first",
-      p: "Our goal is not to collect complaints but to bring consumers and brands together and close issues. We measure success by resolved complaints, not published ones.",
+      t: "Решение на първо място",
+      p: "Целта ни не е да събираме жалби, а да сближим потребители и марки и да приключим проблемите. Успехът измерваме с решени жалби, не с публикувани.",
     },
   ];
 
   const forConsumers = [
-    { icon: Megaphone, t: "Make your voice heard", p: "Your complaint does not disappear — it lands directly in front of the brand and stays public." },
-    { icon: Search, t: "Research before you buy", p: "Before purchasing, see real customer experiences, resolution rates, and response speed." },
-    { icon: UserX, t: "Stay anonymous", p: "You can submit anonymously — your name is hidden from the brand and other users." },
-    { icon: Star, t: "Rate your experience", p: "Rate the resolution process on a 5-star scale and help other consumers decide." },
+    {
+      icon: Megaphone,
+      t: "Нека гласът ви се чуе",
+      p: "Жалбата ви не изчезва — тя стига директно до марката и остава публична.",
+    },
+    {
+      icon: Search,
+      t: "Проучете преди покупка",
+      p: "Преди да купите, вижте реални клиентски опити, процент на решение и скорост на отговор.",
+    },
+    {
+      icon: UserX,
+      t: "Останете анонимни",
+      p: "Можете да подадете анонимно — името ви е скрито от марката и другите потребители.",
+    },
+    {
+      icon: Star,
+      t: "Оценете опита си",
+      p: "Оценете процеса на решение по 5-звездна скала и помогнете на други потребители.",
+    },
   ];
 
   const forBrands = [
-    { icon: BadgeCheck, t: "Verified profile", p: "Verify your brand, reply officially, and build trust with a verified badge." },
-    { icon: MessageCircle, t: "Single-panel management", p: "View all complaints, respond, and message customers from one dashboard." },
-    { icon: BarChart3, t: "Real-time statistics", p: "Track resolution rate, response speed, and customer satisfaction live." },
-    { icon: TrendingUp, t: "Grow your reputation", p: "Every resolved complaint improves your score; success stories appear on your brand page." },
+    {
+      icon: BadgeCheck,
+      t: "Верифициран профил",
+      p: "Верифицирайте марката си, отговаряйте официално и изградете доверие със значка за потвърждение.",
+    },
+    {
+      icon: MessageCircle,
+      t: "Управление от един панел",
+      p: "Вижте всички жалби, отговаряйте и пишете на клиенти от едно табло.",
+    },
+    {
+      icon: BarChart3,
+      t: "Статистика в реално време",
+      p: "Следете процента на решение, скоростта на отговор и удовлетвореността на клиентите на живо.",
+    },
+    {
+      icon: TrendingUp,
+      t: "Изградете репутация",
+      p: "Всяка решена жалба подобрява оценката ви; историите за успех се показват на страницата на марката.",
+    },
   ];
 
   const trust = [
     {
       icon: ShieldAlert,
-      t: "Pre-moderation",
-      p: "Every complaint passes automated checks before publication; abuse, spam, and personal data are blocked; suspicious content goes to human moderators.",
+      t: "Предварителна модерация",
+      p: "Всяка жалба минава автоматични проверки преди публикуване; злоупотреби, спам и лични данни се блокират; съмнително съдържание отива при човешки модератори.",
     },
     {
       icon: Lock,
-      t: "Data security",
-      p: "Data is transmitted over encrypted connections; document access is permission-controlled. Sensitive evidence is visible only to authorized parties.",
+      t: "Сигурност на данните",
+      p: "Данните се предават по криптирани връзки; достъпът до документи е с права. Чувствителните доказателства са видими само за упълномощени страни.",
     },
     {
       icon: Gavel,
-      t: "Fair appeal process",
-      p: "Anyone who believes content is unlawful can report it; our moderation team reviews and resolves each case.",
+      t: "Справедлив процес на обжалване",
+      p: "Всеки, който смята, че съдържанието е незаконно, може да го докладва; екипът ни по модерация преглежда и решава всеки случай.",
     },
   ];
 
   return (
     <div>
-      {/* HERO */}
       <div className="relative h-64 bg-gradient-to-br from-dark via-navy to-brand/40 grid place-items-center">
         <div className="text-center px-6">
           <p className="text-white/60 text-xs uppercase tracking-widest mb-2">{SITE_NAME}.</p>
           <h1 className="text-white text-3xl sm:text-5xl font-display font-black">
-            Bulgaria&apos;s independent
+            Независимата българска
             <br />
-            customer experience platform
+            платформа за клиентски опит
           </h1>
         </div>
       </div>
 
-      {/* MİSYON */}
       <div className="mx-auto max-w-4xl px-4 sm:px-6 py-16 space-y-6 text-navy leading-relaxed">
         <p className="text-lg text-center">
-          We work for a Bulgaria where consumers are heard, brands deliver solutions,
-          and everyone can make purchase decisions based on real experiences.
+          Работим за България, в която потребителите се чуват, марките предлагат решения и всеки може
+          да взема решения за покупка на базата на реален опит.
         </p>
         <p>
-          {SITE_NAME} is an independent platform connecting customers and brands. We believe every
-          problem has an addressee: complaints here do not vanish — they reach the brand; every
-          reply and resolution is recorded publicly. This helps consumers and lets millions of
-          visitors see brands&apos; real performance before they buy.
+          {SITE_NAME} е независима платформа, която свързва клиенти и марки. Вярваме, че всеки проблем
+          има адресат: жалбите тук не изчезват — стигат до марката; всеки отговор и решение се записват
+          публично. Това помага на потребителите и позволява на милиони посетители да видят реалната
+          работа на марките преди покупка.
         </p>
         <ul className="space-y-2 pl-6 list-disc">
-          <li><b className="text-ink">Consumers</b> are heard by brands and track the process step by step.</li>
-          <li><b className="text-ink">Brands</b> turn complaints into satisfaction and strengthen loyalty.</li>
-          <li><b className="text-ink">Visitors</b> check resolution rates and real reviews before purchasing.</li>
+          <li>
+            <b className="text-ink">Потребителите</b> се чуват от марките и проследяват процеса стъпка по стъпка.
+          </li>
+          <li>
+            <b className="text-ink">Марките</b> превръщат жалбите в удовлетворение и укрепват лоялността.
+          </li>
+          <li>
+            <b className="text-ink">Посетителите</b> проверяват процента на решение и реални отзиви преди покупка.
+          </li>
         </ul>
       </div>
 
-      {/* NEDEN VARIZ */}
       <div className="bg-surface border-y border-rule">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 py-16 space-y-6 text-navy leading-relaxed">
-          <h2 className="text-center font-display font-bold text-[24px] text-ink">
-            Why we exist
-          </h2>
+          <h2 className="text-center font-display font-bold text-[24px] text-ink">Защо съществуваме</h2>
           <p>
-            We have all been there: a lost parcel, a refund that never arrives, a call center
-            you cannot reach… Consumers are often the unheard party. On the brand side, teams
-            often learn last and lack the right channel even when they want to help.
+            Всички сме били там: изгубена пратка, възстановяване, което не идва, кол център, до който не
+            може да се стигне… Потребителите често са нечутата страна. От страна на марката екипите често
+            научават последни и нямат правилния канал, дори когато искат да помогнат.
           </p>
           <p>
-            {SITE_NAME} was built to remove that gap. When you post a complaint here, two things
-            happen: the issue becomes a <b className="text-ink">public record</b> and lands{" "}
-            <b className="text-ink">directly in front of the brand</b>. Transparency encourages
-            resolution; the recorded process guides other consumers. Every resolved complaint is
-            both relief for the consumer and a real success for the brand.
+            {SITE_NAME} е създаден, за да премахне тази пропаст. Когато публикувате жалба тук, се случват
+            две неща: проблемът става <b className="text-ink">публичен запис</b> и стига{" "}
+            <b className="text-ink">директно до марката</b>. Прозрачността насърчава решението;
+            записаният процес насочва други потребители. Всяка решена жалба е и облекчение за потребителя,
+            и реален успех за марката.
           </p>
           <p>
-            We see a complaint not as a fight but as an <b className="text-ink">opportunity</b>.
-            A well-handled complaint can turn a lost customer into a loyal advocate. Every tool on
-            the platform — ratings, resolution flow, brand panel, moderation — is designed for
-            that transformation.
+            Виждаме жалбата не като конфликт, а като <b className="text-ink">възможност</b>. Добре
+            обработената жалба може да превърне загубен клиент в лоялен защитник. Всяка функция на
+            платформата — оценки, процес на решение, панел на марката, модерация — е проектирана за
+            тази трансформация.
           </p>
         </div>
       </div>
 
-      {/* NASIL ÇALIŞIR */}
       <div className="mx-auto max-w-6xl px-4 sm:px-6 py-16">
-        <h2 className="text-center font-display font-bold text-[24px] text-ink mb-10">
-          How it works
-        </h2>
+        <h2 className="text-center font-display font-bold text-[24px] text-ink mb-10">Как работи</h2>
         <div className="grid md:grid-cols-3 gap-6">
           {steps.map((st) => (
             <div key={st.t} className="bg-card rounded-2xl p-6 ring-1 ring-rule">
@@ -200,7 +229,6 @@ function Page() {
         </div>
       </div>
 
-      {/* GERÇEK SAYILAR */}
       <div className="bg-card border-y border-rule">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 py-12 grid grid-cols-2 md:grid-cols-4 gap-6">
           {stats.map((st) => (
@@ -215,15 +243,14 @@ function Page() {
         </div>
       </div>
 
-      {/* TÜKETİCİLER + MARKALAR İÇİN */}
       <div className="mx-auto max-w-6xl px-4 sm:px-6 py-16">
         <div className="grid md:grid-cols-2 gap-8">
           <div className="bg-card rounded-3xl ring-1 ring-rule p-8">
             <div className="inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-wider text-brand mb-4">
-              <Users className="size-4" /> For consumers
+              <Users className="size-4" /> За потребители
             </div>
             <h3 className="font-display font-bold text-[20px] text-ink mb-6">
-              You are not alone — a platform stands behind you.
+              Не сте сами — платформата е зад вас.
             </h3>
             <div className="space-y-5">
               {forConsumers.map((f) => (
@@ -241,16 +268,16 @@ function Page() {
           </div>
 
           <div className="bg-card rounded-3xl ring-1 ring-rule p-8">
-            <div className="inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-wider text-accent-purple mb-4">
-              <Building2 className="size-4" /> For brands
+            <div className="inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-wider text-primary mb-4">
+              <Building2 className="size-4" /> За марки
             </div>
             <h3 className="font-display font-bold text-[20px] text-ink mb-6">
-              Turn complaints into your strongest customer acquisition tool.
+              Превърнете жалбите в най-силния си инструмент за привличане на клиенти.
             </h3>
             <div className="space-y-5">
               {forBrands.map((f) => (
                 <div key={f.t} className="flex gap-3">
-                  <div className="size-9 rounded-lg bg-accent-purple/10 text-accent-purple grid place-items-center shrink-0">
+                  <div className="size-9 rounded-lg bg-primary/10 text-primary grid place-items-center shrink-0">
                     <f.icon className="size-4" />
                   </div>
                   <div>
@@ -264,16 +291,15 @@ function Page() {
         </div>
       </div>
 
-      {/* GÜVEN VE MODERASYON */}
       <div className="bg-surface border-y border-rule">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 py-16">
           <h2 className="text-center font-display font-bold text-[24px] text-ink mb-3">
-            Trust is not left to chance
+            Доверието не се оставя на случайност
           </h2>
           <p className="text-center text-[14px] text-navy-mid mb-10 max-w-2xl mx-auto">
-            Every piece of content and every rating goes through rule-based processes. We are
-            responsible for ensuring published complaints reflect real experiences and parties
-            are represented fairly.
+            Всяко съдържание и всяка оценка минават през процеси по правила. Отговорни сме да
+            гарантираме, че публикуваните жалби отразяват реален опит и страните са представени
+            справедливо.
           </p>
           <div className="grid md:grid-cols-3 gap-6">
             {trust.map((t) => (
@@ -287,20 +313,21 @@ function Page() {
             ))}
           </div>
           <p className="text-center mt-8 text-[13px] text-navy-mid">
-            For details see our{" "}
-            <Link to="/seffaflik-raporu" className="text-brand hover:underline">Transparency Report</Link>
-            {", and for rules see "}
-            <Link to="/kullanim-kosullari" className="text-brand hover:underline">Terms of Use</Link>
-            {"."}
+            За подробности вижте{" "}
+            <Link to="/seffaflik-raporu" className="text-brand hover:underline">
+              Доклада за прозрачност
+            </Link>
+            {", а за правила — "}
+            <Link to="/kullanim-kosullari" className="text-brand hover:underline">
+              Условията за ползване
+            </Link>
+            .
           </p>
         </div>
       </div>
 
-      {/* DEĞERLER */}
       <div className="mx-auto max-w-6xl px-4 sm:px-6 py-16">
-        <h2 className="text-center font-display font-bold text-[24px] text-ink mb-10">
-          Our values
-        </h2>
+        <h2 className="text-center font-display font-bold text-[24px] text-ink mb-10">Нашите ценности</h2>
         <div className="grid md:grid-cols-3 gap-6">
           {values.map((v) => (
             <div key={v.t} className="text-center px-4">
@@ -314,14 +341,13 @@ function Page() {
         </div>
       </div>
 
-      {/* KAPANIŞ CTA */}
       <div className="bg-ink text-paper dark:bg-surface dark:text-ink py-16">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 text-center">
           <div className="mx-auto size-14 rounded-full bg-brand grid place-items-center mb-6">
             <ShieldCheck className="size-7 text-white" />
           </div>
           <p className="text-lg">
-            95% of people read customer experiences on {SITE_NAME} before buying
+            95% от хората четат клиентски опити в {SITE_NAME} преди покупка
           </p>
           <div className="text-brand text-5xl font-black mt-4">%95</div>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
@@ -329,13 +355,13 @@ function Page() {
               to="/sikayet-yaz"
               className="inline-flex items-center gap-2 rounded-full bg-brand text-brand-foreground px-6 h-11 text-[13px] font-semibold hover:brightness-110 transition"
             >
-              <PenLine className="size-4" /> Submit a complaint
+              <PenLine className="size-4" /> Подай жалба
             </Link>
             <Link
               to="/markalar"
               className="inline-flex items-center gap-2 rounded-full ring-1 ring-paper/30 dark:ring-rule px-6 h-11 text-[13px] font-semibold hover:bg-paper/10 dark:hover:bg-surface transition"
             >
-              <Search className="size-4" /> Explore brands
+              <Search className="size-4" /> Разгледай марки
             </Link>
           </div>
         </div>

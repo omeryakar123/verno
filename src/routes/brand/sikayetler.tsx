@@ -152,10 +152,10 @@ function BrandComplaintsPage() {
     });
     if (!res.ok) {
       const j = await res.json().catch(() => ({}));
-      toast.error(j.error ?? "İşlem başarısız");
+      toast.error(j.error ?? "Операцията е неуспешна");
       return;
     }
-    toast.success("Durum güncellendi");
+    toast.success("Статусът е обновен");
     setItems((prev) => prev.map((c) => c.id === id ? { ...c, status: s } : c));
     if (active?.id === id) setActive({ ...active, status: s });
   }
@@ -172,7 +172,7 @@ function BrandComplaintsPage() {
     if (!res.ok) {
       const j = await res.json().catch(() => ({}));
       setSending(false);
-      toast.error(j.error ?? "İşlem başarısız");
+      toast.error(j.error ?? "Операцията е неуспешна");
       return;
     }
     const { id: replyId } = (await res.json()) as { id: string };
@@ -186,23 +186,23 @@ function BrandComplaintsPage() {
       const up = await fetch("/api/upload", { method: "POST", credentials: "include", body: fd });
       if (!up.ok) {
         const j = await up.json().catch(() => ({}));
-        toast.error(j.error ?? "Dosya yüklenemedi");
+        toast.error(j.error ?? "Файлът не можа да бъде качен");
       }
     }
 
-    setReply(""); setFile(null); setSending(false); toast.success("Yanıt gönderildi");
+    setReply(""); setFile(null); setSending(false); toast.success("Отговорът е изпратен");
     setItems((prev) => prev.map((c) => c.id === active.id ? { ...c, status: "answered", brand_response: reply.trim() } : c));
     setActive({ ...active, status: "answered", brand_response: reply.trim() });
   }
 
-  if (!brandId) return <div className="px-6 lg:px-10 py-8 text-navy-mid">Firma bağlantısı bekleniyor…</div>;
+  if (!brandId) return <div className="px-6 lg:px-10 py-8 text-navy-mid">Изчаква се свързване с марка…</div>;
 
   return (
     <div className="px-6 lg:px-10 py-8 grid lg:grid-cols-[360px_1fr] gap-4 min-h-[calc(100vh-2rem)]">
       <aside className="bg-card rounded-2xl ring-1 ring-rule overflow-hidden flex flex-col max-h-[calc(100vh-4rem)]">
         <div className="p-4 border-b border-rule">
-          <div className="eyebrow text-navy-mid">Gelen Kutusu</div>
-          <h2 className="font-display text-xl font-bold text-ink mt-1">Şikayetler ({total})</h2>
+          <div className="eyebrow text-navy-mid">Входяща кутия</div>
+          <h2 className="font-display text-xl font-bold text-ink mt-1">Жалби ({total})</h2>
         </div>
         <ul className="overflow-y-auto divide-y divide-rule flex-1">
           {items.map((c) => (
@@ -219,7 +219,7 @@ function BrandComplaintsPage() {
               </button>
             </li>
           ))}
-          {items.length === 0 && <li className="p-6 text-center text-navy-mid text-[13px]">Henüz şikayet yok.</li>}
+          {items.length === 0 && <li className="p-6 text-center text-navy-mid text-[13px]">Все още няма жалби.</li>}
         </ul>
         {total > PAGE_SIZE && (
           <div className="p-3 border-t border-rule">
@@ -235,7 +235,7 @@ function BrandComplaintsPage() {
             <div className="p-6 border-b border-rule">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <Link to="/sikayet/$id" params={{ id: active.id }} className="text-[12px] text-navy-mid hover:text-brand">Şikayet #{active.short_id ?? active.id.slice(0, 6)}</Link>
+                  <Link to="/sikayet/$id" params={{ id: active.id }} className="text-[12px] text-navy-mid hover:text-brand">Жалба #{active.short_id ?? active.id.slice(0, 6)}</Link>
                   <h1 className="font-display text-2xl font-black tracking-tight text-ink mt-1">{active.title}</h1>
                 </div>
                 <select value={active.status} onChange={(e) => setStatus(active.id, e.target.value as Status)} className="h-9 rounded-lg ring-1 ring-rule px-3 text-[13px]">
@@ -246,51 +246,51 @@ function BrandComplaintsPage() {
               {active.rating != null && active.rating > 0 ? (
                 <div className="mt-4 inline-flex items-center gap-1.5 text-amber-600 text-[13px] font-semibold">
                   <Star className="size-4 fill-amber-400 text-amber-400" />
-                  Şikayet puanı: {active.rating}/5
+                  Оценка на жалбата: {active.rating}/5
                 </div>
               ) : null}
               {active.brand_response ? (
                 <div className="mt-4 rounded-xl bg-brand-soft/50 ring-1 ring-brand/15 p-4">
-                  <p className="text-[11px] font-semibold text-brand mb-2">Mevcut firma yanıtınız</p>
+                  <p className="text-[11px] font-semibold text-brand mb-2">Текущият отговор на марката ви</p>
                   <p className="text-[14px] text-navy whitespace-pre-wrap">{active.brand_response}</p>
                 </div>
               ) : null}
 
               <div className="mt-6 rounded-xl bg-surface ring-1 ring-rule p-4">
                 <p className="text-[11px] font-semibold uppercase tracking-wider text-navy-mid mb-3">
-                  Şikayetçi bilgileri
+                  Данни за жалбоподателя
                 </p>
                 <dl className="grid sm:grid-cols-2 gap-x-6 gap-y-3 text-[13px]">
                   <InfoRow
                     icon={<User className="size-3.5" />}
-                    label="Ad Soyad"
+                    label="Име и фамилия"
                     value={active.author_name ?? "—"}
                   />
                   <InfoRow
                     icon={<Phone className="size-3.5" />}
-                    label="Telefon"
+                    label="Телефон"
                     value={active.contact_phone_display ?? active.contact_phone ?? "—"}
                   />
                   <InfoRow
                     icon={<AtSign className="size-3.5" />}
-                    label="Site kullanıcı adı"
+                    label="Потребителско име в сайта"
                     value={
                       active.site_username
                         ? `@${active.site_username}`
                         : active.is_anonymous
-                          ? "Anonim"
+                          ? "Анонимен"
                           : "—"
                     }
                   />
                   <InfoRow
                     icon={<AtSign className="size-3.5" />}
-                    label="Platform kullanıcı adı"
+                    label="Потребителско име в платформата"
                     value={active.platform_username ? `@${active.platform_username}` : "—"}
                   />
                 </dl>
                 {active.is_anonymous ? (
                   <p className="mt-3 text-[11px] text-navy-mid">
-                    Bu şikayet anonim olarak yayınlanmış; iletişim bilgileri yalnızca firma panelinde görünür.
+                    Тази жалба е публикувана анонимно; данните за контакт са видими само в панела на марката.
                   </p>
                 ) : null}
               </div>
@@ -298,14 +298,14 @@ function BrandComplaintsPage() {
               {detailLoading ? (
                 <div className="mt-4 flex items-center gap-2 text-[13px] text-navy-mid">
                   <Loader2 className="size-4 animate-spin" />
-                  Ek bilgiler yükleniyor…
+                  Зареждане на допълнителна информация…
                 </div>
               ) : null}
 
               {detail && detail.attachments.length > 0 ? (
                 <div className="mt-4 rounded-xl bg-surface ring-1 ring-rule p-4">
                   <p className="text-[11px] font-semibold uppercase tracking-wider text-navy-mid mb-3">
-                    Kanıt dosyaları ({detail.attachments.length})
+                    Доказателствени файлове ({detail.attachments.length})
                   </p>
                   <ul className="flex flex-wrap gap-2">
                     {detail.attachments.map((a) => (
@@ -317,7 +317,7 @@ function BrandComplaintsPage() {
                           className="inline-flex items-center gap-1.5 rounded-lg ring-1 ring-rule px-3 py-1.5 text-[12px] font-medium text-brand hover:bg-brand-soft/40"
                         >
                           <Paperclip className="size-3.5" />
-                          {a.file_type.startsWith("image/") ? "Görsel" : a.file_type.startsWith("video/") ? "Video" : "Dosya"}
+                          {a.file_type.startsWith("image/") ? "Изображение" : a.file_type.startsWith("video/") ? "Видео" : "Файл"}
                           <ExternalLink className="size-3" />
                         </a>
                       </li>
@@ -330,7 +330,7 @@ function BrandComplaintsPage() {
                 <div className="mt-4 rounded-xl bg-surface ring-1 ring-rule p-4">
                   <p className="text-[11px] font-semibold uppercase tracking-wider text-navy-mid mb-3 flex items-center gap-1.5">
                     <History className="size-3.5" />
-                    Bu kullanıcının diğer şikayetleri ({detail.other_complaints.length})
+                    Други жалби на този потребител ({detail.other_complaints.length})
                   </p>
                   <ul className="divide-y divide-rule">
                     {detail.other_complaints.map((oc) => (
@@ -360,7 +360,7 @@ function BrandComplaintsPage() {
                             to="/sikayet/$id"
                             params={{ id: oc.public_id ?? oc.id }}
                             className="shrink-0 text-brand hover:text-brand/80"
-                            title="Şikayeti görüntüle"
+                            title="Виж жалбата"
                           >
                             <ExternalLink className="size-4" />
                           </Link>
@@ -371,23 +371,23 @@ function BrandComplaintsPage() {
                 </div>
               ) : detail && !detailLoading && active.other_complaints_count === 0 ? (
                 <p className="mt-4 text-[12px] text-navy-mid">
-                  Bu kullanıcının firmanıza yönelik başka şikayeti bulunmuyor.
+                  Този потребител няма други жалби към вашата марка.
                 </p>
               ) : null}
             </div>
             <div className="p-6 flex-1 flex flex-col gap-3">
-              <textarea value={reply} onChange={(e) => setReply(e.target.value)} rows={6} placeholder="Yanıtınızı yazın…" className="w-full rounded-lg ring-1 ring-rule p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40" />
+              <textarea value={reply} onChange={(e) => setReply(e.target.value)} rows={6} placeholder="Напишете отговора си…" className="w-full rounded-lg ring-1 ring-rule p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40" />
               <div className="flex items-center justify-between gap-3 flex-wrap">
                 <label className="inline-flex items-center gap-2 text-[13px] text-navy cursor-pointer hover:text-brand">
-                  <Paperclip className="size-4" /> {file ? file.name : "Dosya ekle"}
+                  <Paperclip className="size-4" /> {file ? file.name : "Прикачи файл"}
                   <input type="file" hidden onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
                 </label>
                 <div className="flex gap-2 flex-wrap">
                   <button onClick={() => setEscOpen(true)} className="inline-flex items-center gap-2 rounded-full ring-1 ring-warning/30 text-warning bg-warning-soft px-4 h-10 text-[13px] font-semibold hover:bg-warning-soft">
-                    <AlertTriangle className="size-4" /> Super Admin'e İlet
+                    <AlertTriangle className="size-4" /> Изпрати към супер админ
                   </button>
                   <button onClick={sendReply} disabled={sending || !reply.trim()} className="inline-flex items-center gap-2 rounded-full bg-brand text-brand-foreground px-5 h-10 text-[13px] font-semibold hover:brightness-105 disabled:opacity-60">
-                    <Send className="size-4" /> Yanıtla
+                    <Send className="size-4" /> Отговори
                   </button>
                 </div>
               </div>
@@ -397,7 +397,7 @@ function BrandComplaintsPage() {
           <div className="flex-1 grid place-items-center text-navy-mid p-12 text-center">
             <div>
               <MessageSquareIcon />
-              <p className="mt-3 text-[14px]">Yanıtlamak için soldan bir şikayet seçin.</p>
+              <p className="mt-3 text-[14px]">Изберете жалба отляво, за да отговорите.</p>
             </div>
           </div>
         )}

@@ -75,39 +75,39 @@ function AdminDashboard() {
   return (
     <div className="px-6 lg:px-10 py-8 space-y-8">
       <div>
-        <div className="eyebrow text-navy-mid">Genel Bakış</div>
-        <h1 className="mt-1 font-display text-3xl font-black tracking-tight text-ink">Yönetim Paneli</h1>
-        <p className="mt-1 text-[14px] text-navy-mid">Platformun anlık durumu — gerçek zamanlı veriler.</p>
+        <div className="eyebrow text-navy-mid">Общ преглед</div>
+        <h1 className="mt-1 font-display text-3xl font-black tracking-tight text-ink">Админ панел</h1>
+        <p className="mt-1 text-[14px] text-navy-mid">Актуално състояние на платформата — данни в реално време.</p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
-        <Stat icon={Building2} label="Toplam Firma" value={s?.brands} tone="brand" />
-        <Stat icon={Users} label="Toplam Kullanıcı" value={s?.users} tone="ink" />
-        <Stat icon={Users} label="Bugün kayıt olan" value={s?.user_signups?.today} tone="brand" />
-        <Stat icon={Users} label="Bu hafta kayıt (7g)" value={s?.user_signups?.week} tone="ink" />
-        <Stat icon={MessageSquare} label="Toplam Şikayet" value={s?.complaints} tone="ink" />
-        <Stat icon={Clock} label="Bugünkü Şikayet" value={s?.today} tone="brand" />
-        <Stat icon={AlertOctagon} label="Bekleyen Onay" value={s?.pending} tone="warn" />
-        <Stat icon={MousePointerClick} label="Sayfa görüntüleme (7g)" value={s?.page_views?.week} tone="ink" />
-        <Stat icon={MousePointerClick} label="Bugünkü tıklama" value={s?.page_views?.today} tone="brand" />
-        <Stat icon={CheckCircle2} label="Çözülen" value={s?.resolved} tone="brand" />
-        <Stat icon={Crown} label="Premium Firma" value={s?.premium} tone="warn" />
-        <Stat icon={ShieldCheck} label="Doğrulanmış Firma" value={s?.verified} tone="brand" />
+        <Stat icon={Building2} label="Общо марки" value={s?.brands} tone="brand" />
+        <Stat icon={Users} label="Общо потребители" value={s?.users} tone="ink" />
+        <Stat icon={Users} label="Регистрации днес" value={s?.user_signups?.today} tone="brand" />
+        <Stat icon={Users} label="Регистрации тази седмица" value={s?.user_signups?.week} tone="ink" />
+        <Stat icon={MessageSquare} label="Общо жалби" value={s?.complaints} tone="ink" />
+        <Stat icon={Clock} label="Жалби днес" value={s?.today} tone="brand" />
+        <Stat icon={AlertOctagon} label="Чакащи одобрение" value={s?.pending} tone="warn" />
+        <Stat icon={MousePointerClick} label="Прегледи (7 дни)" value={s?.page_views?.week} tone="ink" />
+        <Stat icon={MousePointerClick} label="Прегледи днес" value={s?.page_views?.today} tone="brand" />
+        <Stat icon={CheckCircle2} label="Решени" value={s?.resolved} tone="brand" />
+        <Stat icon={Crown} label="Премиум марки" value={s?.premium} tone="warn" />
+        <Stat icon={ShieldCheck} label="Верифицирани марки" value={s?.verified} tone="brand" />
       </div>
 
       {/* Organik vs Bot şikayet özeti */}
       <div className="grid md:grid-cols-2 gap-4">
         <SourcePanel
-          title="Organik Şikayetler"
-          subtitle="Gerçek kullanıcılar tarafından yazılan"
+          title="Органични жалби"
+          subtitle="Написани от реални потребители"
           icon={User}
           stats={s?.complaints_by_source?.organic}
           flow={s?.complaint_flow_organic ?? []}
           tone="brand"
         />
         <SourcePanel
-          title="Bot Şikayetleri"
-          subtitle="Complaint Bot tarafından üretilen"
+          title="Bot жалби"
+          subtitle="Генерирани от Complaint Bot"
           icon={Bot}
           stats={s?.complaints_by_source?.bot}
           flow={s?.complaint_flow_bot ?? []}
@@ -117,10 +117,10 @@ function AdminDashboard() {
 
       <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-4">
         <div className="bg-card rounded-2xl ring-1 ring-rule p-6">
-          <h2 className="font-display text-lg font-bold text-ink">Şikayet Akışı</h2>
-          <p className="text-[13px] text-navy-mid mt-1">Son 7 günde durum dağılımı (canlı veri).</p>
+          <h2 className="font-display text-lg font-bold text-ink">Поток на жалби</h2>
+          <p className="text-[13px] text-navy-mid mt-1">Разпределение по статус за последните 7 дни.</p>
           {flow.length === 0 ? (
-            <p className="mt-8 text-center text-navy-mid text-sm">Henüz veri yok.</p>
+            <p className="mt-8 text-center text-navy-mid text-sm">Все още няма данни.</p>
           ) : (
             <div className="mt-6 flex items-end gap-2 h-44">
               {flow.map((d) => (
@@ -130,28 +130,28 @@ function AdminDashboard() {
                       <div
                         className="w-full rounded-t bg-brand"
                         style={{ height: `${(d.resolved / maxFlow) * 100}%`, minHeight: d.resolved ? 4 : 0 }}
-                        title={`Çözülen: ${d.resolved}`}
+                        title={`Решени: ${d.resolved}`}
                       />
                     )}
                     {d.answered > 0 && (
                       <div
                         className="w-full bg-accent-purple/70"
                         style={{ height: `${(d.answered / maxFlow) * 100}%`, minHeight: d.answered ? 4 : 0 }}
-                        title={`Yanıtlanan: ${d.answered}`}
+                        title={`Отговорени: ${d.answered}`}
                       />
                     )}
                     {d.approved > 0 && (
                       <div
                         className="w-full bg-success/70"
                         style={{ height: `${(d.approved / maxFlow) * 100}%`, minHeight: d.approved ? 4 : 0 }}
-                        title={`Onaylı: ${d.approved}`}
+                        title={`Одобрени: ${d.approved}`}
                       />
                     )}
                     {d.pending > 0 && (
                       <div
                         className="w-full rounded-b bg-warning/80"
                         style={{ height: `${(d.pending / maxFlow) * 100}%`, minHeight: d.pending ? 4 : 0 }}
-                        title={`Bekleyen: ${d.pending}`}
+                        title={`Чакащи: ${d.pending}`}
                       />
                     )}
                   </div>
@@ -164,18 +164,18 @@ function AdminDashboard() {
             </div>
           )}
           <div className="mt-4 flex flex-wrap gap-3 text-[11px] text-navy-mid">
-            <span className="inline-flex items-center gap-1"><span className="size-2 rounded bg-warning/80" /> Bekleyen</span>
-            <span className="inline-flex items-center gap-1"><span className="size-2 rounded bg-success/70" /> Onaylı</span>
-            <span className="inline-flex items-center gap-1"><span className="size-2 rounded bg-accent-purple/70" /> Yanıtlı</span>
-            <span className="inline-flex items-center gap-1"><span className="size-2 rounded bg-brand" /> Çözülen</span>
+            <span className="inline-flex items-center gap-1"><span className="size-2 rounded bg-warning/80" /> Чакащи</span>
+            <span className="inline-flex items-center gap-1"><span className="size-2 rounded bg-success/70" /> Одобрени</span>
+            <span className="inline-flex items-center gap-1"><span className="size-2 rounded bg-accent-purple/70" /> Отговорени</span>
+            <span className="inline-flex items-center gap-1"><span className="size-2 rounded bg-brand" /> Решени</span>
           </div>
         </div>
 
         <div className="bg-card rounded-2xl ring-1 ring-rule p-6">
-          <h2 className="font-display text-lg font-bold text-ink">Site Ziyaretleri</h2>
-          <p className="text-[13px] text-navy-mid mt-1">Son 7 gün sayfa görüntüleme.</p>
+          <h2 className="font-display text-lg font-bold text-ink">Посещения на сайта</h2>
+          <p className="text-[13px] text-navy-mid mt-1">Прегледи на страници за последните 7 дни.</p>
           {pvDaily.length === 0 ? (
-            <p className="mt-8 text-center text-navy-mid text-sm">Henüz izleme verisi yok — deploy sonrası birikir.</p>
+            <p className="mt-8 text-center text-navy-mid text-sm">Все още няма данни — ще се натрупат след deploy.</p>
           ) : (
             <div className="mt-6 flex items-end gap-2 h-44">
               {pvDaily.map((d) => (
@@ -191,16 +191,16 @@ function AdminDashboard() {
             </div>
           )}
           <div className="mt-4 text-[12px] text-navy-mid">
-            Toplam: <b className="text-ink">{s?.page_views?.total?.toLocaleString("tr-TR") ?? "—"}</b>
-            {" · "}Bu hafta: <b className="text-ink">{s?.page_views?.week?.toLocaleString("tr-TR") ?? "—"}</b>
+            Общо: <b className="text-ink">{s?.page_views?.total?.toLocaleString("bg-BG") ?? "—"}</b>
+            {" · "}Тази седмица: <b className="text-ink">{s?.page_views?.week?.toLocaleString("bg-BG") ?? "—"}</b>
           </div>
         </div>
 
         <div className="bg-card rounded-2xl ring-1 ring-rule p-6">
-          <h2 className="font-display text-lg font-bold text-ink">Günlük Kayıtlar</h2>
-          <p className="text-[13px] text-navy-mid mt-1">Son 7 günde yeni üye kayıtları.</p>
+          <h2 className="font-display text-lg font-bold text-ink">Дневни регистрации</h2>
+          <p className="text-[13px] text-navy-mid mt-1">Нови потребители за последните 7 дни.</p>
           {signupDaily.length === 0 ? (
-            <p className="mt-8 text-center text-navy-mid text-sm">Henüz kayıt verisi yok.</p>
+            <p className="mt-8 text-center text-navy-mid text-sm">Все още няма данни за регистрации.</p>
           ) : (
             <div className="mt-6 flex items-end gap-2 h-44">
               {signupDaily.map((d) => (
@@ -216,9 +216,9 @@ function AdminDashboard() {
             </div>
           )}
           <div className="mt-4 text-[12px] text-navy-mid">
-            Toplam üye: <b className="text-ink">{s?.user_signups?.total?.toLocaleString("tr-TR") ?? "—"}</b>
-            {" · "}Bugün: <b className="text-ink">{s?.user_signups?.today?.toLocaleString("tr-TR") ?? "—"}</b>
-            {" · "}Bu hafta: <b className="text-ink">{s?.user_signups?.week?.toLocaleString("tr-TR") ?? "—"}</b>
+            Общо членове: <b className="text-ink">{s?.user_signups?.total?.toLocaleString("bg-BG") ?? "—"}</b>
+            {" · "}Днес: <b className="text-ink">{s?.user_signups?.today?.toLocaleString("bg-BG") ?? "—"}</b>
+            {" · "}Тази седмица: <b className="text-ink">{s?.user_signups?.week?.toLocaleString("bg-BG") ?? "—"}</b>
           </div>
         </div>
       </div>
@@ -258,16 +258,16 @@ function SourcePanel({
       </div>
 
       <div className="mt-5 grid grid-cols-3 sm:grid-cols-6 gap-2">
-        <SourceStat label="Toplam" value={stats?.total} />
-        <SourceStat label="Bugün" value={stats?.today} />
-        <SourceStat label="Bekleyen" value={stats?.pending} />
-        <SourceStat label="Onaylı" value={stats?.approved} />
-        <SourceStat label="Çözülen" value={stats?.resolved} />
+        <SourceStat label="Общо" value={stats?.total} />
+        <SourceStat label="Днес" value={stats?.today} />
+        <SourceStat label="Чакащи" value={stats?.pending} />
+        <SourceStat label="Одобрени" value={stats?.approved} />
+        <SourceStat label="Решени" value={stats?.resolved} />
         <SourceStat label="Spam" value={stats?.spam} />
       </div>
 
       {flow.length === 0 ? (
-        <p className="mt-6 text-center text-navy-mid text-sm">Son 7 günde veri yok.</p>
+        <p className="mt-6 text-center text-navy-mid text-sm">Няма данни за последните 7 дни.</p>
       ) : (
         <div className="mt-6 flex items-end gap-1.5 h-28">
           {flow.map((d) => (
@@ -291,7 +291,7 @@ function SourceStat({ label, value }: { label: string; value: number | undefined
     <div className="text-center">
       <div className="text-[10px] text-navy-mid font-medium">{label}</div>
       <div className="text-[15px] font-black tabular-nums text-ink">
-        {value === undefined ? "—" : value.toLocaleString("tr-TR")}
+        {value === undefined ? "—" : value.toLocaleString("bg-BG")}
       </div>
     </div>
   );
@@ -321,7 +321,7 @@ function Stat({
       </div>
       <div className="mt-3 text-[12px] text-navy-mid font-medium">{label}</div>
       <div className="mt-1 font-display text-2xl font-black text-ink tabular-nums">
-        {value === undefined ? "—" : value.toLocaleString("tr-TR")}
+        {value === undefined ? "—" : value.toLocaleString("bg-BG")}
       </div>
     </div>
   );

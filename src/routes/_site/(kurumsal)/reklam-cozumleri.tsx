@@ -6,9 +6,9 @@ import { ArrowRight, Target, Sparkles, BarChart3, Users, Globe, ShieldCheck, Mes
 export const Route = createFileRoute("/_site/(kurumsal)/reklam-cozumleri")({
   head: () => ({
     ...seoHead({
-      title: `Advertising Solutions — ${SITE_NAME}`,
+      title: `Рекламни решения — ${SITE_NAME}`,
       description:
-        `Reach shoppers who are actively making purchase decisions on ${SITE_NAME}. Premium, targeted, and programmatic advertising models.`,
+        `Достигнете до потребители, които активно вземат решения за покупка на ${SITE_NAME}. Premium, таргетирани и programmatic модели.`,
       path: "/reklam-cozumleri",
     }),
   }),
@@ -17,48 +17,46 @@ export const Route = createFileRoute("/_site/(kurumsal)/reklam-cozumleri")({
 
 function AdsPage() {
   const metrics = [
-    { v: "120M+", k: "Ad inventory", icon: BarChart3 },
-    { v: "%88", k: "Organic traffic", icon: Globe },
-    { v: "14M+", k: "Registered members", icon: Users },
-    { v: "21M+", k: "Monthly visits", icon: Sparkles },
+    { v: "120M+", k: "Рекламен инвентар", icon: BarChart3 },
+    { v: "%88", k: "Органичен трафик", icon: Globe },
+    { v: "14M+", k: "Регистрирани членове", icon: Users },
+    { v: "21M+", k: "Месечни посещения", icon: Sparkles },
   ];
 
   return (
     <div className="min-h-screen bg-paper">
-      {/* HERO */}
       <section className="relative overflow-hidden border-b border-rule bg-gradient-to-b from-brand-soft/40 to-paper">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 py-12 sm:py-20">
           <div className="max-w-2xl">
             <span className="inline-flex items-center gap-2 rounded-full bg-card text-brand px-3 h-8 text-[12px] font-semibold ring-1 ring-brand/20 mb-5">
-              <Sparkles className="size-3.5" /> Enterprise solutions
+              <Sparkles className="size-3.5" /> Корпоративни решения
             </span>
             <h1 className="font-display font-black text-[26px] sm:text-[42px] leading-[1.08] tracking-[-0.02em] text-ink">
-              Reach millions making purchase decisions on{" "}
+              Достигнете до милиони, които вземат решения на{" "}
               <span className="text-brand">{SITE_NAME}</span>
             </h1>
             <p className="mt-4 text-[14px] sm:text-[16px] text-navy leading-relaxed">
-              Premium, targeted, and programmatic models — show your brand at the right moment
-              to the right audience.
+              Premium, таргетирани и programmatic модели — покажете марката си в правилния момент
+              пред правилната аудитория.
             </p>
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
               <a
-                href={siteContactMailto("Advertising solutions")}
+                href={siteContactMailto("Рекламни решения")}
                 className="inline-flex items-center justify-center gap-2 rounded-full bg-brand text-brand-foreground px-6 h-11 text-[13px] font-semibold hover:bg-brand-hover transition"
               >
-                Contact sales <ArrowRight className="size-4" />
+                Свържете се с нас <ArrowRight className="size-4" />
               </a>
               <Link
                 to="/register/marka-basvuru"
                 className="inline-flex items-center justify-center gap-2 rounded-full bg-card ring-1 ring-rule px-6 h-11 text-[13px] font-semibold hover:bg-surface transition"
               >
-                Brand application
+                Заявка от марка
               </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* METRICS */}
       <section className="border-b border-rule bg-surface">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8 sm:py-10">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
@@ -78,23 +76,22 @@ function AdsPage() {
         </div>
       </section>
 
-      {/* WHY */}
       <section className="py-12 sm:py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 grid md:grid-cols-2 gap-8 items-center">
           <div className="rounded-3xl bg-gradient-to-br from-ink to-brand p-8 sm:p-10 text-paper min-h-[220px] flex flex-col justify-end">
             <ShieldCheck className="size-10 text-brand mb-4" />
             <h2 className="font-display font-bold text-[22px] sm:text-[26px] leading-snug">
-              Why advertise on {SITE_NAME}?
+              Защо да рекламирате на {SITE_NAME}?
             </h2>
             <p className="mt-3 text-[13px] sm:text-[14px] text-paper/80 leading-relaxed">
-              Users research brand experiences before buying. The right visibility builds trust and conversions.
+              Потребителите проучват опита с марките преди покупка. Правилната видимост изгражда доверие и конверсии.
             </p>
           </div>
           <ul className="space-y-4">
             {[
-              { icon: MessageCircle, t: "High-intent audience", d: "Active users close to a purchase decision." },
-              { icon: Target, t: "Brand page visibility", d: "Appear directly on your company profile." },
-              { icon: ShieldCheck, t: "Reputation management", d: "Handle complaints and thank-yous with a resolution-first approach." },
+              { icon: MessageCircle, t: "Аудитория с намерение", d: "Активни потребители близо до решение за покупка." },
+              { icon: Target, t: "Видимост на профила", d: "Появявайте се директно на страницата на компанията." },
+              { icon: ShieldCheck, t: "Управление на репутацията", d: "Обработвайте жалби и благодарности с фокус върху решението." },
             ].map((item) => {
               const Icon = item.icon;
               return (
@@ -113,14 +110,13 @@ function AdsPage() {
         </div>
       </section>
 
-      {/* CTA — site-cta-shell: tema bağımsız koyu gradyan */}
       <section className="relative overflow-hidden site-cta-shell">
         <div
           className="pointer-events-none absolute -right-24 -top-24 size-80 rounded-full bg-brand/14 blur-3xl"
           aria-hidden
         />
         <div
-          className="pointer-events-none absolute -left-20 bottom-0 size-64 rounded-full bg-accent-purple/14 blur-3xl"
+          className="pointer-events-none absolute -left-20 bottom-0 size-64 rounded-full bg-primary/14 blur-3xl"
           aria-hidden
         />
         <div className="relative mx-auto max-w-3xl px-4 sm:px-6 py-12 sm:py-16 text-center">
@@ -129,23 +125,23 @@ function AdsPage() {
             {SITE_NAME} Pro
           </span>
           <h2 className="font-display font-bold text-[20px] sm:text-[26px] leading-snug">
-            Grow your customer base with {SITE_NAME} Pro
+            Разширете клиентската си база с {SITE_NAME} Pro
           </h2>
           <p className="mt-3 text-[13px] sm:text-[14px] site-cta-muted max-w-md mx-auto leading-relaxed">
-            Join brands that deliver solutions and benefit from Pro membership.
+            Присъединете се към марки, които предлагат решения и се възползват от Pro членство.
           </p>
           <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
             <a
-              href={siteContactMailto("Pro membership")}
+              href={siteContactMailto("Pro членство")}
               className="inline-flex items-center justify-center gap-2 rounded-full bg-brand text-brand-foreground px-6 h-11 text-[13px] font-semibold hover:bg-brand-hover transition shadow-soft"
             >
-              Contact for Pro membership
+              Запитване за Pro
             </a>
             <Link
               to="/register/marka-basvuru"
               className="inline-flex items-center justify-center gap-2 rounded-full ring-1 ring-brand/45 px-6 h-11 text-[13px] font-semibold hover:bg-brand/15 transition"
             >
-              Brand application
+              Заявка от марка
             </Link>
           </div>
         </div>

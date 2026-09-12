@@ -23,13 +23,13 @@ function BrandMessages() {
   return (
     <div className="px-6 lg:px-10 py-8 space-y-6">
       <div>
-        <div className="eyebrow text-navy-mid">Brand Panel</div>
-        <h1 className="mt-1 font-display text-3xl font-black tracking-tight text-ink">Mesajlar</h1>
+        <div className="eyebrow text-navy-mid">Панел на марката</div>
+        <h1 className="mt-1 font-display text-3xl font-black tracking-tight text-ink">Съобщения</h1>
       </div>
       {brandId ? (
         <Messenger brandId={brandId} />
       ) : (
-        <div className="card-surface p-10 text-center text-sm text-navy-mid">Hesabınız bir firmaya bağlı değil.</div>
+        <div className="card-surface p-10 text-center text-sm text-navy-mid">Акаунтът ви не е свързан с марка.</div>
       )}
     </div>
   );

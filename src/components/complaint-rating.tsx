@@ -57,10 +57,10 @@ export function ComplaintRating({
     setBusy(false);
     if (!res.ok) {
       const j = (await res.json().catch(() => ({}))) as { error?: string };
-      return toast.error(j.error ?? "Oyunuz kaydedilemedi");
+      return toast.error(j.error ?? "Оценката не можа да бъде запазена");
     }
     setRating(value);
-    toast.success("Değerlendirmeniz kaydedildi");
+    toast.success("Оценката ви е запазена");
     onChange?.();
   }
 
@@ -75,10 +75,10 @@ export function ComplaintRating({
     setBusy(false);
     if (!res.ok) {
       const j = (await res.json().catch(() => ({}))) as { error?: string };
-      return toast.error(j.error ?? "Oy kaldırılamadı");
+      return toast.error(j.error ?? "Оценката не можа да бъде премахната");
     }
     setRating(null);
-    toast.success("Oyunuz kaldırıldı");
+    toast.success("Оценката е премахната");
     onChange?.();
   }
 
@@ -106,7 +106,7 @@ export function ComplaintRating({
               key={n}
               type="button"
               disabled={busy}
-              aria-label={`${n} yıldız`}
+              aria-label={`${n} звезди`}
               onMouseEnter={() => setHover(n)}
               onClick={() => send(n)}
               className="disabled:opacity-60"
@@ -128,7 +128,7 @@ export function ComplaintRating({
             disabled={busy}
             className="text-[12.5px] text-navy-mid hover:text-danger underline disabled:opacity-60"
           >
-            Oyumu kaldır
+            Премахни оценката
           </button>
         )}
       </div>

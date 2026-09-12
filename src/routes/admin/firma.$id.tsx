@@ -43,7 +43,7 @@ function AdminBrandEditPage() {
     });
     setBusy(false);
     if (!ok) return;
-    toast.success("Kaydedildi");
+    toast.success("Запазено");
     load();
   }
 
@@ -53,7 +53,7 @@ function AdminBrandEditPage() {
     if (!up) return;
     const field = kind === "logo" ? "logo_url" : "cover_url";
     if (!(await patch({ [field]: up.url }))) return;
-    toast.success(`${kind === "logo" ? "Logo" : "Kapak"} güncellendi`);
+    toast.success(`${kind === "logo" ? "Logo" : "Корица"} обновено`);
     load();
   }
 
@@ -62,14 +62,14 @@ function AdminBrandEditPage() {
     const up = await uploadFile(file, "brand-videos", b.id);
     if (!up) return;
     if (!(await patch({ cover_video: up.url }))) return;
-    toast.success("Video yüklendi");
+    toast.success("Видеото е качено");
     load();
   }
 
   async function removeVideo() {
     if (!b) return;
     if (!(await patch({ cover_video: null }))) return;
-    toast.success("Video silindi");
+    toast.success("Видеото е изтрито");
     load();
   }
 
@@ -79,7 +79,7 @@ function AdminBrandEditPage() {
     if (!up) return;
     const next = [...(b.gallery ?? []), up.url];
     if (!(await patch({ gallery: next }))) return;
-    toast.success("Galeriye eklendi");
+    toast.success("Добавено в галерията");
     load();
   }
 
@@ -87,7 +87,7 @@ function AdminBrandEditPage() {
     if (!b) return;
     const next = (b.gallery ?? []).filter((u) => u !== url);
     if (!(await patch({ gallery: next }))) return;
-    toast.success("Silindi");
+    toast.success("Изтрито");
     load();
   }
 
@@ -95,53 +95,53 @@ function AdminBrandEditPage() {
     if (!b) return;
     const until = new Date(Date.now() + days * 86400000).toISOString();
     if (!(await patch({ premium: true, premium_until: until }))) return;
-    toast.success(`Premium başlatıldı (${days} gün)`);
+    toast.success(`Premium активиран (${days} дни)`);
     load();
   }
 
   async function cancelPremium() {
     if (!b) return;
     if (!(await patch({ premium: false, premium_until: null }))) return;
-    toast.success("Premium iptal edildi");
+    toast.success("Premium е отменен");
     load();
   }
 
-  if (!b) return <div className="px-6 lg:px-10 py-8 text-navy-mid">Yükleniyor…</div>;
+  if (!b) return <div className="px-6 lg:px-10 py-8 text-navy-mid">Зареждане…</div>;
 
   return (
     <div className="px-6 lg:px-10 py-8 space-y-6 max-w-5xl">
-      <Link to="/admin/firmalar" className="text-[12px] text-navy-mid hover:text-brand inline-flex items-center gap-1"><ArrowLeft className="size-3.5" /> Firmalar</Link>
+      <Link to="/admin/firmalar" className="text-[12px] text-navy-mid hover:text-brand inline-flex items-center gap-1"><ArrowLeft className="size-3.5" /> Марки</Link>
       <div className="flex items-end justify-between flex-wrap gap-3">
         <div>
-          <div className="eyebrow text-navy-mid">Firma Düzenle</div>
+          <div className="eyebrow text-navy-mid">Редакция на марка</div>
           <h1 className="mt-1 font-display text-3xl font-black tracking-tight text-ink">{b.name}</h1>
           <p className="text-[12px] text-navy-mid mt-1">/{b.slug}</p>
         </div>
         <div className="flex gap-2 flex-wrap">
           <button onClick={() => { setB({ ...b, is_active: !b.is_active }); }} className={`h-10 px-4 rounded-lg text-[13px] font-semibold inline-flex items-center gap-2 ${b.is_active ? "bg-brand text-brand-foreground" : "bg-rule text-ink"}`}>
-            {b.is_active ? <ToggleRight className="size-4" /> : <ToggleLeft className="size-4" />} {b.is_active ? "Aktif" : "Pasif"}
+            {b.is_active ? <ToggleRight className="size-4" /> : <ToggleLeft className="size-4" />} {b.is_active ? "Активна" : "Неактивна"}
           </button>
           <button onClick={() => { setB({ ...b, verified: !b.verified }); }} className={`h-10 px-4 rounded-lg text-[13px] font-semibold inline-flex items-center gap-2 ${b.verified ? "bg-blue-500 text-white" : "ring-1 ring-rule text-ink"}`}>
-            <ShieldCheck className="size-4" /> {b.verified ? "Doğrulandı" : "Doğrulanmadı"}
+            <ShieldCheck className="size-4" /> {b.verified ? "Потвърдена" : "Непотвърдена"}
           </button>
-          <button onClick={save} disabled={busy} className="h-10 px-5 rounded-lg bg-brand text-brand-foreground text-[13px] font-semibold disabled:opacity-60">Kaydet</button>
+          <button onClick={save} disabled={busy} className="h-10 px-5 rounded-lg bg-brand text-brand-foreground text-[13px] font-semibold disabled:opacity-60">Запази</button>
         </div>
       </div>
 
-      <Section title="Görseller">
+      <Section title="Изображения">
         <div className="grid sm:grid-cols-3 gap-3">
           <ImageSlot label="Logo" url={b.logo_url} onUpload={(f) => uploadImage(f, "logo")} icon={ImageIcon} />
-          <ImageSlot label="Kapak" url={b.cover_url} onUpload={(f) => uploadImage(f, "cover")} icon={ImageIcon} />
+          <ImageSlot label="Корица" url={b.cover_url} onUpload={(f) => uploadImage(f, "cover")} icon={ImageIcon} />
           <div className="rounded-xl ring-1 ring-rule p-3 flex flex-col">
             <div className="text-[11px] uppercase tracking-wider text-navy-mid font-semibold mb-2">Video</div>
             {b.cover_video ? (
               <>
                 <video src={b.cover_video} controls className="w-full rounded-lg bg-black aspect-video" />
-                <button onClick={removeVideo} className="mt-2 text-[12px] text-danger inline-flex items-center gap-1 hover:underline"><Trash2 className="size-3" /> Sil</button>
+                <button onClick={removeVideo} className="mt-2 text-[12px] text-danger inline-flex items-center gap-1 hover:underline"><Trash2 className="size-3" /> Изтрий</button>
               </>
             ) : (
               <label className="flex-1 grid place-items-center rounded-lg border-2 border-dashed border-rule cursor-pointer hover:bg-surface text-navy-mid text-[12px]">
-                <div className="text-center"><VideoIcon className="size-5 mx-auto mb-1" />Video yükle</div>
+                <div className="text-center"><VideoIcon className="size-5 mx-auto mb-1" />Качи видео</div>
                 <input type="file" accept="video/*" hidden onChange={(e) => e.target.files?.[0] && uploadVideo(e.target.files[0])} />
               </label>
             )}
@@ -149,7 +149,7 @@ function AdminBrandEditPage() {
         </div>
       </Section>
 
-      <Section title="Galeri">
+      <Section title="Галерия">
         <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
           {(b.gallery ?? []).map((g) => (
             <div key={g} className="relative aspect-square rounded-lg overflow-hidden ring-1 ring-rule group">
@@ -164,24 +164,24 @@ function AdminBrandEditPage() {
         </div>
       </Section>
 
-      <Section title="İçerik & İletişim">
+      <Section title="Съдържание и контакт">
         <div className="grid sm:grid-cols-2 gap-3">
-          <Text label="Firma adı" value={b.name} onChange={(v) => setB({ ...b, name: v })} />
+          <Text label="Име на марка" value={b.name} onChange={(v) => setB({ ...b, name: v })} />
           <Text label="Website" value={b.website ?? ""} onChange={(v) => setB({ ...b, website: v })} />
           <Text label="Telefon" value={b.phone ?? ""} onChange={(v) => setB({ ...b, phone: v })} />
-          <Text label="E-posta" value={b.email ?? ""} onChange={(v) => setB({ ...b, email: v })} />
-          <Text label="Adres" value={b.address ?? ""} onChange={(v) => setB({ ...b, address: v })} />
+          <Text label="Имейл" value={b.email ?? ""} onChange={(v) => setB({ ...b, email: v })} />
+          <Text label="Адрес" value={b.address ?? ""} onChange={(v) => setB({ ...b, address: v })} />
         </div>
         <div className="mt-3">
-          <label className="text-[12px] font-medium text-navy-mid">Hakkında</label>
+          <label className="text-[12px] font-medium text-navy-mid">За марката</label>
           <textarea value={b.about ?? ""} onChange={(e) => setB({ ...b, about: e.target.value })} rows={5} className="mt-1 w-full rounded-lg ring-1 ring-rule p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40" />
         </div>
       </Section>
 
       <Section title="SEO">
-        <Text label="SEO başlık" value={b.seo_title ?? ""} onChange={(v) => setB({ ...b, seo_title: v })} />
+        <Text label="SEO заглавие" value={b.seo_title ?? ""} onChange={(v) => setB({ ...b, seo_title: v })} />
         <div className="mt-3">
-          <label className="text-[12px] font-medium text-navy-mid">SEO açıklama</label>
+          <label className="text-[12px] font-medium text-navy-mid">SEO описание</label>
           <textarea value={b.seo_description ?? ""} onChange={(e) => setB({ ...b, seo_description: e.target.value })} rows={3} className="mt-1 w-full rounded-lg ring-1 ring-rule p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40" />
         </div>
       </Section>
@@ -189,11 +189,11 @@ function AdminBrandEditPage() {
       <Section title="Premium">
         <div className="flex items-center gap-3 flex-wrap">
           <span className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[12px] font-semibold ${b.premium ? "bg-warning-soft text-warning" : "bg-surface text-navy-mid"}`}>
-            <Crown className="size-3.5" /> {b.premium ? `Premium ${b.premium_until ? "(" + new Date(b.premium_until).toLocaleDateString("tr-TR") + ")" : ""}` : "Standart"}
+            <Crown className="size-3.5" /> {b.premium ? `Premium ${b.premium_until ? "(" + new Date(b.premium_until).toLocaleDateString("bg-BG") + ")" : ""}` : "Стандарт"}
           </span>
-          <button onClick={() => setPremiumDays(30)} className="h-9 px-3 rounded-lg bg-amber-500 text-white text-[12px] font-semibold">30 gün başlat</button>
-          <button onClick={() => setPremiumDays(365)} className="h-9 px-3 rounded-lg bg-amber-600 text-white text-[12px] font-semibold">1 yıl başlat</button>
-          {b.premium && <button onClick={cancelPremium} className="h-9 px-3 rounded-lg ring-1 ring-rule text-[12px] font-semibold hover:bg-surface">İptal et</button>}
+          <button onClick={() => setPremiumDays(30)} className="h-9 px-3 rounded-lg bg-amber-500 text-white text-[12px] font-semibold">30 дни</button>
+          <button onClick={() => setPremiumDays(365)} className="h-9 px-3 rounded-lg bg-amber-600 text-white text-[12px] font-semibold">1 година</button>
+          {b.premium && <button onClick={cancelPremium} className="h-9 px-3 rounded-lg ring-1 ring-rule text-[12px] font-semibold hover:bg-surface">Отмени</button>}
         </div>
       </Section>
 
@@ -222,22 +222,22 @@ function BrandMembersSection({ brandId }: { brandId: string }) {
     const ok = await apiSend("/api/admin/brand-members", "POST", { brandId, email: email.trim() });
     setBusy(false);
     if (!ok) return;
-    toast.success("Kullanıcı firmaya atandı");
+    toast.success("Потребителят е назначен на марката");
     setEmail("");
     loadMembers();
   }
 
   async function revoke(userId: string) {
-    if (!confirm("Bu kullanıcının firma erişimini kaldırmak istiyor musunuz?")) return;
+    if (!confirm("Да премахнете ли достъпа на този потребител до марката?")) return;
     const ok = await apiSend("/api/admin/brand-members", "DELETE", { brandId, userId });
     if (!ok) return;
-    toast.success("Erişim kaldırıldı");
+    toast.success("Достъпът е премахнат");
     loadMembers();
   }
 
   return (
-    <Section title="Firma temsilcileri">
-      <p className="text-[12px] text-navy-mid mb-3">Kullanıcıya brand paneli erişimi verin veya kaldırın. Atama otomatik olarak <b>brand</b> rolünü de ekler.</p>
+    <Section title="Представители на марката">
+      <p className="text-[12px] text-navy-mid mb-3">Дайте или премахнете достъп до brand панела. Назначаването автоматично добавя роля <b>brand</b>.</p>
       <div className="flex gap-2 flex-wrap mb-4">
         <input
           value={email}
@@ -246,11 +246,11 @@ function BrandMembersSection({ brandId }: { brandId: string }) {
           className="flex-1 min-w-[200px] h-10 rounded-lg ring-1 ring-rule px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40"
         />
         <button onClick={assign} disabled={busy} className="h-10 px-4 rounded-lg bg-brand text-brand-foreground text-[13px] font-semibold disabled:opacity-60">
-          Ata
+          Назначи
         </button>
       </div>
       {members.length === 0 ? (
-        <p className="text-[13px] text-navy-mid">Henüz temsilci yok.</p>
+        <p className="text-[13px] text-navy-mid">Все още няма представители.</p>
       ) : (
         <ul className="divide-y divide-rule rounded-xl ring-1 ring-rule overflow-hidden">
           {members.map((m) => (
@@ -259,7 +259,7 @@ function BrandMembersSection({ brandId }: { brandId: string }) {
                 <div className="font-medium text-ink truncate">{m.full_name || "—"}</div>
                 <div className="text-navy-mid truncate">{m.email}</div>
               </div>
-              <button onClick={() => revoke(m.user_id)} className="shrink-0 text-[12px] text-danger hover:underline">Kaldır</button>
+              <button onClick={() => revoke(m.user_id)} className="shrink-0 text-[12px] text-danger hover:underline">Премахни</button>
             </li>
           ))}
         </ul>
@@ -290,7 +290,7 @@ function ImageSlot({ label, url, onUpload, icon: Icon }: { label: string; url: s
       <div className="text-[11px] uppercase tracking-wider text-navy-mid font-semibold mb-2">{label}</div>
       {url ? <img src={url} alt="" className="w-full aspect-video object-cover rounded-lg bg-surface" /> : <div className="aspect-video grid place-items-center rounded-lg bg-surface text-navy-mid"><Icon className="size-5" /></div>}
       <label className="mt-2 inline-flex items-center gap-1 text-[12px] text-brand hover:underline cursor-pointer">
-        <Upload className="size-3" /> Yeni yükle
+        <Upload className="size-3" /> Качи нов
         <input type="file" accept="image/*" hidden onChange={(e) => e.target.files?.[0] && onUpload(e.target.files[0])} />
       </label>
     </div>

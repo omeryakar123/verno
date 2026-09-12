@@ -54,7 +54,7 @@ function ComplaintAssistantAdminPage() {
     const ok = await apiSend("/api/admin/complaint-assistant", "PATCH", config);
     setSaving(false);
     if (ok) {
-      toast.success("Şikayet asistanı ayarları kaydedildi");
+      toast.success("Настройките на асистента за жалби са запазени");
       await load();
     }
   }
@@ -81,11 +81,11 @@ function ComplaintAssistantAdminPage() {
         <div>
           <div className="eyebrow text-navy-mid">Admin</div>
           <h1 className="font-display text-2xl sm:text-3xl font-black tracking-tight text-ink">
-            Şikayet Yazma Asistanı
+            Асистент за писане на жалби
           </h1>
           <p className="mt-1 text-[14px] text-navy-mid leading-relaxed">
-            Kullanıcıların şikayet yazarken konuştuğu yapay zeka asistanının davranışını buradan
-            eğitin ve özelleştirin.
+            Обучете и персонализирайте оттук поведението на AI асистента, с който потребителите
+            разговарят, докато пишат жалба.
           </p>
         </div>
       </div>
@@ -100,23 +100,23 @@ function ComplaintAssistantAdminPage() {
         <div className="flex items-center gap-2 font-semibold">
           <Bot className="size-4 shrink-0" />
           {ai?.configured ? (
-            <>AI aktif — {ai.provider}</>
+            <>AI е активен — {ai.provider}</>
           ) : (
-            <>AI yapılandırılmadı — şablon modu kullanılıyor</>
+            <>AI не е конфигуриран — използва се шаблонен режим</>
           )}
         </div>
         {!ai?.configured && (
           <p className="mt-2 leading-relaxed">
-            Coolify ortam değişkenlerine <b>AI_API_KEY</b> (OpenAI: sk-…) ve{" "}
-            <b>AI_PROVIDER=openai</b> ekleyin. Anahtar olmadan asistan profesyonel yanıt veremez.
+            Добавете <b>AI_API_KEY</b> (OpenAI: sk-…) и{" "}
+            <b>AI_PROVIDER=openai</b> към променливите на средата в Coolify. Без ключ асистентът не може да дава професионални отговори.
           </p>
         )}
       </div>
 
       <div className="space-y-5">
         <Field
-          label="Karşılama mesajı"
-          hint="Kullanıcı sohbete başladığında görünen ilk mesaj."
+          label="Приветствено съобщение"
+          hint="Първото съобщение, което се показва, когато потребителят започне чат."
           onReset={() => resetField("greeting")}
         >
           <textarea
@@ -128,8 +128,8 @@ function ComplaintAssistantAdminPage() {
         </Field>
 
         <Field
-          label="Sistem talimatı (sohbet)"
-          hint="Asistanın her mesajda uyması gereken ana kurallar."
+          label="Системна инструкция (чат)"
+          hint="Основните правила, които асистентът следва при всяко съобщение."
           onReset={() => resetField("systemPrompt")}
         >
           <textarea
@@ -141,8 +141,8 @@ function ComplaintAssistantAdminPage() {
         </Field>
 
         <Field
-          label="Sistem talimatı (özet / finalize)"
-          hint="Kullanıcı «Hayır» dediğinde nihai metni oluştururken kullanılır."
+          label="Системна инструкция (обобщение / финализиране)"
+          hint="Използва се при съставяне на финалния текст, когато потребителят каже «Не»."
           onReset={() => resetField("finalizePrompt")}
         >
           <textarea
@@ -154,21 +154,21 @@ function ComplaintAssistantAdminPage() {
         </Field>
 
         <Field
-          label="Ek talimatlar"
-          hint="İsteğe bağlı — yukarıdaki talimatlara eklenir."
+          label="Допълнителни инструкции"
+          hint="По избор — добавят се към инструкциите по-горе."
           onReset={() => resetField("customInstructions")}
         >
           <textarea
             rows={4}
             value={config.customInstructions}
             onChange={(e) => setConfig({ ...config, customInstructions: e.target.value })}
-            placeholder="Örn: Bahis sitelerinde çekim sorunlarına öncelik ver…"
+            placeholder="Напр.: Давай приоритет на проблеми с тегления при сайтове за залози…"
             className={`${INPUT} resize-y`}
           />
         </Field>
 
         <div className="grid sm:grid-cols-2 gap-4">
-          <Field label="Sıcaklık (temperature)" onReset={() => resetField("temperature")}>
+          <Field label="Температура (temperature)" onReset={() => resetField("temperature")}>
             <input
               type="number"
               min={0}
@@ -181,7 +181,7 @@ function ComplaintAssistantAdminPage() {
               className={INPUT}
             />
           </Field>
-          <Field label="Maks. token" onReset={() => resetField("maxTokens")}>
+          <Field label="Макс. токени" onReset={() => resetField("maxTokens")}>
             <input
               type="number"
               min={400}
@@ -205,14 +205,14 @@ function ComplaintAssistantAdminPage() {
           className="inline-flex items-center gap-2 h-11 px-5 rounded-full bg-brand text-brand-foreground text-[14px] font-semibold disabled:opacity-60"
         >
           {saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
-          Kaydet
+          Запази
         </button>
         <button
           type="button"
           onClick={() => defaults && setConfig(defaults)}
           className="inline-flex items-center gap-2 h-11 px-5 rounded-full ring-1 ring-rule text-[14px] font-semibold hover:bg-surface"
         >
-          <RotateCcw className="size-4" /> Varsayılana dön
+          <RotateCcw className="size-4" /> Върни по подразбиране
         </button>
       </div>
     </div>
@@ -242,7 +242,7 @@ function Field({
           onClick={onReset}
           className="text-[11px] font-semibold text-brand hover:underline shrink-0"
         >
-          Sıfırla
+          Нулирай
         </button>
       </div>
       {children}

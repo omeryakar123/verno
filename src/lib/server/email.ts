@@ -1,13 +1,17 @@
-/** OTP / transactional e-posta — Resend API (öncelik) veya SMTP yedek. */
+/** OTP / transactional email — Resend API (priority) or SMTP fallback. */
 
 import nodemailer from "nodemailer";
+import { SITE_NAME, SITE_URL } from "@/lib/seo";
+
+const BRAND_PRIMARY = "#695DE9";
+const BRAND_GREEN = "#3AD08F";
 
 export function resolveFromAddress(): string {
   const explicit = process.env.SMTP_FROM?.trim() || process.env.RESEND_FROM_EMAIL?.trim();
   if (explicit) {
-    return explicit.includes("<") ? explicit : `tepkimvar <${explicit}>`;
+    return explicit.includes("<") ? explicit : `${SITE_NAME} <${explicit}>`;
   }
-  return process.env.EMAIL_FROM || "tepkimvar <info@tepkimvar.net>";
+  return process.env.EMAIL_FROM || `${SITE_NAME} <info@verno.bg>`;
 }
 
 function parseFrom(raw: string): { name?: string; address: string } {
@@ -31,7 +35,7 @@ function emailProvider(): "resend" | "smtp" | "auto" {
   return "auto";
 }
 
-/** Prod'da SMTP/Resend yoksa sessiz başarı yerine hata fırlat. */
+/** In production, throw if no provider is configured. */
 export function assertEmailConfigured(): void {
   const provider = emailProvider();
   if (provider === "resend" && resendConfigured()) return;
@@ -39,12 +43,14 @@ export function assertEmailConfigured(): void {
   if (provider === "auto" && (resendConfigured() || smtpConfigured())) return;
   if (process.env.EMAIL_DEV_CONSOLE === "true") return;
   throw new Error(
-    "E-posta servisi yapılandırılmamış. Coolify'da RESEND_API_KEY ve RESEND_FROM_EMAIL ayarlayın.",
+    "Имейл услугата не е конфигурирана. Задайте RESEND_API_KEY и RESEND_FROM_EMAIL в Coolify.",
   );
 }
 
 function otpSubject(type: "signup" | "forget-password"): string {
-  return type === "forget-password" ? "Şifre sıfırlama kodun — tepkimvar" : "E-posta doğrulama kodun — tepkimvar";
+  return type === "forget-password"
+    ? `Код за нова парола — ${SITE_NAME}`
+    : `Код за потвърждение на имейл — ${SITE_NAME}`;
 }
 
 function otpHtml(
@@ -54,35 +60,32 @@ function otpHtml(
 ): string {
   const lead =
     type === "forget-password"
-      ? "Şifrenizi sıfırlamak için aşağıdaki kodu girin:"
-      : "Kaydınızı tamamlamak için e-posta adresinizi doğrulayın:";
+      ? "Въведете кода по-долу, за да зададете нова парола:"
+      : "Потвърдете имейл адреса си, за да завършите регистрацията:";
   const linkBlock =
     type === "signup" && verifyUrl
       ? `<p style="margin:28px 0 0;text-align:center">
-    <a href="${verifyUrl}" style="display:inline-block;background:#0f172a;color:#fff;text-decoration:none;font-weight:600;font-size:14px;padding:12px 24px;border-radius:8px">E-postamı doğrula</a>
+    <a href="${verifyUrl}" style="display:inline-block;background:${BRAND_PRIMARY};color:#fff;text-decoration:none;font-weight:600;font-size:14px;padding:12px 24px;border-radius:999px">Потвърди имейла</a>
   </p>
-  <p style="margin:16px 0 0;font-size:12px;color:#64748b;text-align:center;word-break:break-all">Bağlantı çalışmazsa: ${verifyUrl}</p>`
+  <p style="margin:16px 0 0;font-size:12px;color:#64748b;text-align:center;word-break:break-all">Ако бутонът не работи: ${verifyUrl}</p>`
       : "";
   return `<!DOCTYPE html>
-<html lang="tr">
+<html lang="bg">
 <body style="font-family:Inter,Segoe UI,sans-serif;background:#f4f6f8;margin:0;padding:24px">
-  <div style="max-width:480px;margin:0 auto;background:#fff;border-radius:12px;padding:32px;border:1px solid #e5e7eb">
-    <p style="margin:0 0 8px;font-size:13px;color:#64748b;text-transform:uppercase;letter-spacing:.08em">tepkimvar</p>
-    <h1 style="margin:0 0 16px;font-size:20px;color:#0f172a">Doğrulama kodun</h1>
+  <div style="max-width:480px;margin:0 auto;background:#fff;border-radius:16px;padding:32px;border:1px solid #e5e7eb">
+    <p style="margin:0 0 8px;font-size:13px;color:${BRAND_PRIMARY};text-transform:uppercase;letter-spacing:.08em;font-weight:700">${SITE_NAME}</p>
+    <h1 style="margin:0 0 16px;font-size:20px;color:#0f172a">Вашият код за потвърждение</h1>
     <p style="margin:0 0 24px;color:#334155;line-height:1.5">${lead}</p>
     <p style="margin:0 0 8px;font-size:32px;font-weight:800;letter-spacing:8px;color:#0f172a;text-align:center">${otp}</p>
     ${linkBlock}
-    <p style="margin:24px 0 0;font-size:13px;color:#64748b;text-align:center">Kod 10 dakika geçerlidir. Bağlantı 24 saat geçerlidir. Bu isteği siz yapmadıysanız bu e-postayı yok sayın.</p>
+    <p style="margin:24px 0 0;font-size:13px;color:#64748b;text-align:center">Кодът е валиден 10 минути. Връзката е валидна 24 часа. Ако не сте поискали това, игнорирайте имейла.</p>
+    <p style="margin:16px 0 0;font-size:12px;color:#94a3b8;text-align:center">${SITE_URL.replace(/\/$/, "")}</p>
   </div>
 </body>
 </html>`;
 }
 
-async function sendViaSmtp(
-  to: string,
-  subject: string,
-  html: string,
-): Promise<void> {
+async function sendViaSmtp(to: string, subject: string, html: string): Promise<void> {
   const host = process.env.SMTP_HOST!.trim();
   const port = Number(process.env.SMTP_PORT || "587");
   const secure = process.env.SMTP_SECURE === "true" || port === 465;
@@ -91,7 +94,7 @@ async function sendViaSmtp(
     process.env.SMTP_LOGIN?.trim() ||
     parseFrom(resolveFromAddress()).address;
   if (!user) {
-    throw new Error("SMTP_USER tanımlı değil (Brevo panelindeki SMTP login e-postası).");
+    throw new Error("SMTP_USER не е зададен.");
   }
 
   const transporter = nodemailer.createTransport({
@@ -113,11 +116,7 @@ async function sendViaSmtp(
   });
 }
 
-async function sendViaResend(
-  to: string,
-  subject: string,
-  html: string,
-): Promise<void> {
+async function sendViaResend(to: string, subject: string, html: string): Promise<void> {
   const key = process.env.RESEND_API_KEY!.trim();
   const from = resolveFromAddress();
   const res = await fetch("https://api.resend.com/emails", {
@@ -128,8 +127,8 @@ async function sendViaResend(
 
   if (!res.ok) {
     const detail = await res.text().catch(() => "");
-    console.error(`[Resend] OTP gönderilemedi (${res.status}) from="${from}" to="${to}": ${detail}`);
-    throw new Error("E-posta gönderilemedi. Lütfen daha sonra tekrar deneyin.");
+    console.error(`[Resend] OTP failed (${res.status}) from="${from}" to="${to}": ${detail}`);
+    throw new Error("Имейлът не може да бъде изпратен. Опитайте по-късно.");
   }
 }
 
@@ -152,7 +151,7 @@ export async function sendOtpEmail(
       return;
     } catch (e) {
       if (provider === "resend" || !smtpConfigured()) throw e;
-      console.error("[Resend] OTP gönderilemedi, SMTP deneniyor:", e);
+      console.error("[Resend] OTP failed, trying SMTP:", e);
     }
   }
 
@@ -161,8 +160,8 @@ export async function sendOtpEmail(
       await sendViaSmtp(email, subject, html);
       return;
     } catch (e) {
-      console.error("[SMTP] OTP gönderilemedi:", e);
-      throw new Error("E-posta gönderilemedi. Lütfen daha sonra tekrar deneyin.");
+      console.error("[SMTP] OTP failed:", e);
+      throw new Error("Имейлът не може да бъде изпратен. Опитайте по-късно.");
     }
   }
 

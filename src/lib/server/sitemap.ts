@@ -44,7 +44,6 @@ function staticEntries(): SitemapEntry[] {
     { path: "/sikayet-yaz", changefreq: "monthly", priority: "0.6" },
     { path: "/kurumsal-uyelik", changefreq: "monthly", priority: "0.65" },
     { path: "/reklam-cozumleri", changefreq: "monthly", priority: "0.6" },
-    { path: "/tepkimvar-seal", changefreq: "monthly", priority: "0.7" },
     { path: "/hakkimizda", changefreq: "monthly", priority: "0.5" },
     { path: "/seffaflik-raporu", changefreq: "monthly", priority: "0.5" },
     { path: "/yardim", changefreq: "monthly", priority: "0.5" },

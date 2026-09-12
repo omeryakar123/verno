@@ -4,45 +4,45 @@ import { SITE_CONTACT_EMAIL } from "@/lib/contact";
 
 const SECTIONS: { h: string; p: string[] }[] = [
   {
-    h: "1. Genel",
+    h: "1. Общи положения",
     p: [
-      "tepkimvar olarak kullanıcılarımızın gizliliğini önemsiyoruz. Bu politika; hangi verileri topladığımızı, nasıl kullandığımızı ve haklarınızı açıklar. Platformu kullanarak bu politikayı kabul etmiş sayılırsınız.",
+      "verno.bg уважава поверителността на потребителите. Тази политика описва какви данни събираме, как ги използваме и какви права имате. С използването на платформата приемате настоящата политика.",
     ],
   },
   {
-    h: "2. Toplanan Veriler",
+    h: "2. Събирани данни",
     p: [
-      "Üyelik sırasında: ad soyad, e-posta ve isteğe bağlı telefon numarası. Kullanım sırasında: IP adresi, cihaz/tarayıcı bilgileri, oturum kayıtları. İçerik olarak: yazdığınız şikayetler, yorumlar, değerlendirmeler ve yüklediğiniz dosyalar.",
+      "При регистрация: име, имейл и телефон (за SMS верификация). При използване: IP адрес, информация за устройството/браузъра, сесийни записи. Съдържание: жалби, коментари, оценки и качени файлове.",
     ],
   },
   {
-    h: "3. Kullanım Amaçları",
+    h: "3. Цели на обработката",
     p: [
-      "Toplanan veriler; hesabınızın yönetimi, şikayetlerinizin yayınlanması ve markalara iletilmesi, güvenlik ve moderasyon, size bildirim gönderimi ve hizmet kalitesinin artırılması için kullanılır. Verileriniz üçüncü taraflara satılmaz.",
+      "Данните се използват за управление на акаунта, публикуване и предаване на жалби към марки, сигурност и модерация, известия и подобряване на услугата. Данните ви **не се продават** на трети лица.",
     ],
   },
   {
-    h: "4. Çerezler",
+    h: "4. Бисквитки",
     p: [
-      "Platform, oturumunuzu açık tutmak ve tercihlerinizi (ör. tema seçimi) hatırlamak için zorunlu çerezler kullanır. Üçüncü taraf reklam/izleme çerezi kullanılmamaktadır.",
+      "Платформата използва задължителни бисквитки за поддържане на сесията и запомняне на предпочитания (напр. тема). Не използваме рекламни или проследяващи бисквитки на трети страни.",
     ],
   },
   {
-    h: "5. Veri Güvenliği",
+    h: "5. Сигурност",
     p: [
-      "Verileriniz şifreli bağlantı (HTTPS) üzerinden taşınır, parolalar geri döndürülemez şekilde özetlenerek saklanır. Şikayet eklerinize erişim yetki kontrolüne tabidir; gizli olarak işaretlenen belgeler yalnızca yetkili taraflarca görüntülenebilir.",
+      "Данните се предават по криптирана връзка (HTTPS). Паролите се съхраняват като необратими хешове. Достъпът до прикачени файлове е ограничен според правата на потребителя и марката.",
     ],
   },
   {
-    h: "6. Anonimlik",
+    h: "6. Анонимност",
     p: [
-      "Şikayetinizi anonim olarak yayınlamayı seçebilirsiniz. Bu durumda adınız diğer kullanıcılara ve markaya gösterilmez; yalnızca platform moderasyonu şikayet sahibini görebilir.",
+      "Можете да публикувате жалба анонимно. В този случай името ви не се показва на други потребители и на марката; само екипът за модерация вижда самоличността на подателя.",
     ],
   },
   {
-    h: "7. İletişim",
+    h: "7. Контакт",
     p: [
-      `Gizlilikle ilgili soru ve talepleriniz için ${SITE_CONTACT_EMAIL} adresine yazabilirsiniz. Ayrıntılı bilgi için KVKK Aydınlatma Metni'ni inceleyebilirsiniz.`,
+      `За въпроси относно поверителността: ${SITE_CONTACT_EMAIL}. Вижте също информацията за личните данни (GDPR) на /kvkk.`,
     ],
   },
 ];
@@ -50,20 +50,25 @@ const SECTIONS: { h: string; p: string[] }[] = [
 export const Route = createFileRoute("/_site/(kurumsal)/gizlilik")({
   head: () => ({
     ...seoHead({
-      title: "Gizlilik Politikası — tepkimvar",
+      title: "Политика за поверителност — verno.bg",
       description:
-        "tepkimvar Gizlilik Politikası: hangi verileri topladığımız, nasıl koruduğumuz, çerez kullanımı ve anonim şikayet hakkınız.",
+        "Политика за поверителност на verno.bg: какви данни събираме, как ги защитаваме и правата ви.",
       path: "/gizlilik",
     }),
   }),
-  component: () => (
-    <div>
+  component: LegalPage,
+});
+
+function LegalPage() {
+  return (
+    <div className="min-h-screen bg-paper">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 py-16">
-        <h1 className="text-3xl sm:text-4xl font-display font-black mb-2">Gizlilik Politikası</h1>
-        <p className="text-[13px] text-navy-mid mb-10">Son güncelleme: Ağustos 2026</p>
+        <p className="text-xs font-semibold uppercase tracking-wider text-primary mb-2">Verno.bg</p>
+        <h1 className="text-3xl sm:text-4xl font-display font-black mb-2 text-ink">Политика за поверителност</h1>
+        <p className="text-[13px] text-navy-mid mb-10">Последна актуализация: септември 2026</p>
         <div className="space-y-8">
           {SECTIONS.map((s) => (
-            <section key={s.h}>
+            <section key={s.h} className="rounded-2xl bg-card ring-1 ring-rule p-6">
               <h2 className="text-lg font-semibold text-ink mb-2">{s.h}</h2>
               {s.p.map((par, i) => (
                 <p key={i} className="text-navy leading-relaxed mb-2">{par}</p>
@@ -73,5 +78,5 @@ export const Route = createFileRoute("/_site/(kurumsal)/gizlilik")({
         </div>
       </div>
     </div>
-  ),
-});
+  );
+}

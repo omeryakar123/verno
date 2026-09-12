@@ -19,9 +19,9 @@ export const Route = createFileRoute("/_site/trend-100")({
   },
   head: () =>
     seoHead({
-      title: "Trend 100 — Son 7 Günün En Çok Konuşulan Markaları | tepkimvar",
+      title: "Тренд 100 — най-обсъжданите марки за 7 дни | verno.bg",
       description:
-        "Son 7 günde en çok yeni şikayet, okunma ve topluluk desteği alan markalar. Gerçek veriden hesaplanan gündem sıralaması.",
+        "Марките с най-много нови жалби, прегледи и подкрепа за последните 7 дни. Класиране от реални данни.",
       path: "/trend-100",
     }),
   component: Trend100Page,
@@ -51,12 +51,11 @@ function Trend100Page() {
       <section className="bg-gradient-to-br from-[oklch(0.22_0.02_262)] via-[oklch(0.3_0.04_265)] to-brand/40 text-white py-14">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="inline-flex items-center gap-2 px-3 h-7 rounded-full bg-card/10 backdrop-blur text-[11px] font-semibold uppercase tracking-widest">
-            <TrendingUp className="size-3.5" /> Son 7 gün · gerçek veri
+            <TrendingUp className="size-3.5" /> Последни 7 дни · реални данни
           </div>
           <h1 className="mt-3 text-4xl sm:text-5xl font-display font-black tracking-tight">Trend 100</h1>
           <p className="mt-2 text-white/70 max-w-2xl leading-relaxed">
-            Sıralama; yeni şikayet sayısı, okunma ve topluluk desteğine göre hesaplanır. Geçen haftaya göre
-            artış gösteren markalar &quot;Yükselişte&quot; rozeti alır.
+            Класирането се базира на нови жалби, прегледи и подкрепа. Марки с растеж спрямо миналата седмица получават значка „Във възход“.
           </p>
 
           <div className="mt-6 flex flex-wrap gap-2">
@@ -67,7 +66,7 @@ function Trend100Page() {
                 !sp.kategori ? "bg-card text-ink ring-white" : "bg-card/5 text-white/80 ring-white/20 hover:bg-card/10"
               }`}
             >
-              Tümü
+              Всички
             </button>
             {cats.map((c) => {
               const active = sp.kategori === c.slug;
@@ -90,10 +89,10 @@ function Trend100Page() {
 
       <div className="mx-auto max-w-4xl px-4 sm:px-6 py-10">
         {loading ? (
-          <div className="bg-card rounded-2xl p-12 text-center text-navy-mid ring-1 ring-rule">Yükleniyor…</div>
+          <div className="bg-card rounded-2xl p-12 text-center text-navy-mid ring-1 ring-rule">Зареждане…</div>
         ) : brands.length === 0 ? (
           <div className="bg-card rounded-2xl p-12 text-center text-navy-mid ring-1 ring-rule">
-            Bu kategoride son 7 günde yeterli aktivite yok.
+            В тази категория няма достатъчна активност за последните 7 дни.
           </div>
         ) : (
           <ol className="bg-card rounded-2xl ring-1 ring-rule divide-y divide-rule overflow-hidden">

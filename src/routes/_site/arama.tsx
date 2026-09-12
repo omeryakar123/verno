@@ -14,8 +14,8 @@ export const Route = createFileRoute("/_site/arama")({
   validateSearch: searchSchema,
   head: () => ({
     ...seoHead({
-      title: "Arama — tepkimvar",
-      description: "Marka, şikayet veya şikayet kodu arayın; sonuçlara hızla ulaşın.",
+      title: "Търсене — verno.bg",
+      description: "Търсете марка, жалба или код; бърз достъп до резултати.",
       path: "/arama",
     }),
   }),
@@ -54,24 +54,24 @@ function SearchPage() {
         <form onSubmit={(e) => { e.preventDefault(); window.history.replaceState(null, "", `/arama?q=${encodeURIComponent(term)}`); setBrandPage(1); setComplaintPage(1); run(term, 1, 1); }}
           className="bg-card rounded-2xl ring-1 ring-rule p-5 flex gap-3 items-center">
           <Search className="size-5 text-navy-mid" />
-          <input value={term} onChange={(e) => setTerm(e.target.value)} autoFocus placeholder="Marka veya şikayet ara…"
+          <input value={term} onChange={(e) => setTerm(e.target.value)} autoFocus placeholder="Търсене на марка или жалба…"
             className="flex-1 h-11 text-[15px] focus:outline-none" />
-          <button className="h-11 rounded-full bg-brand text-brand-foreground px-5 text-sm font-semibold">Ara</button>
+          <button className="h-11 rounded-full bg-brand text-brand-foreground px-5 text-sm font-semibold">Търси</button>
         </form>
 
         <div className="mt-6 flex items-center gap-2 text-sm">
           {(["all", "brands", "complaints"] as const).map((t) => (
             <button key={t} onClick={() => setTab(t)}
               className={`px-3 h-8 rounded-full ring-1 ${tab === t ? "bg-ink text-paper ring-ink" : "bg-card ring-rule text-navy-mid hover:text-ink"}`}>
-              {t === "all" ? "Tümü" : t === "brands" ? `Markalar (${brandsTotal})` : `Şikayetler (${complaintsTotal})`}
+              {t === "all" ? "Всички" : t === "brands" ? `Марки (${brandsTotal})` : `Жалби (${complaintsTotal})`}
             </button>
           ))}
-          {loading && <span className="text-navy-mid">Aranıyor…</span>}
+          {loading && <span className="text-navy-mid">Търсене…</span>}
         </div>
 
         {(tab === "all" || tab === "brands") && brands.length > 0 && (
           <section className="mt-6">
-            <h2 className="font-display font-bold text-[18px] mb-3">Markalar</h2>
+            <h2 className="font-display font-bold text-[18px] mb-3">Марки</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {brands.map((b) => <CompanyCard key={b.slug} company={b} />)}
             </div>
@@ -81,7 +81,7 @@ function SearchPage() {
 
         {(tab === "all" || tab === "complaints") && complaints.length > 0 && (
           <section className="mt-8">
-            <h2 className="font-display font-bold text-[18px] mb-3">Şikayetler</h2>
+            <h2 className="font-display font-bold text-[18px] mb-3">Жалби</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {complaints.map((c) => <ComplaintCard key={c.id} complaint={c} />)}
             </div>
@@ -91,7 +91,7 @@ function SearchPage() {
 
         {!loading && q && brands.length === 0 && complaints.length === 0 && (
           <div className="mt-10 bg-card rounded-2xl ring-1 ring-rule p-12 text-center text-navy-mid">
-            "{q}" için sonuç bulunamadı.
+            "{q}" — няма резултати.
           </div>
         )}
       </div>

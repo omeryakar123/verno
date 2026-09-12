@@ -22,8 +22,8 @@ function AdminBlogPage() {
   useEffect(() => { load(); }, []);
 
   async function remove(id: string) {
-    if (!confirm("Yazı silinsin mi?")) return;
-    if (await apiSend("/api/admin/blogs", "DELETE", { id })) { toast.success("Silindi"); load(); }
+    if (!confirm("Да се изтрие ли статията?")) return;
+    if (await apiSend("/api/admin/blogs", "DELETE", { id })) { toast.success("Изтрито"); load(); }
   }
   // published_at sunucuda ayarlanır.
   async function togglePublish(b: Blog) {
@@ -35,11 +35,11 @@ function AdminBlogPage() {
     <div className="px-6 lg:px-10 py-8 space-y-6">
       <div className="flex items-end justify-between gap-4 flex-wrap">
         <div>
-          <div className="eyebrow text-navy-mid">İçerik</div>
+          <div className="eyebrow text-navy-mid">Съдържание</div>
           <h1 className="mt-1 font-display text-3xl font-black tracking-tight text-ink">Blog</h1>
         </div>
         <button onClick={() => setOpen(true)} className="inline-flex items-center gap-2 rounded-full bg-brand text-brand-foreground px-5 h-10 text-[13px] font-semibold hover:brightness-105">
-          <Plus className="size-4" /> Yeni Yazı
+          <Plus className="size-4" /> Нова статия
         </button>
       </div>
 
@@ -47,10 +47,10 @@ function AdminBlogPage() {
         <table className="w-full text-[13.5px]">
           <thead className="bg-surface text-navy-mid text-left text-[11.5px] uppercase tracking-wider">
             <tr>
-              <th className="px-4 py-3 font-semibold">Başlık</th>
-              <th className="px-4 py-3 font-semibold">Durum</th>
-              <th className="px-4 py-3 font-semibold">Yayın</th>
-              <th className="px-4 py-3 text-right font-semibold">İşlem</th>
+              <th className="px-4 py-3 font-semibold">Заглавие</th>
+              <th className="px-4 py-3 font-semibold">Статус</th>
+              <th className="px-4 py-3 font-semibold">Публикуване</th>
+              <th className="px-4 py-3 text-right font-semibold">Действие</th>
             </tr>
           </thead>
           <tbody>
@@ -60,14 +60,14 @@ function AdminBlogPage() {
                 <td className="px-4 py-3">
                   <span className={`text-[12px] px-2 py-1 rounded-full ${b.status === "published" ? "bg-brand-soft text-brand" : "bg-surface text-navy-mid"}`}>{b.status}</span>
                 </td>
-                <td className="px-4 py-3 text-navy-mid">{b.published_at ? new Date(b.published_at).toLocaleDateString("tr-TR") : "—"}</td>
+                <td className="px-4 py-3 text-navy-mid">{b.published_at ? new Date(b.published_at).toLocaleDateString("bg-BG") : "—"}</td>
                 <td className="px-4 py-3 text-right space-x-3">
-                  <button onClick={() => togglePublish(b)} className="text-[12px] text-brand hover:underline">{b.status === "published" ? "Taslak yap" : "Yayınla"}</button>
-                  <button onClick={() => remove(b.id)} className="text-[12px] text-danger hover:underline">Sil</button>
+                  <button onClick={() => togglePublish(b)} className="text-[12px] text-brand hover:underline">{b.status === "published" ? "Чернова" : "Публикуванеla"}</button>
+                  <button onClick={() => remove(b.id)} className="text-[12px] text-danger hover:underline">Изтрий</button>
                 </td>
               </tr>
             ))}
-            {items.length === 0 && <tr><td colSpan={4} className="px-4 py-10 text-center text-navy-mid">Henüz yazı yok.</td></tr>}
+            {items.length === 0 && <tr><td colSpan={4} className="px-4 py-10 text-center text-navy-mid">Все още няма статии.</td></tr>}
           </tbody>
         </table>
       </div>
@@ -92,28 +92,28 @@ function BlogCreateModal({ open, onClose }: { open: boolean; onClose: () => void
     // author_id GÖNDERİLMEZ — sunucu oturumdan yazar.
     const ok = await apiSend("/api/admin/blogs", "POST", { title, slug, excerpt, body: content });
     setLoading(false);
-    if (ok) { toast.success("Oluşturuldu"); onClose(); }
+    if (ok) { toast.success("Създадено"); onClose(); }
   }
 
   return (
     <Modal open={open} onClose={onClose} className="max-w-lg">
       <form onSubmit={save} className="bg-card rounded-2xl p-6 space-y-4 shadow-lift">
-        <h2 className="font-display text-xl font-bold text-ink">Yeni Blog Yazısı</h2>
+        <h2 className="font-display text-xl font-bold text-ink">Нова блог статия</h2>
         <div>
-          <label className="text-[12px] font-medium text-navy-mid">Başlık</label>
+          <label className="text-[12px] font-medium text-navy-mid">Заглавие</label>
           <input required value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1 w-full h-10 rounded-lg ring-1 ring-rule px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40" />
         </div>
         <div>
-          <label className="text-[12px] font-medium text-navy-mid">Özet</label>
+          <label className="text-[12px] font-medium text-navy-mid">Резюме</label>
           <input value={excerpt} onChange={(e) => setExcerpt(e.target.value)} className="mt-1 w-full h-10 rounded-lg ring-1 ring-rule px-3 text-sm" />
         </div>
         <div>
-          <label className="text-[12px] font-medium text-navy-mid">İçerik (Markdown)</label>
+          <label className="text-[12px] font-medium text-navy-mid">Съдържание (Markdown)</label>
           <textarea required value={content} onChange={(e) => setContent(e.target.value)} rows={8} className="mt-1 w-full rounded-lg ring-1 ring-rule p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40" />
         </div>
         <div className="flex gap-2 pt-2">
-          <button type="button" onClick={onClose} className="flex-1 h-10 rounded-lg ring-1 ring-rule text-sm font-medium hover:bg-surface">İptal</button>
-          <button disabled={loading} className="flex-1 h-10 rounded-lg bg-brand text-brand-foreground text-sm font-semibold hover:brightness-110 disabled:opacity-60">Kaydet</button>
+          <button type="button" onClick={onClose} className="flex-1 h-10 rounded-lg ring-1 ring-rule text-sm font-medium hover:bg-surface">Отказ</button>
+          <button disabled={loading} className="flex-1 h-10 rounded-lg bg-brand text-brand-foreground text-sm font-semibold hover:brightness-110 disabled:opacity-60">Запази</button>
         </div>
       </form>
     </Modal>

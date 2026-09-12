@@ -70,58 +70,76 @@ function BrandLayout() {
     <>
       <Link
         to="/"
-        className="flex items-center gap-2 px-5 h-16 border-b border-rule"
+        className="relative flex items-center gap-2 px-5 h-16 border-b border-rule overflow-hidden"
         onClick={() => setMenuOpen(false)}
       >
+        {/* Verno dekoratif blob'u */}
+        <span
+          className="absolute -top-6 -right-6 size-20 rounded-full bg-brand/10 pointer-events-none"
+          aria-hidden
+        />
         <SiteLogoMark size={22} />
-        <span className="ml-auto text-[9px] uppercase tracking-wider font-bold bg-brand text-brand-foreground px-1.5 py-0.5 rounded">
-          Brand
+        <span className="ml-auto text-[9px] uppercase tracking-wider font-bold bg-gradient-to-r from-brand to-[#2bb47c] text-white px-2 py-0.5 rounded-full shadow-sm shrink-0">
+          Марка
         </span>
       </Link>
-      <div className="px-5 py-3 border-b border-rule">
+      <div className="px-5 py-3 border-b border-rule bg-brand/5">
         <div className="text-[10px] uppercase tracking-wider text-navy-mid font-semibold">
-          Firma
+          Марка
         </div>
         <div className="mt-1 text-[13.5px] font-semibold text-ink truncate">
-          {memberships[0]?.name ?? "Bağlı firma yok"}
+          {memberships[0]?.name ?? "Няма свързана марка"}
         </div>
       </div>
       <nav className="flex-1 p-3 space-y-1 text-[13.5px]">
         <NavItem
           to="/brand"
           icon={LayoutDashboard}
-          label="Dashboard"
+          label="Табло"
           exact
           onNavigate={() => setMenuOpen(false)}
         />
         <NavItem
           to="/brand/sikayetler"
           icon={MessageSquare}
-          label="Şikayetler"
+          label="Жалби"
           onNavigate={() => setMenuOpen(false)}
         />
         <NavItem
           to="/brand/mesajlar"
           icon={MessagesSquare}
-          label="Mesajlar"
+          label="Съобщения"
           onNavigate={() => setMenuOpen(false)}
         />
         <NavItem
           to="/brand/profil"
           icon={Building2}
-          label="Profil"
+          label="Профил"
           onNavigate={() => setMenuOpen(false)}
         />
       </nav>
       <div className="border-t border-rule p-3">
+        <div className="flex items-center gap-2 px-2 py-2">
+          <div className="grid place-items-center size-9 rounded-full bg-gradient-to-br from-brand to-primary text-white text-sm font-bold">
+            {user?.email?.[0]?.toUpperCase() ?? "B"}
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="text-[12.5px] font-semibold text-ink truncate">
+              {user?.email}
+            </div>
+            <div className="text-[11px] text-navy-mid">
+              Представител на марка
+            </div>
+          </div>
+        </div>
         <button
           onClick={async () => {
             await signOut();
             navigate({ to: "/brand/login" });
           }}
-          className="w-full inline-flex items-center gap-2 rounded-lg px-3 py-2 text-[13px] text-navy hover:bg-surface"
+          className="mt-1 w-full inline-flex items-center gap-2 rounded-lg px-3 py-2 text-[13px] text-navy hover:bg-surface"
         >
-          <LogOut className="size-4" /> Çıkış
+          <LogOut className="size-4" /> Изход
         </button>
       </div>
     </>
@@ -134,15 +152,15 @@ function BrandLayout() {
           type="button"
           onClick={() => setMenuOpen((o) => !o)}
           className="size-10 grid place-items-center rounded-lg ring-1 ring-rule"
-          aria-label="Menü"
+          aria-label="Меню"
         >
           {menuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
         </button>
         <Link to="/brand" className="flex items-center gap-2 min-w-0">
           <SiteLogoMark size={20} />
         </Link>
-        <span className="ml-auto text-[9px] uppercase tracking-wider font-bold bg-brand text-brand-foreground px-1.5 py-0.5 rounded shrink-0">
-          Brand
+        <span className="ml-auto text-[9px] uppercase tracking-wider font-bold bg-gradient-to-r from-brand to-[#2bb47c] text-white px-2 py-0.5 rounded-full shadow-sm shrink-0">
+          Марка
         </span>
       </header>
 
@@ -188,7 +206,7 @@ function NavItem({
       to={to}
       onClick={onNavigate}
       activeOptions={{ exact: !!exact }}
-      activeProps={{ className: "bg-brand-soft text-brand" }}
+      activeProps={{ className: "bg-brand/10 text-brand font-semibold" }}
       className="flex items-center gap-3 rounded-lg px-3 py-2 text-navy hover:bg-surface transition"
     >
       <Icon className="size-4" />

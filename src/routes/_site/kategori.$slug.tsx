@@ -25,9 +25,9 @@ export const Route = createFileRoute("/_site/kategori/$slug")({
     const path = `/kategori/${params.slug}`;
     const name = loaderData?.cat?.name ?? slugToTitle(params.slug);
     const count = loaderData?.complaints?.total ?? 0;
-    const title = `${name} Şikayetleri ve Firmaları — tepkimvar`;
+    const title = `${name} — жалби и марки | verno.bg`;
     const description = clamp(
-      `${name} kategorisinde ${count} müşteri şikayeti. Firmaların çözüm oranları, marka yanıtları ve puanları.`,
+      `${count} клиентски жалби в категория ${name}. Процент на решение, отговори и оценки на марките.`,
       155,
     );
     return {
@@ -35,7 +35,7 @@ export const Route = createFileRoute("/_site/kategori/$slug")({
       scripts: [
         breadcrumbLd([
           { name: "Ana Sayfa", path: "/" },
-          { name: "Şikayetler", path: "/sikayetler" },
+          { name: "Жалби", path: "/sikayetler" },
           { name, path },
         ]),
       ],
@@ -73,15 +73,15 @@ function CategoryPage() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-10">
         <div className="bg-card rounded-2xl ring-1 ring-rule p-6 sm:p-8">
           <p className="text-[11px] font-semibold uppercase tracking-widest text-brand mb-2">Kategori</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-2">{cat?.name ?? "Yükleniyor..."}</h1>
+          <h1 className="text-3xl font-semibold tracking-tight mb-2">{cat?.name ?? "Зареждане…"}</h1>
           <p className="text-sm text-navy-mid">
-            {total.toLocaleString("tr-TR")} şikayet · {companies.length} firma
+            {total.toLocaleString("bg-BG")} жалби · {companies.length} марки
           </p>
         </div>
 
         {companies.length > 0 && (
           <section className="mt-10">
-            <h2 className="text-lg font-semibold tracking-tight mb-4">Öne çıkan firmalar</h2>
+            <h2 className="text-lg font-semibold tracking-tight mb-4">Препоръчани марки</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {companies.map((c) => <CompanyCard key={c.slug} company={c} />)}
             </div>
@@ -89,7 +89,7 @@ function CategoryPage() {
         )}
 
         <section className="mt-10">
-          <h2 className="text-lg font-semibold tracking-tight mb-4">Şikayetler</h2>
+          <h2 className="text-lg font-semibold tracking-tight mb-4">Жалби</h2>
           {complaints.length > 0 ? (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -98,7 +98,7 @@ function CategoryPage() {
               <Pagination page={page} pageSize={PAGE_SIZE} total={total} onChange={setPage} />
             </>
           ) : (
-            <div className="bg-card rounded-2xl ring-1 ring-rule p-8 text-center text-sm text-navy-mid">Bu kategoride henüz şikayet bulunmuyor.</div>
+            <div className="bg-card rounded-2xl ring-1 ring-rule p-8 text-center text-sm text-navy-mid">В тази категория все още няма жалби.</div>
           )}
         </section>
       </div>

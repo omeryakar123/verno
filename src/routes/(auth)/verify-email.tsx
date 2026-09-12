@@ -8,7 +8,7 @@ import { apiSendSignupOtp, apiVerifySignupLink, apiVerifySignupOtp } from "@/lib
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { SiteLogoHeader } from "@/components/site-logo-mark";
-import { privateHead } from "@/lib/seo";
+import { privateHead, SITE_NAME } from "@/lib/seo";
 
 const searchSchema = z.object({
   email: z.string().email().optional(),
@@ -17,7 +17,7 @@ const searchSchema = z.object({
 });
 
 export const Route = createFileRoute("/(auth)/verify-email")({
-  head: () => privateHead("E-posta Doğrulama — tepkimvar", "/verify-email"),
+  head: () => privateHead(`Потвърждение на имейл — ${SITE_NAME}`, "/verify-email"),
   validateSearch: searchSchema,
   component: VerifyEmailPage,
 });
@@ -45,7 +45,7 @@ function VerifyEmailPage() {
 
   async function finishVerified() {
     setSuccess(true);
-    toast.success("E-posta doğrulandı — üyeliğiniz tamamlandı.");
+    toast.success("Имейлът е потвърден — регистрацията е завършена.");
     setTimeout(async () => {
       await authClient.getSession({ fetchOptions: { cache: "no-store" } });
       const res = await fetch("/api/me", { credentials: "include" });
@@ -78,7 +78,7 @@ function VerifyEmailPage() {
     void (async () => {
       const { error } = await apiSendSignupOtp(email);
       if (error) toast.error(error);
-      else toast.success("Doğrulama kodu e-postanıza gönderildi.");
+      else toast.success("Кодът за потвърждение е изпратен на имейла ви.");
       setCooldown(60);
     })();
   }, [email, sent, token]);
@@ -106,7 +106,7 @@ function VerifyEmailPage() {
       toast.error(error);
       return;
     }
-    toast.success("Yeni kod gönderildi.");
+    toast.success("Нов код е изпратен.");
     setCode("");
     setCooldown(60);
   }
@@ -126,29 +126,29 @@ function VerifyEmailPage() {
               <div className="mx-auto grid place-items-center size-16 rounded-full bg-brand-soft text-brand mb-4 animate-in zoom-in-50">
                 <CheckCircle2 className="size-8" />
               </div>
-              <h1 className="text-xl font-semibold text-ink">Üyeliğiniz tamamlandı</h1>
-              <p className="text-[13px] text-navy-mid mt-1">E-postanız doğrulandı. Yönlendiriliyorsunuz…</p>
+              <h1 className="text-xl font-semibold text-ink">Регистрацията е завършена</h1>
+              <p className="text-[13px] text-navy-mid mt-1">Имейлът е потвърден. Пренасочване…</p>
             </div>
           ) : (
             <>
               <div className="mx-auto grid place-items-center size-12 rounded-xl bg-brand-soft text-brand mb-4">
                 <Mail className="size-5" />
               </div>
-              <h1 className="text-xl font-semibold text-ink text-center">E-postanı doğrula</h1>
+              <h1 className="text-xl font-semibold text-ink text-center">Потвърдете имейла си</h1>
               <p className="text-[13px] text-navy-mid mt-1 text-center leading-relaxed">
                 {email ? (
                   <>
-                    Kayıt işleminin son adımı: <b>{email}</b> adresine gönderilen 6 haneli kodu girin veya e-postadaki
-                    doğrulama bağlantısına tıklayın.
+                    Последна стъпка: въведете 6-цифрения код, изпратен на <b>{email}</b>, или кликнете
+                    върху връзката в имейла.
                   </>
                 ) : (
-                  "E-posta adresinize gönderilen 6 haneli kodu girin veya doğrulama bağlantısına tıklayın."
+                  "Въведете 6-цифрения код от имейла или използвайте връзката за потвърждение."
                 )}
               </p>
               {!email && (
                 <p className="mt-3 text-center text-[13px]">
                   <Link to="/login" className="text-brand font-medium hover:underline">
-                    Giriş yapın
+                    Влезте в акаунта
                   </Link>
                 </p>
               )}
@@ -165,7 +165,7 @@ function VerifyEmailPage() {
                     disabled={verifying || code.length !== 6}
                     className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-brand text-brand-foreground font-medium h-11 text-sm hover:brightness-110 disabled:opacity-60"
                   >
-                    {verifying && <Loader2 className="size-4 animate-spin" />} Doğrula ve devam et
+                    {verifying && <Loader2 className="size-4 animate-spin" />} Потвърди и продължи
                   </button>
                 </form>
               )}
@@ -173,7 +173,7 @@ function VerifyEmailPage() {
                 <div className="mt-5 text-center text-[13px] text-navy-mid">
                   {cooldown > 0 ? (
                     <span>
-                      Yeni kodu <b>{cooldown}s</b> sonra isteyebilirsin
+                      Нов код след <b>{cooldown}с</b>
                     </span>
                   ) : (
                     <button
@@ -181,7 +181,7 @@ function VerifyEmailPage() {
                       disabled={resending}
                       className="text-brand font-medium hover:underline disabled:opacity-60 inline-flex items-center gap-1"
                     >
-                      {resending && <Loader2 className="size-3 animate-spin" />} Kodu tekrar gönder
+                      {resending && <Loader2 className="size-3 animate-spin" />} Изпрати кода отново
                     </button>
                   )}
                 </div>

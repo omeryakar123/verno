@@ -38,12 +38,12 @@ const titles: Record<Variant, { login: string; sub: string; brand: string }> = {
   admin: {
     login: "Админ панел",
     sub: "Само за оторизирани администраторски акаунти.",
-    brand: "Admin",
+    brand: "Админ",
   },
   brand: {
     login: "Брандов панел",
     sub: "Влезте с акаунта на представител на марката.",
-    brand: "Brand",
+    brand: "Марка",
   },
 };
 
@@ -435,9 +435,9 @@ export function AuthForm({
               )}
               <Field
                 icon={Mail}
-                label="E-posta"
+                label="Имейл"
                 type="email"
-                placeholder="ornek@email.com"
+                placeholder="primer@email.bg"
                 value={email}
                 onChange={setEmail}
                 required

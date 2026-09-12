@@ -14,13 +14,13 @@ export const Route = createFileRoute("/_site/blog/$slug")({
     const path = `/blog/${params.slug}`;
     if (!p) {
       return seoHead({
-        title: "Yazı bulunamadı — tepkimvar",
-        description: "Aradığınız yazı yayında değil.",
+        title: "Статията не е намерена — verno.bg",
+        description: "Търсената статия не е публикувана.",
         path,
         noindex: true,
       });
     }
-    const title = p.seo_title || `${p.title} | tepkimvar Blog`;
+    const title = p.seo_title || `${p.title} | verno.bg Блог`;
     const description = clamp(p.seo_description || p.excerpt || p.body, 155);
     return {
       ...seoHead({
@@ -41,7 +41,7 @@ export const Route = createFileRoute("/_site/blog/$slug")({
           datePublished: p.published_at,
           inLanguage: "tr-TR",
           ...(p.cover_url ? { image: p.cover_url } : {}),
-          publisher: { "@type": "Organization", name: "tepkimvar" },
+          publisher: { "@type": "Organization", name: "verno" },
         }),
         breadcrumbLd([
           { name: "Ana Sayfa", path: "/" },
@@ -126,14 +126,14 @@ function BlogPostPage() {
 
       <div className="mt-10 rounded-2xl bg-surface ring-1 ring-rule p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4">
         <div className="flex-1">
-          <p className="font-semibold text-ink">Şikayetin mi var?</p>
-          <p className="text-[13px] text-navy-mid mt-1">Sesini duyur, çözüm sürecini tepkimvar üzerinden takip et.</p>
+          <p className="font-semibold text-ink">Имате жалба?</p>
+          <p className="text-[13px] text-navy-mid mt-1">Споделете проблема и проследете решението на verno.bg.</p>
         </div>
         <Link
           to="/sikayet-yaz"
           className="inline-flex items-center justify-center h-11 px-5 rounded-full bg-brand text-brand-foreground text-[13px] font-semibold hover:brightness-105 transition shrink-0"
         >
-          Şikayet Yaz
+          Напиши жалба
         </Link>
       </div>
     </article>

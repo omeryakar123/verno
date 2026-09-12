@@ -17,9 +17,9 @@ export const Route = createFileRoute("/_site/sikayet-yaz")({
   }),
   head: () => ({
     ...seoHead({
-      title: "Şikayet Yaz — Sesini Duyur | tepkimvar",
+      title: "Напиши жалба — verno.bg",
       description:
-        "Yaşadığınız sorunu adım adım anlatın, kanıt ekleyin ve markadan resmi yanıt alın.",
+        "Опишете проблема си стъпка по стъпка, приложете доказателства и получете официален отговор от марката.",
       path: "/sikayet-yaz",
     }),
   }),
@@ -37,12 +37,12 @@ function WriteComplaintPage() {
 
   useEffect(() => {
     if (!authLoading && !user) {
-      toast.info("Şikayet yazmak için giriş yapın");
+      toast.info("Влезте в акаунта, за да подадете жалба");
       navigate({ to: "/login" });
       return;
     }
     if (!authLoading && user && !user.emailVerified) {
-      toast.info("Şikayet yazmak için e-postanızı doğrulayın");
+      toast.info("Потвърдете имейла си, за да подадете жалба");
       navigate({ to: "/verify-email", search: { email: user.email } });
     }
   }, [authLoading, user, navigate]);
@@ -67,25 +67,25 @@ function WriteComplaintPage() {
       <div className="min-h-[50vh] grid place-items-center text-navy-mid text-[14px]">
         {!authLoading && !user ? (
           <p>
-            Şikayet göndermek için{" "}
+            За да подадете жалба,{" "}
             <Link to="/login" className="text-brand font-semibold underline">
-              giriş yapın
+              влезте в акаунта
             </Link>
             .
           </p>
         ) : !authLoading && user && !user.emailVerified ? (
           <p>
-            E-posta doğrulaması gerekli.{" "}
+            Необходимо е потвърждение на имейл.{" "}
             <Link
               to="/verify-email"
               search={{ email: user.email }}
               className="text-brand font-semibold underline"
             >
-              Kodu girin
+              Въведете кода
             </Link>
           </p>
         ) : (
-          "Yükleniyor…"
+          "Зареждане…"
         )}
       </div>
     );

@@ -56,23 +56,23 @@ function BrandDashboard() {
   return (
     <div className="px-6 lg:px-10 py-8 space-y-8">
       <div>
-        <div className="eyebrow text-navy-mid">Brand Panel</div>
-        <h1 className="mt-1 font-display text-3xl font-black tracking-tight text-ink">Dashboard</h1>
-        <p className="mt-1 text-[14px] text-navy-mid">{brandId ? "Firmanızın anlık metrikleri." : "Hesabınız henüz bir firmaya bağlı değil. Admin tarafından bağlanması gerekir."}</p>
+        <div className="eyebrow text-navy-mid">Панел на марката</div>
+        <h1 className="mt-1 font-display text-3xl font-black tracking-tight text-ink">Табло</h1>
+        <p className="mt-1 text-[14px] text-navy-mid">{brandId ? "Актуални метрики на вашата марка." : "Акаунтът ви още не е свързан с марка. Трябва да бъде свързан от администратор."}</p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
-        <Stat icon={Clock} label="Bugün" v={s?.today} tone="brand" />
-        <Stat icon={MessageSquare} label="Bekleyen" v={s?.pending} tone="warn" />
-        <Stat icon={Eye} label="İncelenen" v={s?.review} tone="ink" />
-        <Stat icon={Reply} label="Yanıtlanan" v={s?.answered} tone="ink" />
-        <Stat icon={CheckCircle2} label="Çözülen" v={s?.resolved_total ?? (s ? s.resolved + s.answered : undefined)} tone="brand" />
-        <Stat icon={TrendingUp} label="Çözüm Oranı" v={s?.resolutionRate} suffix="%" tone="brand" />
+        <Stat icon={Clock} label="Днес" v={s?.today} tone="brand" />
+        <Stat icon={MessageSquare} label="Изчакващи" v={s?.pending} tone="warn" />
+        <Stat icon={Eye} label="В преглед" v={s?.review} tone="ink" />
+        <Stat icon={Reply} label="Отговорени" v={s?.answered} tone="ink" />
+        <Stat icon={CheckCircle2} label="Решени" v={s?.resolved_total ?? (s ? s.resolved + s.answered : undefined)} tone="brand" />
+        <Stat icon={TrendingUp} label="Процент решени" v={s?.resolutionRate} suffix="%" tone="brand" />
       </div>
 
       <div className="grid lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2 bg-card rounded-2xl ring-1 ring-rule p-6">
-          <h2 className="font-display text-lg font-bold text-ink flex items-center gap-2"><Activity className="size-4 text-brand" /> Haftalık Yanıt Trafiği</h2>
+          <h2 className="font-display text-lg font-bold text-ink flex items-center gap-2"><Activity className="size-4 text-brand" /> Седмичен трафик на отговори</h2>
           <div className="mt-6 h-40 grid grid-cols-7 items-end gap-3">
             {(() => {
               const w = s?.weekly ?? [];
@@ -80,7 +80,7 @@ function BrandDashboard() {
               return (w.length ? w : Array.from({ length: 7 }, () => ({ day: "", count: 0 }))).map((d, i) => (
                 <div key={i} className="flex flex-col items-center gap-1 h-full justify-end">
                   <div className="w-full rounded-md bg-brand-soft relative flex-1">
-                    <div className="absolute inset-x-0 bottom-0 rounded-md bg-brand transition-all" style={{ height: `${Math.round((d.count / max) * 100)}%` }} title={`${d.count} şikayet`} />
+                    <div className="absolute inset-x-0 bottom-0 rounded-md bg-brand transition-all" style={{ height: `${Math.round((d.count / max) * 100)}%` }} title={`${d.count} жалби`} />
                   </div>
                   <span className="text-[10px] text-navy-mid">{d.day}</span>
                 </div>
@@ -123,10 +123,10 @@ function PremiumCard({ brandId }: { brandId: string }) {
     setBusy(false);
     if (!res.ok) {
       const j = (await res.json().catch(() => ({}))) as { error?: string };
-      toast.error(j.error ?? "Başvuru gönderilemedi");
+      toast.error(j.error ?? "Заявката не можа да бъде изпратена");
       return;
     }
-    toast.success("Başvurunuz alındı");
+    toast.success("Заявката ви е приета");
     load();
   }
 
@@ -139,26 +139,26 @@ function PremiumCard({ brandId }: { brandId: string }) {
       {info?.premium ? (
         <div className="mt-4">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-soft text-brand px-3 h-8 text-[13px] font-semibold">
-            <CheckCircle2 className="size-4" /> Firmanız premium ({info.tier})
+            <CheckCircle2 className="size-4" /> Марката ви е премиум ({info.tier})
           </span>
-          <p className="mt-3 text-[13px] text-navy-mid">Öne çıkan listeleme ve öncelikli destek aktif.</p>
+          <p className="mt-3 text-[13px] text-navy-mid">Приоритетно показване и приоритетна поддръжка са активни.</p>
         </div>
       ) : pending ? (
         <div className="mt-4">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-warning-soft text-warning px-3 h-8 text-[13px] font-semibold">
-            <Clock className="size-4" /> Başvurunuz inceleniyor
+            <Clock className="size-4" /> Заявката ви се разглежда
           </span>
-          <p className="mt-3 text-[13px] text-navy-mid">Plan: {pending.plan} · {new Date(pending.created_at).toLocaleDateString("tr-TR")}</p>
+          <p className="mt-3 text-[13px] text-navy-mid">План: {pending.plan} · {new Date(pending.created_at).toLocaleDateString("tr-TR")}</p>
         </div>
       ) : (
         <div className="mt-4 space-y-3">
-          <p className="text-[13px] text-navy-mid">Öne çıkan listeleme, rozet ve öncelikli destek için premium'a geçin.</p>
+          <p className="text-[13px] text-navy-mid">Преминете към премиум за приоритетно показване, значка и приоритетна поддръжка.</p>
           <select value={plan} onChange={(e) => setPlan(e.target.value)} className="w-full h-10 rounded-lg ring-1 ring-rule px-3 text-sm bg-card">
             <option value="pro">Pro</option>
-            <option value="kurumsal">Kurumsal</option>
+            <option value="kurumsal">Корпоративен</option>
           </select>
           <button disabled={busy} onClick={apply} className="w-full h-10 rounded-lg bg-brand text-brand-foreground text-[13px] font-semibold disabled:opacity-60">
-            Premium Başvurusu Yap
+            Кандидатствай за премиум
           </button>
         </div>
       )}

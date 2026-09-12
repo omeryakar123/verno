@@ -83,16 +83,16 @@ function AdminComplaintsPage() {
 
   async function setStatusFor(id: string, s: Status) {
     if (await apiSend("/api/admin/complaints", "PATCH", { id, status: s })) {
-      toast.success("Güncellendi");
+      toast.success("Обновено");
       load(page);
       loadStats();
     }
   }
 
   async function remove(id: string) {
-    if (!confirm("Şikayet silinsin mi?")) return;
+    if (!confirm("Да се изтрие ли жалбата?")) return;
     if (await apiSend("/api/admin/complaints", "DELETE", { id })) {
-      toast.success("Silindi");
+      toast.success("Изтрито");
       load(page);
       loadStats();
     }
@@ -108,10 +108,10 @@ function AdminComplaintsPage() {
   return (
     <div className="px-6 lg:px-10 py-8 space-y-6">
       <div>
-        <div className="eyebrow text-navy-mid">Moderasyon</div>
-        <h1 className="mt-1 font-display text-3xl font-black tracking-tight text-ink">Şikayetler</h1>
+        <div className="eyebrow text-navy-mid">Модерация</div>
+        <h1 className="mt-1 font-display text-3xl font-black tracking-tight text-ink">Жалби</h1>
         <p className="mt-1 text-[14px] text-navy-mid">
-          Organik kullanıcı şikayetleri ile bot üretimi içerik ayrı listelenir.
+          Органичните потребителски жалби и генерираното от бот съдържание се показват отделно.
         </p>
       </div>
 
@@ -126,7 +126,7 @@ function AdminComplaintsPage() {
             }`}
           >
             <User className="size-4" />
-            Organik
+            Органични
             {stats && (
               <span className="tabular-nums text-[11px] font-bold bg-brand-soft text-brand px-1.5 py-0.5 rounded">
                 {stats.organic.total.toLocaleString("tr-TR")}
@@ -141,7 +141,7 @@ function AdminComplaintsPage() {
             }`}
           >
             <Bot className="size-4" />
-            Bot
+            Бот
             {stats && (
               <span className="tabular-nums text-[11px] font-bold bg-surface text-navy-mid px-1.5 py-0.5 rounded ring-1 ring-rule">
                 {stats.bot.total.toLocaleString("tr-TR")}
@@ -152,23 +152,23 @@ function AdminComplaintsPage() {
 
         {activeStats && (
           <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3">
-            <MiniStat label="Toplam" value={activeStats.total} />
-            <MiniStat label="Bugün" value={activeStats.today} highlight />
-            <MiniStat label="Bekleyen" value={activeStats.pending} warn />
-            <MiniStat label="Onaylı" value={activeStats.approved} />
-            <MiniStat label="Çözülen" value={activeStats.resolved} />
-            <MiniStat label="Spam" value={activeStats.spam} danger />
+            <MiniStat label="Общо" value={activeStats.total} />
+            <MiniStat label="Днес" value={activeStats.today} highlight />
+            <MiniStat label="Изчакващи" value={activeStats.pending} warn />
+            <MiniStat label="Одобрени" value={activeStats.approved} />
+            <MiniStat label="Решени" value={activeStats.resolved} />
+            <MiniStat label="Спам" value={activeStats.spam} danger />
           </div>
         )}
       </div>
 
       {source === "bot" && (
         <div className="rounded-xl bg-brand-soft/50 ring-1 ring-brand/20 px-4 py-3 text-[13px] text-navy">
-          Bot şikayetlerinin detaylı yönetimi için{" "}
+          За детайлно управление на бот жалбите използвайте страницата{" "}
           <Link to="/admin/bot" className="font-semibold text-brand hover:underline">
             Complaint Bot
-          </Link>{" "}
-          sayfasını kullanabilirsiniz.
+          </Link>
+          .
         </div>
       )}
 
@@ -186,7 +186,7 @@ function AdminComplaintsPage() {
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Başlık ara..."
+              placeholder="Търсене по заглавие..."
               className="w-full h-10 rounded-lg ring-1 ring-rule pl-10 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40"
             />
           </div>
@@ -195,28 +195,28 @@ function AdminComplaintsPage() {
             onChange={(e) => setStatus(e.target.value)}
             className="h-10 rounded-lg ring-1 ring-rule px-3 text-sm"
           >
-            <option value="">Tüm durumlar</option>
+            <option value="">Всички статуси</option>
             {STATUSES.map((s) => (
               <option key={s} value={s}>
                 {s}
               </option>
             ))}
           </select>
-          <button className="h-10 rounded-lg bg-brand text-brand-foreground px-4 text-sm font-semibold">Filtrele</button>
+          <button className="h-10 rounded-lg bg-brand text-brand-foreground px-4 text-sm font-semibold">Филтрирай</button>
           <div className="text-[12px] text-navy-mid ml-auto">
-            {total.toLocaleString("tr-TR")} kayıt · {source === "organic" ? "Organik" : "Bot"}
+            {total.toLocaleString("tr-TR")} записа · {source === "organic" ? "Органични" : "Бот"}
           </div>
         </form>
         <div className="overflow-x-auto">
           <table className="w-full text-[13.5px]">
             <thead className="bg-surface text-navy-mid text-left text-[11.5px] uppercase tracking-wider">
               <tr>
-                <th className="px-4 py-3 font-semibold">Başlık</th>
-                <th className="px-4 py-3 font-semibold">Firma</th>
-                <th className="px-4 py-3 font-semibold">Kaynak</th>
-                <th className="px-4 py-3 font-semibold">Durum</th>
-                <th className="px-4 py-3 font-semibold">Tarih</th>
-                <th className="px-4 py-3 text-right font-semibold">İşlem</th>
+                <th className="px-4 py-3 font-semibold">Заглавие</th>
+                <th className="px-4 py-3 font-semibold">Марка</th>
+                <th className="px-4 py-3 font-semibold">Източник</th>
+                <th className="px-4 py-3 font-semibold">Статус</th>
+                <th className="px-4 py-3 font-semibold">Дата</th>
+                <th className="px-4 py-3 text-right font-semibold">Действия</th>
               </tr>
             </thead>
             <tbody>
@@ -231,11 +231,11 @@ function AdminComplaintsPage() {
                   <td className="px-4 py-3">
                     {c.is_synthetic ? (
                       <span className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide text-accent-purple bg-accent-purple/10 px-2 py-0.5 rounded">
-                        <Bot className="size-3" /> Bot
+                        <Bot className="size-3" /> Бот
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide text-brand bg-brand-soft px-2 py-0.5 rounded">
-                        <User className="size-3" /> Organik
+                        <User className="size-3" /> Органична
                       </span>
                     )}
                   </td>
@@ -262,17 +262,17 @@ function AdminComplaintsPage() {
                         onClick={() => openPreview(c.id, false)}
                         className="text-[12px] text-brand hover:underline inline-flex items-center gap-0.5"
                       >
-                        <Eye className="size-3.5" /> Önizle
+                        <Eye className="size-3.5" /> Преглед
                       </button>
                       <button
                         type="button"
                         onClick={() => openPreview(c.id, true)}
                         className="text-[12px] text-navy-mid hover:text-brand hover:underline inline-flex items-center gap-0.5"
                       >
-                        <Pencil className="size-3.5" /> Düzenle
+                        <Pencil className="size-3.5" /> Редактирай
                       </button>
                       <button onClick={() => remove(c.id)} className="text-[12px] text-danger hover:underline">
-                        Sil
+                        Изтрий
                       </button>
                     </div>
                   </td>
@@ -281,7 +281,7 @@ function AdminComplaintsPage() {
               {items.length === 0 && (
                 <tr>
                   <td colSpan={6} className="px-4 py-10 text-center text-navy-mid">
-                    {source === "organic" ? "Organik şikayet bulunamadı." : "Bot şikayeti bulunamadı."}
+                    {source === "organic" ? "Няма намерени органични жалби." : "Няма намерени бот жалби."}
                   </td>
                 </tr>
               )}

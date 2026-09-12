@@ -161,6 +161,7 @@ import { Route as ApiAdminBotRunsRouteImport } from './routes/api/admin/bot/runs
 import { Route as ApiAdminBotGenerateRouteImport } from './routes/api/admin/bot/generate'
 import { Route as ApiAdminBotConfigRouteImport } from './routes/api/admin/bot/config'
 import { Route as ApiAdminBotComplaintsRouteImport } from './routes/api/admin/bot/complaints'
+import { Route as SitekurumsalInfoSlugRouteImport } from './routes/_site/(kurumsal)/info.$slug'
 import { Route as ApiAdminBrandsIdMembersRouteImport } from './routes/api/admin/brands/$id/members'
 
 const SitemapRoute = SitemapRouteImport.update({
@@ -929,6 +930,11 @@ const ApiAdminBotComplaintsRoute = ApiAdminBotComplaintsRouteImport.update({
   path: '/api/admin/bot/complaints',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SitekurumsalInfoSlugRoute = SitekurumsalInfoSlugRouteImport.update({
+  id: '/(kurumsal)/info/$slug',
+  path: '/info/$slug',
+  getParentRoute: () => SiteRoute,
+} as any)
 const ApiAdminBrandsIdMembersRoute = ApiAdminBrandsIdMembersRouteImport.update({
   id: '/members',
   path: '/members',
@@ -1077,6 +1083,7 @@ export interface FileRoutesByFullPath {
   '/api/otp/send': typeof ApiOtpSendRoute
   '/api/otp/verify': typeof ApiOtpVerifyRoute
   '/blog/': typeof SiteBlogIndexRoute
+  '/info/$slug': typeof SitekurumsalInfoSlugRoute
   '/api/admin/bot/complaints': typeof ApiAdminBotComplaintsRoute
   '/api/admin/bot/config': typeof ApiAdminBotConfigRoute
   '/api/admin/bot/generate': typeof ApiAdminBotGenerateRoute
@@ -1228,6 +1235,7 @@ export interface FileRoutesByTo {
   '/api/otp/send': typeof ApiOtpSendRoute
   '/api/otp/verify': typeof ApiOtpVerifyRoute
   '/blog': typeof SiteBlogIndexRoute
+  '/info/$slug': typeof SitekurumsalInfoSlugRoute
   '/api/admin/bot/complaints': typeof ApiAdminBotComplaintsRoute
   '/api/admin/bot/config': typeof ApiAdminBotConfigRoute
   '/api/admin/bot/generate': typeof ApiAdminBotGenerateRoute
@@ -1384,6 +1392,7 @@ export interface FileRoutesById {
   '/api/otp/send': typeof ApiOtpSendRoute
   '/api/otp/verify': typeof ApiOtpVerifyRoute
   '/_site/blog/': typeof SiteBlogIndexRoute
+  '/_site/(kurumsal)/info/$slug': typeof SitekurumsalInfoSlugRoute
   '/api/admin/bot/complaints': typeof ApiAdminBotComplaintsRoute
   '/api/admin/bot/config': typeof ApiAdminBotConfigRoute
   '/api/admin/bot/generate': typeof ApiAdminBotGenerateRoute
@@ -1539,6 +1548,7 @@ export interface FileRouteTypes {
     | '/api/otp/send'
     | '/api/otp/verify'
     | '/blog/'
+    | '/info/$slug'
     | '/api/admin/bot/complaints'
     | '/api/admin/bot/config'
     | '/api/admin/bot/generate'
@@ -1690,6 +1700,7 @@ export interface FileRouteTypes {
     | '/api/otp/send'
     | '/api/otp/verify'
     | '/blog'
+    | '/info/$slug'
     | '/api/admin/bot/complaints'
     | '/api/admin/bot/config'
     | '/api/admin/bot/generate'
@@ -1845,6 +1856,7 @@ export interface FileRouteTypes {
     | '/api/otp/send'
     | '/api/otp/verify'
     | '/_site/blog/'
+    | '/_site/(kurumsal)/info/$slug'
     | '/api/admin/bot/complaints'
     | '/api/admin/bot/config'
     | '/api/admin/bot/generate'
@@ -3012,6 +3024,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminBotComplaintsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_site/(kurumsal)/info/$slug': {
+      id: '/_site/(kurumsal)/info/$slug'
+      path: '/info/$slug'
+      fullPath: '/info/$slug'
+      preLoaderRoute: typeof SitekurumsalInfoSlugRouteImport
+      parentRoute: typeof SiteRoute
+    }
     '/api/admin/brands/$id/members': {
       id: '/api/admin/brands/$id/members'
       path: '/members'
@@ -3063,6 +3082,7 @@ interface SiteRouteChildren {
   SiteKategoriSlugRoute: typeof SiteKategoriSlugRoute
   SiteSikayetIdRoute: typeof SiteSikayetIdRoute
   SiteBlogIndexRoute: typeof SiteBlogIndexRoute
+  SitekurumsalInfoSlugRoute: typeof SitekurumsalInfoSlugRoute
 }
 
 const SiteRouteChildren: SiteRouteChildren = {
@@ -3094,6 +3114,7 @@ const SiteRouteChildren: SiteRouteChildren = {
   SiteKategoriSlugRoute: SiteKategoriSlugRoute,
   SiteSikayetIdRoute: SiteSikayetIdRoute,
   SiteBlogIndexRoute: SiteBlogIndexRoute,
+  SitekurumsalInfoSlugRoute: SitekurumsalInfoSlugRoute,
 }
 
 const SiteRouteWithChildren = SiteRoute._addFileChildren(SiteRouteChildren)

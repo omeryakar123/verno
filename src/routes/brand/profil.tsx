@@ -42,13 +42,13 @@ type Brand = {
 };
 
 const DAYS = [
-  "Pazartesi",
-  "Salı",
-  "Çarşamba",
-  "Perşembe",
-  "Cuma",
-  "Cumartesi",
-  "Pazar",
+  "Понеделник",
+  "Вторник",
+  "Сряда",
+  "Четвъртък",
+  "Петък",
+  "Събота",
+  "Неделя",
 ];
 const DAY_KEYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 
@@ -106,7 +106,7 @@ function BrandProfilePage() {
     });
     if (!res.ok) {
       const j = await res.json().catch(() => ({}));
-      toast.error(j.error ?? "İşlem başarısız");
+      toast.error(j.error ?? "Операцията е неуспешна");
       return null;
     }
     const j = (await res.json()) as { brand?: Brand };
@@ -116,7 +116,7 @@ function BrandProfilePage() {
   async function save() {
     if (!brand) return;
     const e164 = phone ? toE164Tr(phone) : null;
-    if (phone && !e164) return toast.error("Telefon geçersiz");
+    if (phone && !e164) return toast.error("Невалиден телефон");
     setLoading(true);
     const updated = await patchBrand(brand.id, {
       name: brand.name,
@@ -132,14 +132,14 @@ function BrandProfilePage() {
     if (updated) {
       setBrand(updated);
       setPhone(fromE164(updated.phone));
-      toast.success("Profil kaydedildi");
+      toast.success("Профилът е запазен");
     }
   }
 
   async function uploadImage(field: "logo_url" | "cover_url", file: File) {
     if (!brand) return;
-    if (!file.type.startsWith("image/")) return toast.error("Sadece görsel");
-    if (file.size > 5 * 1024 * 1024) return toast.error("Max 5MB");
+    if (!file.type.startsWith("image/")) return toast.error("Само изображения");
+    if (file.size > 5 * 1024 * 1024) return toast.error("Макс. 5MB");
 
     const fd = new FormData();
     fd.append("file", file);
@@ -152,7 +152,7 @@ function BrandProfilePage() {
     });
     if (!up.ok) {
       const j = await up.json().catch(() => ({}));
-      toast.error(j.error ?? "İşlem başarısız");
+      toast.error(j.error ?? "Операцията е неуспешна");
       return;
     }
     const { url } = (await up.json()) as { url: string };
@@ -163,7 +163,7 @@ function BrandProfilePage() {
     );
     if (!updated) return;
     setBrand(updated);
-    toast.success("Yüklendi");
+    toast.success("Качено");
   }
 
   function setSocial(key: keyof Socials, v: string) {
@@ -185,7 +185,7 @@ function BrandProfilePage() {
 
   if (!brand)
     return (
-      <div className="px-6 lg:px-10 py-8 text-navy-mid">Firma yükleniyor…</div>
+      <div className="px-6 lg:px-10 py-8 text-navy-mid">Зареждане на марката…</div>
     );
 
   const socials = brand.socials ?? {};
@@ -194,7 +194,7 @@ function BrandProfilePage() {
   return (
     <div className="px-6 lg:px-10 py-8 space-y-6 max-w-4xl">
       <div>
-        <div className="eyebrow text-navy-mid">Brand Profil</div>
+        <div className="eyebrow text-navy-mid">Профил на марката</div>
         <h1 className="mt-1 font-display text-3xl font-black tracking-tight text-ink">
           {brand.name}
         </h1>
@@ -210,7 +210,7 @@ function BrandProfilePage() {
             className="size-full object-cover"
           />
           <label className="absolute right-3 top-3 text-[11px] bg-card/95 px-3 py-1.5 rounded-full cursor-pointer hover:bg-card shadow-soft font-semibold">
-            Kapak değiştir
+            Смени корицата
             <input
               type="file"
               accept="image/*"
@@ -234,7 +234,7 @@ function BrandProfilePage() {
             />
           </div>
           <label className="text-[12px] font-semibold text-brand hover:underline cursor-pointer">
-            Logo değiştir
+            Смени логото
             <input
               type="file"
               accept="image/*"
@@ -249,10 +249,10 @@ function BrandProfilePage() {
       </div>
 
       {/* Contact */}
-      <Card title="İletişim & Genel">
+      <Card title="Контакти и обща информация">
         <div className="grid sm:grid-cols-2 gap-4">
           <Field
-            label="Firma adı"
+            label="Име на марката"
             value={brand.name}
             onChange={(v) => setBrand({ ...brand, name: v })}
           />
@@ -264,25 +264,25 @@ function BrandProfilePage() {
           />
           <div>
             <label className="text-[12px] font-medium text-navy-mid">
-              Telefon
+              Телефон
             </label>
             <div className="mt-1">
               <PhoneInput value={phone} onChange={setPhone} />
             </div>
           </div>
           <Field
-            label="E-posta"
+            label="Имейл"
             value={brand.email ?? ""}
             onChange={(v) => setBrand({ ...brand, email: v })}
           />
           <Field
-            label="Adres"
+            label="Адрес"
             value={brand.address ?? ""}
             onChange={(v) => setBrand({ ...brand, address: v })}
           />
           <div className="sm:col-span-2">
             <label className="text-[12px] font-medium text-navy-mid">
-              Hakkında
+              За марката
             </label>
             <textarea
               rows={5}
@@ -295,7 +295,7 @@ function BrandProfilePage() {
       </Card>
 
       {/* Socials */}
-      <Card title="Sosyal Medya">
+      <Card title="Социални мрежи">
         <div className="grid sm:grid-cols-2 gap-4">
           <SocialField
             icon={Facebook}
@@ -325,7 +325,7 @@ function BrandProfilePage() {
       </Card>
 
       {/* Working hours */}
-      <Card title="Çalışma Saatleri">
+      <Card title="Работно време">
         <div className="space-y-2">
           {DAY_KEYS.map((k, i) => {
             const d = hours[k] ?? {
@@ -362,7 +362,7 @@ function BrandProfilePage() {
                     onChange={(e) => setHour(k, "closed", e.target.checked)}
                     className="size-4 accent-brand"
                   />
-                  Kapalı
+                  Затворено
                 </label>
               </div>
             );
@@ -375,8 +375,8 @@ function BrandProfilePage() {
         disabled={loading}
         className="rounded-full bg-brand text-brand-foreground px-6 h-11 text-[14px] font-semibold hover:brightness-105 disabled:opacity-60 inline-flex items-center gap-2"
       >
-        {loading && <Loader2 className="size-4 animate-spin" />} Tüm
-        değişiklikleri kaydet
+        {loading && <Loader2 className="size-4 animate-spin" />} Запази
+        всички промени
       </button>
     </div>
   );

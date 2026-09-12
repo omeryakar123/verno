@@ -21,18 +21,18 @@ type Esc = {
 };
 
 const PRIMARY_ACTIONS: { v: string; label: string; tone: string }[] = [
-  { v: "approve", label: "Onayla", tone: "bg-brand text-brand-foreground" },
-  { v: "reject", label: "Reddet", tone: "ring-1 ring-rule text-ink hover:bg-surface" },
-  { v: "return", label: "Firmaya geri gönder", tone: "bg-surface text-ink ring-1 ring-rule" },
+  { v: "approve", label: "Одобри", tone: "bg-brand text-brand-foreground" },
+  { v: "reject", label: "Отхвърли", tone: "ring-1 ring-rule text-ink hover:bg-surface" },
+  { v: "return", label: "Върни на марката", tone: "bg-surface text-ink ring-1 ring-rule" },
 ];
 
 const SECONDARY_ACTIONS: { v: string; label: string; tone: string }[] = [
-  { v: "hide", label: "Gizle", tone: "ring-1 ring-rule text-navy" },
+  { v: "hide", label: "Скрий", tone: "ring-1 ring-rule text-navy" },
   { v: "spam", label: "Spam", tone: "bg-orange-500/90 text-white" },
   { v: "delete", label: "Sil", tone: "bg-danger text-white" },
-  { v: "warn_user", label: "Kullanıcıyı uyar", tone: "bg-warning text-ink" },
+  { v: "warn_user", label: "Предупреди потребителя", tone: "bg-warning text-ink" },
   { v: "ban_user", label: "Ban", tone: "bg-red-700 text-white" },
-  { v: "change_brand", label: "Firmayı değiştir", tone: "ring-1 ring-brand text-brand" },
+  { v: "change_brand", label: "Смени марката", tone: "ring-1 ring-brand text-brand" },
 ];
 
 function EscalationsPage() {
@@ -56,7 +56,7 @@ function EscalationsPage() {
   async function decide(action: string) {
     if (!active) return;
     if (!(await apiSend("/api/admin/escalations", "PATCH", { id: active.id, action, note }))) return;
-    toast.success("Karar uygulandı");
+    toast.success("Решението е приложено");
     setActive(null);
     setNote("");
     load();
@@ -67,12 +67,12 @@ function EscalationsPage() {
   return (
     <div className="px-6 lg:px-10 py-8 space-y-6">
       <div>
-        <div className="eyebrow text-navy-mid">Süper Admin</div>
+        <div className="eyebrow text-navy-mid">Супер админ</div>
         <h1 className="mt-1 font-display text-3xl font-black tracking-tight text-ink flex items-center gap-2">
-          <ShieldAlert className="size-7 text-warning" /> Escalation Merkezi
+          <ShieldAlert className="size-7 text-warning" /> Център за ескалации
         </h1>
         <p className="text-[13.5px] text-navy-mid mt-1">
-          Firmadan yükseltilen veya inceleme gerektiren şikayetler. Destek:{" "}
+          Жалби, ескалирани от марката или изискващи преглед. Поддръжка:{" "}
           <a href={`mailto:${SITE_CONTACT_EMAIL}`} className="text-brand hover:underline">
             {SITE_CONTACT_EMAIL}
           </a>
@@ -82,12 +82,12 @@ function EscalationsPage() {
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-w-lg">
         <div className="bg-card rounded-xl ring-1 ring-rule p-4">
           <div className="text-[11px] uppercase tracking-wider text-navy-mid font-semibold">
-            Açık escalation
+            Отворени ескалации
           </div>
           <div className="mt-1 font-display text-2xl font-black text-ink">{openCount}</div>
         </div>
         <div className="bg-card rounded-xl ring-1 ring-rule p-4">
-          <div className="text-[11px] uppercase tracking-wider text-navy-mid font-semibold">Liste</div>
+          <div className="text-[11px] uppercase tracking-wider text-navy-mid font-semibold">Списък</div>
           <div className="mt-1 font-display text-2xl font-black text-ink">{items.length}</div>
         </div>
       </div>
@@ -95,13 +95,13 @@ function EscalationsPage() {
       <div className="grid lg:grid-cols-[380px_1fr] gap-4">
         <aside className="bg-card rounded-2xl ring-1 ring-rule overflow-hidden flex flex-col max-h-[calc(100vh-12rem)]">
           <div className="p-4 border-b border-rule flex items-center justify-between gap-2">
-            <span className="text-[12px] font-semibold text-ink">Kayıtlar</span>
+            <span className="text-[12px] font-semibold text-ink">Записи</span>
             <select
               value={filter}
               onChange={(e) => setFilter(e.target.value as "open" | "all")}
               className="h-8 rounded-lg ring-1 ring-rule px-2 text-[12px] bg-card"
             >
-              <option value="open">Açık</option>
+              <option value="open">Отворени</option>
               <option value="all">Tümü</option>
             </select>
           </div>
@@ -129,13 +129,13 @@ function EscalationsPage() {
                   </div>
                   <div className="text-[11px] text-navy-mid mt-0.5 flex items-center gap-1">
                     <Clock className="size-3" />
-                    {it.brands?.name} · {new Date(it.created_at).toLocaleDateString("tr-TR")}
+                    {it.brands?.name} · {new Date(it.created_at).toLocaleDateString("bg-BG")}
                   </div>
                 </button>
               </li>
             ))}
             {items.length === 0 && (
-              <li className="p-8 text-center text-navy-mid text-[13px]">Escalation kaydı yok.</li>
+              <li className="p-8 text-center text-navy-mid text-[13px]">Няма записи за ескалация.</li>
             )}
           </ul>
         </aside>
@@ -148,7 +148,7 @@ function EscalationsPage() {
                   {active.reason}
                 </span>
                 <h2 className="mt-2 font-display text-2xl font-black text-ink">
-                  {active.complaints?.title ?? "Şikayet"}
+                  {active.complaints?.title ?? "Жалба"}
                 </h2>
                 <div className="mt-2 text-[12px] text-navy-mid flex flex-wrap gap-x-3 gap-y-1">
                   {active.brands?.slug && (
@@ -165,7 +165,7 @@ function EscalationsPage() {
                     params={{ id: active.complaint_id }}
                     className="text-brand inline-flex items-center gap-0.5"
                   >
-                    #{active.complaints?.short_id ?? "detay"}{" "}
+                    #{active.complaints?.short_id ?? "детайли"}{" "}
                     <ExternalLink className="size-3" />
                   </Link>
                 </div>
@@ -178,19 +178,19 @@ function EscalationsPage() {
               )}
 
               <div>
-                <label className="text-[12px] font-medium text-navy-mid">Karar notu</label>
+                <label className="text-[12px] font-medium text-navy-mid">Бележка за решението</label>
                 <textarea
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                   rows={3}
-                  placeholder="İsteğe bağlı açıklama…"
+                  placeholder="Незадължително пояснение…"
                   className="mt-1 w-full rounded-lg ring-1 ring-rule p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40"
                 />
               </div>
 
               <div>
                 <div className="text-[11px] font-semibold uppercase tracking-wider text-navy-mid mb-2">
-                  Birincil kararlar
+                  Основни решения
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {PRIMARY_ACTIONS.map((a) => (
@@ -208,7 +208,7 @@ function EscalationsPage() {
 
               <div>
                 <div className="text-[11px] font-semibold uppercase tracking-wider text-navy-mid mb-2">
-                  Ek işlemler
+                  Допълнителни действия
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {SECONDARY_ACTIONS.map((a) => (
@@ -226,7 +226,7 @@ function EscalationsPage() {
             </div>
           ) : (
             <div className="h-full min-h-[280px] grid place-items-center text-navy-mid text-[14px]">
-              Soldan bir escalation seçin veya moderasyon kuyruğunu kontrol edin.
+              Изберете ескалация отляво или проверете опашката за модерация.
             </div>
           )}
         </section>

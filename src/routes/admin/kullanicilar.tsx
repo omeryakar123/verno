@@ -30,10 +30,10 @@ export const Route = createFileRoute("/admin/kullanicilar")({
 
 const ROLES: AppRole[] = ["user", "brand", "moderator", "admin", "super_admin"];
 const TYPE_LABEL: Record<Sanction["type"], string> = {
-  warning: "Uyarı",
-  ban_temp: "Süreli ban",
-  ban_permanent: "Kalıcı ban",
-  unban: "Askı kaldırıldı",
+  warning: "Предупреждение",
+  ban_temp: "Временен бан",
+  ban_permanent: "Постоянен бан",
+  unban: "Банът е премахнат",
 };
 
 function AdminUsersPage() {
@@ -56,10 +56,10 @@ function AdminUsersPage() {
 
   async function remindUnverified() {
     if (unverifiedCount === 0) {
-      toast.message("Doğrulanmamış kullanıcı yok.");
+      toast.message("Няма непотвърдени потребители.");
       return;
     }
-    if (!confirm(`${unverifiedCount} kullanıcıya bildirim ve doğrulama e-postası gönderilsin mi?`)) return;
+    if (!confirm(`Да изпратим ли напомняне и имейл за потвърждение на ${unverifiedCount} потребители?`)) return;
     setReminding(true);
     const data = await apiSendJson<{ ok?: boolean; notified?: number; emailed?: number; errors?: { email: string; error: string }[] }>(
       "/api/admin/email-verification-remind",
@@ -68,9 +68,9 @@ function AdminUsersPage() {
     );
     setReminding(false);
     if (!data?.ok) return;
-    toast.success(`${data.notified ?? 0} bildirim, ${data.emailed ?? 0} e-posta gönderildi.`);
+    toast.success(`${data.notified ?? 0} известия, ${data.emailed ?? 0} имейла изпратени.`);
     if (data.errors?.length) {
-      toast.error(`${data.errors.length} kullanıcıda hata oluştu.`);
+      toast.error(`Грешка при ${data.errors.length} потребители.`);
     }
   }
 
@@ -79,18 +79,18 @@ function AdminUsersPage() {
       ? await apiSend("/api/admin/users", "DELETE", { userId, role })
       : await apiSend("/api/admin/users", "POST", { userId, role });
     if (!ok) return;
-    toast.success("Rol güncellendi"); load();
+    toast.success("Ролята е обновена"); load();
   }
 
   return (
     <div className="px-6 lg:px-10 py-8 space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
         <div>
-          <div className="eyebrow text-navy-mid">Üye Yönetimi</div>
-          <h1 className="mt-1 font-display text-3xl font-black tracking-tight text-ink">Kullanıcılar</h1>
+          <div className="eyebrow text-navy-mid">Управление на членове</div>
+          <h1 className="mt-1 font-display text-3xl font-black tracking-tight text-ink">Потребители</h1>
           {unverifiedCount > 0 && (
             <p className="mt-2 text-[13px] text-warning">
-              {unverifiedCount} kullanıcının e-postası henüz doğrulanmadı.
+              {unverifiedCount} потребители все още не са потвърдили имейла си.
             </p>
           )}
         </div>
@@ -100,7 +100,7 @@ function AdminUsersPage() {
           className="inline-flex items-center justify-center gap-2 rounded-lg bg-brand text-brand-foreground font-medium h-10 px-4 text-sm hover:brightness-110 disabled:opacity-60"
         >
           {reminding ? <Loader2 className="size-4 animate-spin" /> : <Mail className="size-4" />}
-          Doğrulanmamışlara hatırlatma gönder
+          Напомняне на непотвърдените
         </button>
       </div>
 
@@ -108,12 +108,12 @@ function AdminUsersPage() {
         <table className="w-full text-[13.5px]">
           <thead className="bg-surface text-navy-mid text-left text-[11.5px] uppercase tracking-wider">
             <tr>
-              <th className="px-4 py-3 font-semibold">Kullanıcı</th>
-              <th className="px-4 py-3 font-semibold">E-posta</th>
-              <th className="px-4 py-3 font-semibold">Roller</th>
-              <th className="px-4 py-3 font-semibold">Durum</th>
-              <th className="px-4 py-3 font-semibold">Kayıt</th>
-              <th className="px-4 py-3 text-right font-semibold">İşlem</th>
+              <th className="px-4 py-3 font-semibold">Потребител</th>
+              <th className="px-4 py-3 font-semibold">Имейл</th>
+              <th className="px-4 py-3 font-semibold">Роли</th>
+              <th className="px-4 py-3 font-semibold">Статус</th>
+              <th className="px-4 py-3 font-semibold">Регистрация</th>
+              <th className="px-4 py-3 text-right font-semibold">Действие</th>
             </tr>
           </thead>
           <tbody>
@@ -128,7 +128,7 @@ function AdminUsersPage() {
                   <td className="px-4 py-3">
                     <div className="text-[12px] text-ink">{u.email || "—"}</div>
                     <span className={`inline-flex mt-1 text-[10px] px-2 py-0.5 rounded-full font-bold ${u.email_verified ? "bg-brand-soft text-brand" : "bg-warning-soft text-warning"}`}>
-                      {u.email_verified ? "Doğrulandı" : "Doğrulanmadı"}
+                      {u.email_verified ? "Потвърден" : "Непотвърден"}
                     </span>
                   </td>
                   <td className="px-4 py-3">
@@ -145,19 +145,19 @@ function AdminUsersPage() {
                   </td>
                   <td className="px-4 py-3">
                     <span className={`text-[12px] px-2 py-1 rounded-full ${u.is_banned ? "bg-danger-soft text-danger" : "bg-brand-soft text-brand"}`}>
-                      {u.is_banned ? "Askıda" : "Aktif"}
+                      {u.is_banned ? "Блокиран" : "Активен"}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-navy-mid">{new Date(u.created_at).toLocaleDateString("tr-TR")}</td>
+                  <td className="px-4 py-3 text-navy-mid">{new Date(u.created_at).toLocaleDateString("bg-BG")}</td>
                   <td className="px-4 py-3 text-right">
                     <button onClick={() => setSanctionUser(u)} className="inline-flex items-center gap-1.5 text-[12px] font-medium text-navy hover:text-danger">
-                      <ShieldAlert className="size-3.5" /> Yaptırım
+                      <ShieldAlert className="size-3.5" /> Санкция
                     </button>
                   </td>
                 </tr>
               );
             })}
-            {users.length === 0 && <tr><td colSpan={6} className="px-4 py-10 text-center text-navy-mid">Henüz kullanıcı yok.</td></tr>}
+            {users.length === 0 && <tr><td colSpan={6} className="px-4 py-10 text-center text-navy-mid">Все още няма потребители.</td></tr>}
           </tbody>
         </table>
       </div>
@@ -191,14 +191,14 @@ function SanctionModal({ user, onClose, onDone }: { user: Profile | null; onClos
 
   async function submit() {
     if (!shown) return;
-    if (type !== "unban" && reason.trim().length < 3) return toast.error("Sebep girin");
+    if (type !== "unban" && reason.trim().length < 3) return toast.error("Въведете причина");
     setBusy(true);
     const ok = await apiSend("/api/admin/sanctions", "POST", {
       userId: shown.id, type, reason: reason.trim(), days,
     });
     setBusy(false);
     if (!ok) return;
-    toast.success("Yaptırım uygulandı");
+    toast.success("Санкцията е приложена");
     onDone();
   }
 
@@ -206,7 +206,7 @@ function SanctionModal({ user, onClose, onDone }: { user: Profile | null; onClos
     <Modal open={!!user} onClose={onClose} className="max-w-lg bg-card rounded-2xl p-6 space-y-4 max-h-[85vh] overflow-y-auto shadow-lift">
         <div className="flex items-center justify-between">
           <h3 className="font-display text-lg font-bold text-ink">
-            Yaptırım · {shown?.full_name || shown?.username || shown?.id.slice(0, 8)}
+            Санкция · {shown?.full_name || shown?.username || shown?.id.slice(0, 8)}
           </h3>
           <button onClick={onClose}><X className="size-4 text-navy-mid" /></button>
         </div>
@@ -221,35 +221,35 @@ function SanctionModal({ user, onClose, onDone }: { user: Profile | null; onClos
           </div>
           {type === "ban_temp" && (
             <label className="flex items-center gap-2 text-[13px] text-navy">
-              Süre:
+              Срок:
               <input type="number" min={1} max={365} value={days} onChange={(e) => setDays(Number(e.target.value))} className="w-20 h-9 rounded-lg ring-1 ring-rule px-2 text-sm" />
-              gün
+              дни
             </label>
           )}
           {type !== "unban" && (
-            <textarea value={reason} onChange={(e) => setReason(e.target.value)} rows={2} placeholder="Sebep (kullanıcıya bildirilecek)" className="w-full rounded-lg ring-1 ring-rule p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40" />
+            <textarea value={reason} onChange={(e) => setReason(e.target.value)} rows={2} placeholder="Причина (ще бъде съобщена на потребителя)" className="w-full rounded-lg ring-1 ring-rule p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40" />
           )}
           <button disabled={busy} onClick={submit} className="w-full h-10 rounded-lg bg-brand text-brand-foreground text-[13px] font-semibold disabled:opacity-60">
-            Uygula
+            Приложи
           </button>
         </div>
 
         <div>
-          <div className="text-[12px] font-semibold text-navy-mid uppercase tracking-wider mb-2">Geçmiş</div>
+          <div className="text-[12px] font-semibold text-navy-mid uppercase tracking-wider mb-2">История</div>
           {history.length === 0 ? (
-            <p className="text-[13px] text-navy-mid">Kayıt yok.</p>
+            <p className="text-[13px] text-navy-mid">Няма записи.</p>
           ) : (
             <ul className="space-y-2">
               {history.map((s) => (
                 <li key={s.id} className="flex items-start gap-2 text-[13px]">
                   <span className={`shrink-0 mt-0.5 text-[11px] px-2 py-0.5 rounded-full ${s.type === "unban" ? "bg-brand-soft text-brand" : s.type === "warning" ? "bg-warning-soft text-warning" : "bg-danger-soft text-danger"}`}>
-                    {TYPE_LABEL[s.type]}{s.active ? "" : " (kapalı)"}
+                    {TYPE_LABEL[s.type]}{s.active ? "" : " (затворено)"}
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="text-ink">{s.reason}</span>
                     <span className="block text-[11px] text-navy-mid">
-                      {new Date(s.created_at).toLocaleString("tr-TR")}
-                      {s.expires_at && ` · bitiş ${new Date(s.expires_at).toLocaleDateString("tr-TR")}`}
+                      {new Date(s.created_at).toLocaleString("bg-BG")}
+                      {s.expires_at && ` · край ${new Date(s.expires_at).toLocaleDateString("bg-BG")}`}
                     </span>
                   </span>
                 </li>

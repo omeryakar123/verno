@@ -29,15 +29,27 @@ if (!process.env.DATABASE_URL) {
 }
 
 const ACCOUNTS = [
-  { email: "user@tepkimvar.com", password: "user123!", name: "Test Kullanıcı", username: "testuser", roles: ["user"] },
-  { email: "admin@tepkimvar.com", password: "siftadmin123!", name: "Mehmet Cakır", username: "testadmin", roles: ["user", "super_admin"] },
   {
-    email: "brand@tepkimvar.com",
-    password: "brand123!",
-    name: "Test Marka",
-    username: "testbrand",
+    email: "user@verno.bg",
+    password: "user123",
+    name: "Демо Потребител",
+    username: "demouser",
+    roles: ["user"],
+  },
+  {
+    email: "admin@verno.bg",
+    password: "admin123",
+    name: "Верно Админ",
+    username: "vernoadmin",
+    roles: ["user", "admin", "super_admin"],
+  },
+  {
+    email: "brand@verno.bg",
+    password: "brand123",
+    name: "Марка Мениджър",
+    username: "brandmanager",
     roles: ["user", "brand"],
-    brandSlug: "trendyol",
+    brandSlug: "emag",
     brandMemberRole: "manager",
   },
 ];

@@ -4,56 +4,61 @@ import { SITE_CONTACT_EMAIL } from "@/lib/contact";
 
 const SECTIONS: { h: string; p: string }[] = [
   {
-    h: "1. Taraflar ve Kapsam",
-    p: "Bu koşullar, tepkimvar platformunu (\"Platform\") kullanan tüm üyeler ve ziyaretçiler için geçerlidir. Platformu kullanarak bu koşulları okuduğunuzu ve kabul ettiğinizi beyan etmiş olursunuz.",
+    h: "1. Страни и обхват",
+    p: "Настоящите условия важат за всички потребители и посетители на verno.bg (Платформата). С използването на платформата потвърждавате, че сте прочели и приемате условията.",
   },
   {
-    h: "2. Üyelik",
-    p: "Üyelik gerçek kimlik bilgileriyle oluşturulur; bir kişi yalnızca bir hesap açabilir. Sahte kimlikle veya başkası adına açılan hesaplar ile kural ihlali yapan hesaplar uyarılabilir, askıya alınabilir veya kalıcı olarak kapatılabilir.",
+    h: "2. Членство",
+    p: "Регистрацията се извършва с реални данни; един акаунт на човек. Фалшиви или нарушаващи правилата акаунти могат да бъдат предупредени, ограничени или закрити.",
   },
   {
-    h: "3. Şikayet İçeriği",
-    p: "Şikayetler gerçek ve birinci elden yaşanmış deneyimlere dayanmalıdır. Küfür, hakaret, tehdit, iftira, nefret söylemi, müstehcen içerik ve üçüncü kişilere ait kişisel veriler (isim, telefon, adres vb.) içeren şikayetler yayınlanmaz. İçerikler yayın öncesi ve sonrası moderasyon süreçlerine tabidir.",
+    h: "3. Съдържание на жалби",
+    p: "Жалбите трябва да отразяват реален личен опит. Обиди, заплахи, клевета, омраза, нецензурно съдържание и лични данни на трети лица не се публикуват. Съдържанието минава през модерация преди и след публикуване.",
   },
   {
-    h: "4. Sorumluluk",
-    p: "Kullanıcı, yayımladığı içeriğin doğruluğundan ve hukuka uygunluğundan şahsen sorumludur. Platform, kullanıcı içeriklerinin doğruluğunu garanti etmez; ancak bildirilen ihlalleri inceler ve gerekli gördüğünde içeriği kaldırır.",
+    h: "4. Отговорност",
+    p: "Потребителят носи отговорност за точността и законността на публикуваното съдържание. Платформата не гарантира точността на потребителски публикации, но разглежда сигналите и премахва нарушенията.",
   },
   {
-    h: "5. Marka Yanıtları",
-    p: "Markalar, kendileri hakkındaki şikayetlere resmi yanıt verebilir ve çözüm sürecini yürütebilir. Marka hesapları, temsil ettikleri şirket adına doğrulama sürecinden geçirilir. Çözülen şikayetler yalnızca şikayet sahibi tarafından kapatılabilir.",
+    h: "5. Отговори от марки",
+    p: "Марките могат да отговарят официално на жалби срещу тях. Марковите акаунти минават през верификация. Оценката след решение се дава само от автора на жалбата.",
   },
   {
-    h: "6. Fikri Mülkiyet",
-    p: "Platformun tasarımı, yazılımı ve markası tepkimvar'a aittir. Kullanıcılar, yayımladıkları içeriğin platformda görüntülenmesi için tepkimvar'a münhasır olmayan kullanım hakkı tanır.",
+    h: "6. Интелектуална собственост",
+    p: "Дизайнът, софтуерът и марката verno.bg са собственост на оператора. Потребителите предоставят неизключително право за показване на съдържанието си на платформата.",
   },
   {
-    h: "7. İçerik Kaldırma ve İtiraz",
-    p: `Hakkınızda hukuka aykırı içerik bulunduğunu düşünüyorsanız, ilgili içeriği 'Raporla' özelliğiyle veya ${SITE_CONTACT_EMAIL} üzerinden bildirebilirsiniz. Bildirimler moderasyon ekibince incelenir.`,
+    h: "7. Премахване и възражение",
+    p: `При незаконно съдържание използвайте „Докладвай" или пишете на ${SITE_CONTACT_EMAIL}. Сигналите се разглеждат от екипа за модерация.`,
   },
   {
-    h: "8. Değişiklikler",
-    p: "tepkimvar bu koşulları güncelleyebilir. Güncel sürüm her zaman bu sayfada yayınlanır; önemli değişiklikler üyelere ayrıca duyurulabilir.",
+    h: "8. Промени",
+    p: "verno.bg може да актуализира условията. Актуалната версия винаги е на тази страница; съществени промени могат да бъдат съобщени на членовете.",
   },
 ];
 
 export const Route = createFileRoute("/_site/(kurumsal)/kullanim-kosullari")({
   head: () => ({
     ...seoHead({
-      title: "Kullanım Koşulları — tepkimvar",
+      title: "Условия за ползване — verno.bg",
       description:
-        "tepkimvar Kullanım Koşulları: üyelik kuralları, şikayet içerik standartları, moderasyon, marka yanıtları ve sorumluluklar.",
+        "Условия за ползване на verno.bg: членство, стандарти за жалби, модерация и отговорности.",
       path: "/kullanim-kosullari",
     }),
   }),
-  component: () => (
-    <div>
+  component: LegalPage,
+});
+
+function LegalPage() {
+  return (
+    <div className="min-h-screen bg-paper">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 py-16">
-        <h1 className="text-3xl sm:text-4xl font-display font-black mb-2">Kullanım Koşulları</h1>
-        <p className="text-[13px] text-navy-mid mb-10">Son güncelleme: Ağustos 2026</p>
+        <p className="text-xs font-semibold uppercase tracking-wider text-primary mb-2">Verno.bg</p>
+        <h1 className="text-3xl sm:text-4xl font-display font-black mb-2 text-ink">Условия за ползване</h1>
+        <p className="text-[13px] text-navy-mid mb-10">Последна актуализация: септември 2026</p>
         <div className="space-y-8">
           {SECTIONS.map((s) => (
-            <section key={s.h}>
+            <section key={s.h} className="rounded-2xl bg-card ring-1 ring-rule p-6">
               <h2 className="text-lg font-semibold text-ink mb-2">{s.h}</h2>
               <p className="text-navy leading-relaxed">{s.p}</p>
             </section>
@@ -61,5 +66,5 @@ export const Route = createFileRoute("/_site/(kurumsal)/kullanim-kosullari")({
         </div>
       </div>
     </div>
-  ),
-});
+  );
+}

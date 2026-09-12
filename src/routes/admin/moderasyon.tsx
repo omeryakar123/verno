@@ -29,13 +29,13 @@ type Item = {
 };
 
 const KIND_LABEL: Record<Item["kind"], string> = {
-  escalation: "Escalate",
-  report: "Rapor",
-  sensitive: "Hassas",
-  verification: "Doğrulama",
+  escalation: "Ескалация",
+  report: "Доклад",
+  sensitive: "Чувствително",
+  verification: "Верификация",
   adult: "18+",
-  duplicate: "Tekrar",
-  other: "Şikayet onayı",
+  duplicate: "Дубликат",
+  other: "Одобрение на жалба",
 };
 
 function ModerationPage() {
@@ -58,7 +58,7 @@ function ModerationPage() {
   async function complaintAction(id: string, action: "approve" | "reject") {
     if (!(await apiSend("/api/admin/moderation", "PATCH", { id, complaintAction: action })))
       return false;
-    toast.success(action === "approve" ? "Şikayet onaylandı ve yayına alındı" : "Şikayet reddedildi");
+    toast.success(action === "approve" ? "Жалбата е одобрена и публикувана" : "Жалбата е отхвърлена");
     load();
     return true;
   }
@@ -76,7 +76,7 @@ function ModerationPage() {
 
   async function resolve(id: string, target: "resolved" | "dismissed") {
     if (!(await apiSend("/api/admin/moderation", "PATCH", { id, state: target }))) return;
-    toast.success(target === "resolved" ? "Çözüldü" : "Yok sayıldı");
+    toast.success(target === "resolved" ? "Решено" : "Пропуснато");
     load();
   }
 
@@ -86,23 +86,23 @@ function ModerationPage() {
   return (
     <div className="px-6 lg:px-10 py-8 space-y-6">
       <div>
-        <div className="eyebrow text-navy-mid">Süper Admin</div>
+        <div className="eyebrow text-navy-mid">Админ</div>
         <h1 className="mt-1 font-display text-3xl font-black tracking-tight text-ink">
-          Moderasyon Merkezi
+          Център за модерация
         </h1>
         <p className="text-[13.5px] text-navy-mid mt-1">
-          Tüm şikayetler firma paneline yansımadan önce buradan onaylanır. Sorular için{" "}
-          <a href="mailto:info@tepkimvar.com" className="text-brand hover:underline">
-            info@tepkimvar.com
+          Всички жалби се одобряват тук, преди да се появят в панела на марката. Въпроси:{" "}
+          <a href="mailto:support@verno.bg" className="text-brand hover:underline">
+            support@verno.bg
           </a>
         </p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <MiniStat label="Açık kayıt" value={openCount} />
-        <MiniStat label="Şikayet incelemesi" value={complaintCount} />
-        <MiniStat label="Toplam liste" value={items.length} />
-        <MiniStat label="Öncelikli" value={items.filter((i) => i.priority >= 2).length} />
+        <MiniStat label="Отворени" value={openCount} />
+        <MiniStat label="Жалби за преглед" value={complaintCount} />
+        <MiniStat label="Общо в списъка" value={items.length} />
+        <MiniStat label="Приоритетни" value={items.filter((i) => i.priority >= 2).length} />
       </div>
 
       <div className="bg-card rounded-2xl ring-1 ring-rule">
@@ -113,7 +113,7 @@ function ModerationPage() {
             onChange={(e) => setFilter(e.target.value as never)}
             className="h-9 rounded-lg ring-1 ring-rule px-3 text-sm bg-card"
           >
-            <option value="all">Tüm türler</option>
+            <option value="all">Всички типове</option>
             {Object.entries(KIND_LABEL).map(([k, v]) => (
               <option key={k} value={k}>
                 {v}
@@ -125,8 +125,8 @@ function ModerationPage() {
             onChange={(e) => setState(e.target.value as never)}
             className="h-9 rounded-lg ring-1 ring-rule px-3 text-sm bg-card"
           >
-            <option value="open">Aktif</option>
-            <option value="all">Tümü</option>
+            <option value="open">Активни</option>
+            <option value="all">Всички</option>
           </select>
         </div>
 
@@ -150,20 +150,20 @@ function ModerationPage() {
                     <span
                       className={`text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded ${badgeKind(it.kind)}`}
                     >
-                      {it.target_type === "complaint" ? "Şikayet onayı" : KIND_LABEL[it.kind]}
+                      {it.target_type === "complaint" ? "Одобрение на жалба" : KIND_LABEL[it.kind]}
                     </span>
                     <span className="text-[10px] text-navy-mid uppercase">{it.state}</span>
                     {it.priority >= 2 && (
-                      <span className="text-[10px] font-bold text-danger uppercase">Öncelikli</span>
+                      <span className="text-[10px] font-bold text-danger uppercase">Приоритет</span>
                     )}
                     <span className="text-[11px] text-navy-mid ml-auto">
-                      {new Date(it.created_at).toLocaleString("tr-TR")}
+                      {new Date(it.created_at).toLocaleString("bg-BG")}
                     </span>
                   </div>
                   <div className="mt-1 text-[14px] font-medium text-ink">{it.summary ?? "—"}</div>
                   {it.payload?.platformUsername != null && (
                     <div className="text-[12px] text-navy-mid mt-0.5">
-                      Platform kullanıcı adı:{" "}
+                      Потребителско име:{" "}
                       <span className="text-ink font-medium">
                         {String(it.payload.platformUsername)}
                       </span>
@@ -176,7 +176,7 @@ function ModerationPage() {
                         onClick={() => openPreview(it)}
                         className="inline-flex items-center gap-1 text-[12px] font-semibold text-brand hover:underline"
                       >
-                        <Eye className="size-3.5" /> Önizle & düzenle
+                        <Eye className="size-3.5" /> Преглед и редакция
                       </button>
                       <Link
                         to="/sikayet/$id"
@@ -184,7 +184,7 @@ function ModerationPage() {
                         target="_blank"
                         className="inline-flex items-center gap-0.5 text-[12px] text-navy-mid hover:text-brand hover:underline"
                       >
-                        Sayfayı aç <ExternalLink className="size-3" />
+                        Отвори страницата <ExternalLink className="size-3" />
                       </Link>
                     </div>
                   )}
@@ -196,7 +196,7 @@ function ModerationPage() {
                       onClick={() => openPreview(it)}
                       className="h-8 px-3 rounded-lg ring-1 ring-rule text-[12px] font-semibold inline-flex items-center gap-1 hover:bg-surface"
                     >
-                      <Eye className="size-3.5" /> Önizle
+                      <Eye className="size-3.5" /> Преглед
                     </button>
                   )}
                   {it.target_type === "complaint" &&
@@ -206,13 +206,13 @@ function ModerationPage() {
                           onClick={() => complaintAction(it.id, "approve")}
                           className="h-8 px-3 rounded-lg bg-brand text-brand-foreground text-[12px] font-semibold inline-flex items-center gap-1"
                         >
-                          <CheckCircle2 className="size-3.5" /> Onayla
+                          <CheckCircle2 className="size-3.5" /> Одобри
                         </button>
                         <button
                           onClick={() => complaintAction(it.id, "reject")}
                           className="h-8 px-3 rounded-lg ring-1 ring-rule text-[12px] font-semibold inline-flex items-center gap-1 hover:bg-danger-soft/40 text-danger"
                         >
-                          <XCircle className="size-3.5" /> Reddet
+                          <XCircle className="size-3.5" /> Отхвърли
                         </button>
                       </>
                     )}
@@ -222,13 +222,13 @@ function ModerationPage() {
                         onClick={() => resolve(it.id, "resolved")}
                         className="h-8 px-3 rounded-lg bg-brand text-brand-foreground text-[12px] font-semibold"
                       >
-                        Çözüldü
+                        Решено
                       </button>
                       <button
                         onClick={() => resolve(it.id, "dismissed")}
                         className="h-8 px-3 rounded-lg ring-1 ring-rule text-[12px] font-semibold hover:bg-surface"
                       >
-                        Yok say
+                        Пропусни
                       </button>
                     </>
                   )}
@@ -237,7 +237,7 @@ function ModerationPage() {
             </li>
           ))}
           {items.length === 0 && (
-            <li className="p-10 text-center text-navy-mid">Kuyruk boş — bekleyen inceleme yok.</li>
+            <li className="p-10 text-center text-navy-mid">Опашката е празна — няма чакащи прегледи.</li>
           )}
         </ul>
       </div>

@@ -40,17 +40,17 @@ export const Route = createFileRoute("/_site/markalar")({
   },
   head: ({ loaderData }) => {
     const total = loaderData?.first?.total ?? 0;
-    const title = "Markalar Dizini — Firma Şikayetleri ve Puanları | tepkimvar";
+    const title = "Каталог на марки — жалби и оценки | verno.bg";
     const description = clamp(
-      `${total > 0 ? total + " marka" : "Markalar"}: müşteri şikayetleri, çözüm oranları ve puanlar. Kategoriye göre filtreleyin, puana göre sıralayın.`,
+      `${total > 0 ? total + " марки" : "Марки"}: клиентски жалби, процент на решение и оценки. Филтрирайте по категория и сортирайте по рейтинг.`,
       155,
     );
     return {
       ...seoHead({ title, description, path: "/markalar" }),
       scripts: [
         breadcrumbLd([
-          { name: "Ana Sayfa", path: "/" },
-          { name: "Markalar", path: "/markalar" },
+          { name: "Начало", path: "/" },
+          { name: "Марки", path: "/markalar" },
         ]),
       ],
     };
@@ -122,9 +122,9 @@ function BrandsPage() {
     <div>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-10">
         <div className="bg-card rounded-2xl ring-1 ring-rule p-6 sm:p-8 mb-6">
-          <p className="eyebrow text-brand mb-1">Markalar</p>
-          <h1 className="font-display text-3xl font-black tracking-tight">Tüm markalar</h1>
-          <p className="text-sm text-navy-mid mt-1">{total.toLocaleString("tr-TR")} firma listeleniyor.</p>
+          <p className="eyebrow text-brand mb-1">Марки</p>
+          <h1 className="font-display text-3xl font-black tracking-tight">Всички марки</h1>
+          <p className="text-sm text-navy-mid mt-1">{total.toLocaleString("bg-BG")} марки в списъка.</p>
 
           <form
             onSubmit={(e) => {
@@ -139,7 +139,7 @@ function BrandsPage() {
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Firma ara…"
+                placeholder="Търсене на марка…"
                 className="w-full h-11 rounded-full ring-1 ring-rule pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40"
               />
             </div>
@@ -151,7 +151,7 @@ function BrandsPage() {
               }}
               className="h-11 rounded-full ring-1 ring-rule px-4 text-sm bg-card"
             >
-              <option value="">Tüm kategoriler</option>
+              <option value="">Всички категории</option>
               {cats.map((c) => (
                 <option key={c.slug} value={c.slug}>
                   {c.name}
@@ -166,21 +166,21 @@ function BrandsPage() {
               }}
               className="h-11 rounded-full ring-1 ring-rule px-4 text-sm bg-card"
             >
-              <option value="rating">Puan</option>
-              <option value="resolution">Çözüm oranı</option>
-              <option value="complaints">Şikayet sayısı</option>
-              <option value="recent">Yeni eklenen</option>
+              <option value="rating">Оценка</option>
+              <option value="resolution">Процент решение</option>
+              <option value="complaints">Брой жалби</option>
+              <option value="recent">Наскоро добавени</option>
             </select>
             <button className="h-11 rounded-full bg-brand text-brand-foreground px-5 text-sm font-semibold">
-              Ara
+              Търси
             </button>
           </form>
         </div>
 
         {loading && brands.length === 0 ? (
-          <div className="bg-card rounded-2xl p-12 text-center text-navy-mid ring-1 ring-rule">Yükleniyor…</div>
+          <div className="bg-card rounded-2xl p-12 text-center text-navy-mid ring-1 ring-rule">Зареждане…</div>
         ) : brands.length === 0 ? (
-          <div className="bg-card rounded-2xl p-12 text-center text-navy-mid ring-1 ring-rule">Sonuç bulunamadı.</div>
+          <div className="bg-card rounded-2xl p-12 text-center text-navy-mid ring-1 ring-rule">Няма резултати.</div>
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

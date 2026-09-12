@@ -4,40 +4,40 @@ import { SITE_CONTACT_EMAIL } from "@/lib/contact";
 
 const SECTIONS: { h: string; p: string[] }[] = [
   {
-    h: "1. Veri Sorumlusu",
+    h: "1. Администратор на данни",
     p: [
-      "6698 sayılı Kişisel Verilerin Korunması Kanunu (\"KVKK\") uyarınca tepkimvar (\"Platform\"), veri sorumlusu sıfatıyla kişisel verilerinizi aşağıda açıklanan kapsamda işlemektedir.",
+      "Съгласно GDPR и българското законодателство verno.bg (Платформата) обработва личните ви данни като администратор на данни в обхвата, описан по-долу.",
     ],
   },
   {
-    h: "2. İşlenen Kişisel Veriler",
+    h: "2. Обработвани лични данни",
     p: [
-      "Üyelik ve platform kullanımı kapsamında şu veriler işlenir: kimlik bilgileri (ad, soyad, kullanıcı adı), iletişim bilgileri (e-posta, telefon), işlem güvenliği bilgileri (IP adresi, oturum ve cihaz/tarayıcı bilgileri), platformda oluşturduğunuz içerikler (şikayet metinleri, yorumlar, değerlendirmeler, yüklenen dosyalar).",
+      "При регистрация и използване: идентификационни данни (име, потребителско име), контактни данни (имейл, телефон), данни за сигурност (IP, сесия, устройство), съдържание (текст на жалби, коментари, оценки, файлове).",
     ],
   },
   {
-    h: "3. İşleme Amaçları",
+    h: "3. Цели на обработката",
     p: [
-      "Kişisel verileriniz; üyelik hesabının oluşturulması ve yönetilmesi, şikayetlerin yayınlanması ve markalara iletilmesi, moderasyon ve güvenlik süreçlerinin yürütülmesi, size bildirim gönderilmesi, yasal yükümlülüklerin yerine getirilmesi ve platform hizmetlerinin iyileştirilmesi amaçlarıyla işlenir.",
+      "Създаване и управление на акаунт, публикуване и предаване на жалби към марки, модерация и сигурност, известия, изпълнение на правни задължения и подобряване на услугата.",
     ],
   },
   {
-    h: "4. Aktarım",
+    h: "4. Предаване на данни",
     p: [
-      "Şikayetinizde yer alan içerik, şikayet konusu markanın yetkilileriyle çözüm amacıyla paylaşılır. Anonim şikayetlerde kimlik bilgileriniz markaya gösterilmez. Verileriniz yasal zorunluluk halleri dışında üçüncü kişilere satılmaz ve pazarlama amacıyla paylaşılmaz.",
+      "Съдържанието на жалбата се споделя с марката-адресат за целите на решаване. При анонимни жалби самоличността не се показва на марката. Данните не се продават и не се споделят за маркетинг на трети лица, освен при законово задължение.",
     ],
   },
   {
-    h: "5. Saklama Süresi",
+    h: "5. Срок на съхранение",
     p: [
-      "Verileriniz, üyeliğiniz devam ettiği sürece ve ilgili mevzuatta öngörülen zamanaşımı süreleri boyunca saklanır. Üyeliğinizi sonlandırmanız halinde, yasal saklama yükümlülüğü bulunmayan verileriniz makul süre içinde silinir veya anonim hale getirilir.",
+      "Данните се съхраняват докато акаунтът е активен и в сроковете, предвидени от закона. При заявка за изтриване данните без правно задължение за съхранение се изтриват или анонимизират в разумен срок.",
     ],
   },
   {
-    h: "6. Haklarınız (KVKK m.11)",
+    h: "6. Вашите права (GDPR)",
     p: [
-      "Kişisel verilerinizin işlenip işlenmediğini öğrenme, işlenmişse buna ilişkin bilgi talep etme, işleme amacını ve amacına uygun kullanılıp kullanılmadığını öğrenme, eksik veya yanlış işlenmişse düzeltilmesini isteme, silinmesini veya yok edilmesini talep etme, otomatik sistemlerle analiz sonucu aleyhinize bir sonucun ortaya çıkmasına itiraz etme ve zarara uğramanız halinde giderilmesini talep etme haklarına sahipsiniz.",
-      `Taleplerinizi ${SITE_CONTACT_EMAIL} adresine iletebilirsiniz. Başvurularınız en geç 30 gün içinde ücretsiz olarak sonuçlandırılır.`,
+      "Имате право на достъп, коригиране, изтриване, ограничаване на обработката, преносимост и възражение срещу автоматизирано профилиране.",
+      `Заявки: ${SITE_CONTACT_EMAIL}. Отговор в срок до 30 дни без такса, освен при необосновани или повторни искания.`,
     ],
   },
 ];
@@ -45,20 +45,25 @@ const SECTIONS: { h: string; p: string[] }[] = [
 export const Route = createFileRoute("/_site/(kurumsal)/kvkk")({
   head: () => ({
     ...seoHead({
-      title: "KVKK Aydınlatma Metni — tepkimvar",
+      title: "Информация за личните данни (GDPR) — verno.bg",
       description:
-        "tepkimvar KVKK Aydınlatma Metni: hangi kişisel verilerin hangi amaçlarla işlendiği, saklama süreleri ve KVKK kapsamındaki haklarınız.",
+        "Как verno.bg обработва личните данни, срокове на съхранение и правата ви по GDPR.",
       path: "/kvkk",
     }),
   }),
-  component: () => (
-    <div>
+  component: LegalPage,
+});
+
+function LegalPage() {
+  return (
+    <div className="min-h-screen bg-paper">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 py-16">
-        <h1 className="text-3xl sm:text-4xl font-display font-black mb-2">KVKK Aydınlatma Metni</h1>
-        <p className="text-[13px] text-navy-mid mb-10">Son güncelleme: Ağustos 2026</p>
+        <p className="text-xs font-semibold uppercase tracking-wider text-primary mb-2">Verno.bg</p>
+        <h1 className="text-3xl sm:text-4xl font-display font-black mb-2 text-ink">Лични данни (GDPR)</h1>
+        <p className="text-[13px] text-navy-mid mb-10">Последна актуализация: септември 2026</p>
         <div className="space-y-8">
           {SECTIONS.map((s) => (
-            <section key={s.h}>
+            <section key={s.h} className="rounded-2xl bg-card ring-1 ring-rule p-6">
               <h2 className="text-lg font-semibold text-ink mb-2">{s.h}</h2>
               {s.p.map((par, i) => (
                 <p key={i} className="text-navy leading-relaxed mb-2">{par}</p>
@@ -68,5 +73,5 @@ export const Route = createFileRoute("/_site/(kurumsal)/kvkk")({
         </div>
       </div>
     </div>
-  ),
-});
+  );
+}

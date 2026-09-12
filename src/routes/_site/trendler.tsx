@@ -10,8 +10,8 @@ import { seoHead } from "@/lib/seo";
 export const Route = createFileRoute("/_site/trendler")({
   head: () => ({
     ...seoHead({
-      title: "Trend Şikayetler — Gündemdeki Müşteri Şikayetleri | tepkimvar",
-      description: "Gündemdeki müşteri şikayetleri: en güncel şikayetler önce listelenir.",
+      title: "Трендови жалби — актуални клиентски проблеми | verno.bg",
+      description: "Актуални клиентски жалби: най-новите са първи в списъка.",
       path: "/trendler",
     }),
   }),
@@ -35,14 +35,14 @@ function TrendsPage() {
     <div>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-10">
         <div className="bg-card rounded-2xl ring-1 ring-rule p-6 sm:p-8 mb-6">
-          <p className="eyebrow text-brand mb-1 inline-flex items-center gap-1"><TrendingUp className="size-3" /> Gündemde</p>
-          <h1 className="font-display text-3xl font-black tracking-tight">Trend şikayetler</h1>
-          <p className="text-sm text-navy-mid mt-1">{total.toLocaleString("tr-TR")} şikayet — en çok desteklenenler önce.</p>
+          <p className="eyebrow text-brand mb-1 inline-flex items-center gap-1"><TrendingUp className="size-3" /> Актуално</p>
+          <h1 className="font-display text-3xl font-black tracking-tight">Трендови жалби</h1>
+          <p className="text-sm text-navy-mid mt-1">{total.toLocaleString("bg-BG")} жалби — най-подкрепените са първи.</p>
         </div>
         {loading && items.length === 0 ? (
-          <div className="bg-card rounded-2xl p-12 text-center text-navy-mid ring-1 ring-rule">Yükleniyor…</div>
+          <div className="bg-card rounded-2xl p-12 text-center text-navy-mid ring-1 ring-rule">Зареждане…</div>
         ) : items.length === 0 ? (
-          <div className="bg-card rounded-2xl p-12 text-center text-navy-mid ring-1 ring-rule">Henüz trend şikayet yok.</div>
+          <div className="bg-card rounded-2xl p-12 text-center text-navy-mid ring-1 ring-rule">Все още няма трендови жалби.</div>
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

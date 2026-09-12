@@ -15,9 +15,9 @@ export const Route = createFileRoute("/_site/blog/")({
     await fetchBlogList(deps.sayfa, PAGE_SIZE).catch(() => ({ items: [], total: 0 })),
   head: ({ loaderData }) => ({
     ...seoHead({
-      title: "Blog — Tüketici Hakları ve Rehberler | tepkimvar",
+      title: "Блог — права на потребителите и ръководства | verno.bg",
       description: clamp(
-        `Tüketici hakları, şikayet süreçleri ve marka rehberleri. ${loaderData?.total ?? 0} yazı.`,
+        `Права на потребителите, процеси по жалби и ръководства за марки. ${loaderData?.total ?? 0} статии.`,
         155,
       ),
       path: "/blog",
@@ -43,16 +43,16 @@ function BlogIndex() {
       <header className="max-w-2xl">
         <p className="eyebrow text-brand">Blog</p>
         <h1 className="mt-1 font-display text-4xl font-black tracking-tight text-ink">
-          Tüketici hakları ve rehberler
+          Права на потребителите и ръководства
         </h1>
         <p className="mt-3 text-[15px] text-navy leading-relaxed">
-          Şikayet süreçleri, haklarınız ve markalarla iletişim üzerine yazılar.
+          Статии за процеси по жалби, вашите права и комуникация с марки.
         </p>
       </header>
 
       {items.length === 0 ? (
         <div className="mt-10 card-surface p-10 text-center text-sm text-navy-mid">
-          Henüz yayınlanmış yazı yok.
+          Все още няма публикувани статии.
         </div>
       ) : (
         <>

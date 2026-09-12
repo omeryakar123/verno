@@ -15,11 +15,11 @@ type Category = {
 };
 
 const DEFAULTS = [
-  { name: "E-Ticaret", icon: "ShoppingCart", sortOrder: 1 },
-  { name: "Telekomünikasyon", icon: "Phone", sortOrder: 2 },
-  { name: "Bankacılık", icon: "Landmark", sortOrder: 3 },
-  { name: "Kargo", icon: "Truck", sortOrder: 4 },
-  { name: "Market", icon: "Store", sortOrder: 5 },
+  { name: "E-commerce", icon: "ShoppingCart", sortOrder: 1 },
+  { name: "Телеком", icon: "Phone", sortOrder: 2 },
+  { name: "Банки", icon: "Landmark", sortOrder: 3 },
+  { name: "Куриери", icon: "Truck", sortOrder: 4 },
+  { name: "Маркети", icon: "Store", sortOrder: 5 },
 ];
 
 export const Route = createFileRoute("/admin/kategoriler")({
@@ -45,17 +45,17 @@ function CategoriesPage() {
 
   async function toggleActive(c: Category) {
     if (await apiSend("/api/admin/categories", "PATCH", { id: c.id, isActive: !c.is_active })) {
-      toast.success(c.is_active ? "Pasife alındı" : "Aktifleştirildi");
+      toast.success(c.is_active ? "Деактивирана" : "Активирана");
       load();
     }
   }
 
   async function remove(c: Category) {
     const n = brandCounts[c.id] ?? 0;
-    const warn = n > 0 ? `\n\nBu kategoriye bağlı ${n} firma "kategorisiz" olacak (silinmez).` : "";
-    if (!confirm(`"${c.name}" kategorisini silmek istiyor musun?${warn}`)) return;
+    const warn = n > 0 ? `\n\n${n} марки, свързани с тази категория, ще останат "без категория" (няма да бъдат изтрити).` : "";
+    if (!confirm(`Искаш ли да изтриеш категорията "${c.name}"?${warn}`)) return;
     if (await apiSend("/api/admin/categories", "DELETE", { id: c.id })) {
-      toast.success("Kategori silindi");
+      toast.success("Категорията е изтрита");
       load();
     }
   }
@@ -68,7 +68,7 @@ function CategoriesPage() {
       if (await apiSend("/api/admin/categories", "POST", d)) added++;
     }
     setSeeding(false);
-    toast.success(added ? `${added} kategori eklendi` : "Zaten mevcutlar");
+    toast.success(added ? `Добавени са ${added} категории` : "Вече съществуват");
     load();
   }
 
@@ -76,14 +76,14 @@ function CategoriesPage() {
     <div className="px-6 lg:px-10 py-8 space-y-6">
       <div className="flex items-end justify-between gap-4">
         <div>
-          <div className="eyebrow text-navy-mid">İçerik Yapısı</div>
-          <h1 className="mt-1 font-display text-3xl font-black tracking-tight text-ink">Kategoriler</h1>
+          <div className="eyebrow text-navy-mid">Структура на съдържанието</div>
+          <h1 className="mt-1 font-display text-3xl font-black tracking-tight text-ink">Категории</h1>
         </div>
         <button
           onClick={() => setCreating(true)}
           className="inline-flex items-center gap-2 h-10 px-4 rounded-full bg-brand text-brand-foreground text-[13px] font-semibold hover:brightness-110"
         >
-          <Plus className="size-4" /> Yeni Kategori
+          <Plus className="size-4" /> Нова категория
         </button>
       </div>
 
@@ -91,13 +91,13 @@ function CategoriesPage() {
         <table className="w-full text-[13.5px]">
           <thead className="bg-surface text-navy-mid text-left text-[11.5px] uppercase tracking-wider">
             <tr>
-              <th className="px-4 py-3 font-semibold w-16">Sıra</th>
-              <th className="px-4 py-3 font-semibold">Ad</th>
+              <th className="px-4 py-3 font-semibold w-16">Ред</th>
+              <th className="px-4 py-3 font-semibold">Име</th>
               <th className="px-4 py-3 font-semibold">Slug</th>
-              <th className="px-4 py-3 font-semibold">İkon</th>
-              <th className="px-4 py-3 font-semibold">Firma</th>
-              <th className="px-4 py-3 font-semibold">Durum</th>
-              <th className="px-4 py-3 text-right font-semibold">İşlem</th>
+              <th className="px-4 py-3 font-semibold">Икона</th>
+              <th className="px-4 py-3 font-semibold">Марки</th>
+              <th className="px-4 py-3 font-semibold">Статус</th>
+              <th className="px-4 py-3 text-right font-semibold">Действия</th>
             </tr>
           </thead>
           <tbody>
@@ -114,15 +114,15 @@ function CategoriesPage() {
                     className={`inline-flex items-center gap-1.5 text-[12px] px-2 py-1 rounded-full ${c.is_active ? "bg-brand-soft text-brand" : "bg-surface text-navy-mid"}`}
                   >
                     {c.is_active ? <Eye className="size-3.5" /> : <EyeOff className="size-3.5" />}
-                    {c.is_active ? "Aktif" : "Pasif"}
+                    {c.is_active ? "Активна" : "Неактивна"}
                   </button>
                 </td>
                 <td className="px-4 py-3 text-right space-x-3 whitespace-nowrap">
                   <button onClick={() => setEditing(c)} className="text-[12px] text-brand hover:underline inline-flex items-center gap-1">
-                    <Pencil className="size-3.5" /> Düzenle
+                    <Pencil className="size-3.5" /> Редактирай
                   </button>
                   <button onClick={() => remove(c)} className="text-[12px] text-danger hover:underline inline-flex items-center gap-1">
-                    <Trash2 className="size-3.5" /> Sil
+                    <Trash2 className="size-3.5" /> Изтрий
                   </button>
                 </td>
               </tr>
@@ -130,19 +130,19 @@ function CategoriesPage() {
             {!loading && items.length === 0 && (
               <tr>
                 <td colSpan={7} className="px-4 py-12 text-center">
-                  <p className="text-navy-mid">Henüz kategori yok. Firma oluştururken seçim çıkması için en az bir tane ekle.</p>
+                  <p className="text-navy-mid">Все още няма категории. Добави поне една, за да може да се избира при създаване на марка.</p>
                   <button
                     onClick={seedDefaults}
                     disabled={seeding}
                     className="mt-4 inline-flex items-center gap-2 h-10 px-4 rounded-full ring-1 ring-rule text-[13px] font-semibold hover:bg-surface disabled:opacity-60"
                   >
-                    <Sparkles className="size-4" /> {seeding ? "Ekleniyor…" : "5 varsayılan kategoriyi ekle"}
+                    <Sparkles className="size-4" /> {seeding ? "Добавяне…" : "Добави 5-те категории по подразбиране"}
                   </button>
                 </td>
               </tr>
             )}
             {loading && (
-              <tr><td colSpan={7} className="px-4 py-12 text-center text-navy-mid">Yükleniyor…</td></tr>
+              <tr><td colSpan={7} className="px-4 py-12 text-center text-navy-mid">Зареждане…</td></tr>
             )}
           </tbody>
         </table>
@@ -181,44 +181,44 @@ function CategoryModal({
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
-    if (name.trim().length < 2) return toast.error("Kategori adı en az 2 karakter");
+    if (name.trim().length < 2) return toast.error("Името на категорията трябва да е поне 2 знака");
     setBusy(true);
     const payload = { name: name.trim(), slug: slug.trim() || undefined, icon: icon.trim() || null, sortOrder };
     const ok = value
       ? await apiSend("/api/admin/categories", "PATCH", { id: value.id, ...payload })
       : await apiSend("/api/admin/categories", "POST", payload);
     setBusy(false);
-    if (ok) { toast.success(value ? "Güncellendi" : "Kategori oluşturuldu"); onSaved(); }
+    if (ok) { toast.success(value ? "Обновено" : "Категорията е създадена"); onSaved(); }
   }
 
   return (
     <Modal open={open} onClose={onClose} className="max-w-md">
       <form onSubmit={save} className="bg-card rounded-2xl p-6 space-y-4 shadow-lift">
-        <h2 className="font-display text-xl font-bold text-ink">{isEdit ? "Kategoriyi Düzenle" : "Yeni Kategori"}</h2>
+        <h2 className="font-display text-xl font-bold text-ink">{isEdit ? "Редактирай категория" : "Нова категория"}</h2>
 
-        <Field label="Kategori adı *">
+        <Field label="Име на категорията *">
           <input value={name} onChange={(e) => setName(e.target.value)} required autoFocus
             className="mt-1 w-full h-10 rounded-lg ring-1 ring-rule px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40" />
         </Field>
-        <Field label="Slug (boşsa addan üretilir)">
-          <input value={slug} onChange={(e) => setSlug(e.target.value)} placeholder="otomatik"
+        <Field label="Slug (ако е празно, се генерира от името)">
+          <input value={slug} onChange={(e) => setSlug(e.target.value)} placeholder="автоматично"
             className="mt-1 w-full h-10 rounded-lg ring-1 ring-rule px-3 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand/40" />
         </Field>
         <div className="grid grid-cols-2 gap-3">
-          <Field label="İkon (lucide adı)">
+          <Field label="Икона (име от lucide)">
             <input value={icon} onChange={(e) => setIcon(e.target.value)} placeholder="ShoppingCart"
               className="mt-1 w-full h-10 rounded-lg ring-1 ring-rule px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40" />
           </Field>
-          <Field label="Sıra">
+          <Field label="Ред">
             <input type="number" value={sortOrder} onChange={(e) => setSortOrder(Number(e.target.value))}
               className="mt-1 w-full h-10 rounded-lg ring-1 ring-rule px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40" />
           </Field>
         </div>
 
         <div className="flex gap-2 pt-2">
-          <button type="button" onClick={onClose} className="flex-1 h-10 rounded-lg ring-1 ring-rule text-sm font-medium hover:bg-surface">İptal</button>
+          <button type="button" onClick={onClose} className="flex-1 h-10 rounded-lg ring-1 ring-rule text-sm font-medium hover:bg-surface">Отказ</button>
           <button disabled={busy} className="flex-1 h-10 rounded-lg bg-brand text-brand-foreground text-sm font-semibold hover:brightness-110 disabled:opacity-60">
-            {value ? "Kaydet" : "Oluştur"}
+            {value ? "Запази" : "Създай"}
           </button>
         </div>
       </form>

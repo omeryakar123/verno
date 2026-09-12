@@ -1,12 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ShieldX, ArrowLeft } from "lucide-react";
-import { seoHead } from "@/lib/seo";
+import { seoHead, SITE_NAME } from "@/lib/seo";
 
 export const Route = createFileRoute("/_site/(kurumsal)/erisim-yok")({
   head: () => ({
     ...seoHead({
-      title: "Erişim Yok — tepkimvar",
-      description: "Bu sayfayı görüntülemek için yetkiniz yok.",
+      title: `Няма достъп — ${SITE_NAME}`,
+      description: "Нямате права да преглеждате тази страница.",
       path: "/erisim-yok",
       noindex: true,
     }),
@@ -22,12 +22,18 @@ function AccessDenied() {
           <div className="mx-auto size-20 rounded-full bg-danger-soft grid place-items-center mb-6 animate-pulse">
             <ShieldX className="size-10 text-danger" />
           </div>
-          <h1 className="font-display text-3xl font-black tracking-tight text-ink mb-2">Erişim Reddedildi</h1>
+          <h1 className="font-display text-3xl font-black tracking-tight text-ink mb-2">
+            Достъпът е отказан
+          </h1>
           <p className="text-navy-mid text-[15px] leading-relaxed mb-6">
-            Bu sayfayı görüntülemek için gerekli yetkiye sahip değilsiniz. Eğer bir hata olduğunu düşünüyorsanız hesabınızla giriş yapın veya yönetici ile iletişime geçin.
+            Нямате необходимите права за тази страница. Ако смятате, че това е грешка, влезте в
+            акаунта си или се свържете с администратор.
           </p>
-          <Link to="/" className="inline-flex items-center gap-2 rounded-full bg-brand text-brand-foreground px-5 h-11 text-sm font-semibold shadow-soft hover:brightness-105">
-            <ArrowLeft className="size-4" /> Ana sayfaya dön
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 rounded-full bg-brand text-brand-foreground px-5 h-11 text-sm font-semibold shadow-soft hover:brightness-105"
+          >
+            <ArrowLeft className="size-4" /> Към началната страница
           </Link>
         </div>
       </main>

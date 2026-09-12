@@ -265,7 +265,9 @@ export function SiteFooter() {
         ["Решени жалби", "/sikayetler", { durum: "cozuldu" }],
         ["Анонимна жалба", "/sikayet-yaz"],
         ["Помощ", "/yardim"],
-        ["ЧЗВ", "/yardim"],
+        ["Как работи", "/info/$slug", { slug: "how-it-works" }],
+        ["Как да подам жалба", "/info/$slug", { slug: "how-to-complain" }],
+        ["Съвети за потребители", "/info/$slug", { slug: "consumer-tips" }],
       ],
     },
     {
@@ -304,7 +306,7 @@ export function SiteFooter() {
 
   const topLinks = [
     ["За нас", "/hakkimizda"],
-    ["Verno SEAL", "/hakkimizda"],
+    ["Избор на марка", "/info/$slug", { slug: "choose-brand" }],
     ["Pro членство", "/kurumsal-uyelik"],
     ["Рекламни решения", "/reklam-cozumleri"],
     ["Блог", "/blog"],
@@ -324,10 +326,11 @@ export function SiteFooter() {
             <SiteLogoMark size={28} tone="on-dark" />
           </Link>
           <div className="hidden items-center gap-4 text-[13px] md:flex">
-            {topLinks.map(([t, to]) => (
+            {topLinks.map(([t, to, params]) => (
               <Link
                 key={t}
                 to={to}
+                params={params as never}
                 className="hover:text-paper dark:hover:text-ink"
               >
                 {t}
@@ -342,11 +345,13 @@ export function SiteFooter() {
                 {g.t}
               </h4>
               <ul className="space-y-2 text-[12.5px]">
-                {g.l.map(([label, to, search]) => (
+                {g.l.map(([label, to, searchOrParams]) => (
                   <li key={label}>
                     <Link
                       to={to}
-                      search={search as never}
+                      {...(to === "/info/$slug"
+                        ? { params: searchOrParams as never }
+                        : { search: searchOrParams as never })}
                       className="text-paper/60 transition-colors hover:text-paper dark:text-navy-mid dark:hover:text-ink"
                     >
                       {label}

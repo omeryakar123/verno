@@ -125,7 +125,7 @@ async function legacySend(phone: string, text: string, senderID: string): Promis
 export async function sendSmsOtp(phoneE164: string, code: string): Promise<void> {
   const { token, from, senderId } = smsConfig();
   const phone = normalizePhone(phoneE164);
-  const text = `tepkimvar dogrulama kodunuz: ${code}. Kod 10 dakika gecerlidir.`;
+  const text = `Verno.bg код за потвърждение: ${code}. Валиден 10 минути.`;
 
   if (!token) {
     console.log(`[SMS:OTP] +${phone} -> ${code}`);

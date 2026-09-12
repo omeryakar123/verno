@@ -22,16 +22,16 @@ function NotFoundComponent() {
     <div className="flex min-h-screen items-center justify-center bg-canvas px-4">
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold text-dark">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-dark">Sayfa bulunamadı</h2>
+        <h2 className="mt-4 text-xl font-semibold text-dark">Страницата не е намерена</h2>
         <p className="mt-2 text-sm text-navy-mid">
-          Aradığınız sayfa taşınmış ya da hiç var olmamış olabilir.
+          Търсената страница може да е преместена или да не съществува.
         </p>
         <div className="mt-6">
           <Link
             to="/"
             className="inline-flex items-center justify-center rounded-lg bg-brand px-4 py-2 text-sm font-medium text-brand-foreground transition-colors hover:brightness-110"
           >
-            Ana sayfaya dön
+            Към началната страница
           </Link>
         </div>
       </div>
@@ -49,9 +49,9 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-canvas px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-dark">Bu sayfa yüklenemedi</h1>
+        <h1 className="text-xl font-semibold tracking-tight text-dark">Страницата не може да се зареди</h1>
         <p className="mt-2 text-sm text-navy-mid">
-          Bir şeyler ters gitti. Yenilemeyi veya ana sayfaya dönmeyi deneyebilirsiniz.
+          Нещо се обърка. Опитайте да опресните или се върнете на началната страница.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
@@ -61,13 +61,13 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
             }}
             className="inline-flex items-center justify-center rounded-lg bg-brand px-4 py-2 text-sm font-medium text-brand-foreground transition-colors hover:brightness-110"
           >
-            Tekrar dene
+            Опитай отново
           </button>
           <a
             href="/"
             className="inline-flex items-center justify-center rounded-lg border border-rule bg-card px-4 py-2 text-sm font-medium text-dark transition-colors hover:bg-surface"
           >
-            Ana sayfa
+            Начало
           </a>
         </div>
       </div>

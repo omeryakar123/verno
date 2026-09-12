@@ -29,13 +29,13 @@ function AdminMediaPage() {
     for (const file of Array.from(files)) {
       if (await uploadFile(file, FOLDER)) ok = true;
     }
-    if (ok) toast.success("Yüklendi");
+    if (ok) toast.success("Качено");
     load();
   }
 
   async function remove(name: string) {
-    if (!confirm("Dosya silinsin mi?")) return;
-    if (await apiSend("/api/admin/media", "DELETE", { key: name })) { toast.success("Silindi"); load(); }
+    if (!confirm("Да се изтрие ли файлът?")) return;
+    if (await apiSend("/api/admin/media", "DELETE", { key: name })) { toast.success("Изтрито"); load(); }
   }
 
   function urlOf(name: string) {
@@ -46,11 +46,11 @@ function AdminMediaPage() {
     <div className="px-6 lg:px-10 py-8 space-y-6">
       <div className="flex items-end justify-between gap-4 flex-wrap">
         <div>
-          <div className="eyebrow text-navy-mid">Medya Kütüphanesi</div>
-          <h1 className="mt-1 font-display text-3xl font-black tracking-tight text-ink">Medya</h1>
+          <div className="eyebrow text-navy-mid">Медийна библиотека</div>
+          <h1 className="mt-1 font-display text-3xl font-black tracking-tight text-ink">Медия</h1>
         </div>
         <button onClick={() => fileRef.current?.click()} className="inline-flex items-center gap-2 rounded-full bg-brand text-brand-foreground px-5 h-10 text-[13px] font-semibold hover:brightness-105">
-          <Upload className="size-4" /> Yükle
+          <Upload className="size-4" /> Качи
         </button>
         <input ref={fileRef} type="file" multiple hidden onChange={(e) => upload(e.target.files)} />
       </div>
@@ -71,7 +71,7 @@ function AdminMediaPage() {
             </div>
           );
         })}
-        {items.length === 0 && <div className="col-span-full text-center text-navy-mid py-10">Henüz medya yok.</div>}
+        {items.length === 0 && <div className="col-span-full text-center text-navy-mid py-10">Все още няма медия.</div>}
       </div>
     </div>
   );

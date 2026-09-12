@@ -130,7 +130,7 @@ export function ComplaintStarRating({
   return (
     <div
       className="inline-flex items-center gap-1.5"
-      aria-label={`${stars} yıldız`}
+      aria-label={`${stars} звезди`}
     >
       <div className="inline-flex items-center gap-0.5">
         {[1, 2, 3, 4, 5].map((n) => (
@@ -175,10 +175,10 @@ export function BrandProfileComplaintCard({
     setSending(false);
     if (!res.ok) {
       const j = (await res.json().catch(() => ({}))) as { error?: string };
-      toast.error(j.error ?? "Yanıt gönderilemedi");
+      toast.error(j.error ?? "Отговорът не можа да бъде изпратен");
       return;
     }
-    toast.success("Yanıt gönderildi");
+    toast.success("Отговорът е изпратен");
     setReply("");
     onReplied?.();
   }
@@ -188,7 +188,7 @@ export function BrandProfileComplaintCard({
       {complaint.rating != null && complaint.rating > 0 ? (
         <div className="mb-4 pb-3 border-b border-rule">
           <p className="text-[10px] uppercase tracking-wider text-navy-mid font-semibold mb-1.5">
-            Şikayet sonucu puanı
+            Оценка на резултата
           </p>
           <ComplaintStarRating rating={complaint.rating} />
         </div>
@@ -232,7 +232,7 @@ export function BrandProfileComplaintCard({
         <div className="mt-4 rounded-xl bg-brand-soft/50 ring-1 ring-brand/15 p-4">
           <div className="flex items-center gap-2 text-[11px] font-semibold text-brand mb-2">
             <Building2 className="size-3.5" />
-            Firma yanıtı
+            Отговор от марката
             {complaint.companyReply.agoLabel ? (
               <span className="font-normal text-navy-mid">
                 · {complaint.companyReply.agoLabel}
@@ -246,13 +246,13 @@ export function BrandProfileComplaintCard({
       ) : canReply ? (
         <form onSubmit={sendReply} className="mt-4 space-y-2">
           <label className="text-[11px] font-semibold text-navy-mid uppercase tracking-wider">
-            Firma yanıtı yazın
+            Напишете отговор от марката
           </label>
           <textarea
             value={reply}
             onChange={(e) => setReply(e.target.value)}
             rows={3}
-            placeholder="Müşteriye yanıtınız…"
+            placeholder="Вашият отговор към клиента…"
             className="w-full rounded-lg ring-1 ring-rule p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40 resize-none"
           />
           <button
@@ -260,12 +260,12 @@ export function BrandProfileComplaintCard({
             disabled={sending || !reply.trim()}
             className="inline-flex items-center gap-2 rounded-full bg-brand text-brand-foreground px-4 h-9 text-[13px] font-semibold hover:brightness-105 disabled:opacity-60"
           >
-            <Send className="size-3.5" /> Yanıtla
+            <Send className="size-3.5" /> Отговори
           </button>
         </form>
       ) : (
         <p className="mt-4 text-[12px] text-navy-mid italic">
-          Henüz firma yanıtı yok.
+          Все още няма отговор от марката.
         </p>
       )}
 
@@ -296,7 +296,7 @@ export function BrandProfileComplaintCard({
           params={{ id: complaintLinkId(complaint) }}
           className="text-brand hover:underline text-[12px] font-medium"
         >
-          Detayı gör →
+          Виж детайли →
         </Link>
       </div>
     </article>
@@ -539,7 +539,7 @@ export function CompanyCard({ company }: { company: Company }) {
       <div className="rounded-xl bg-surface p-3 grid grid-cols-3 gap-2 text-center">
         <div>
           <div className="text-[10px] uppercase tracking-wider text-navy-mid">
-            Çözüm
+            Решени
           </div>
           <div className="font-bold text-[13px] mt-0.5 text-brand tabular-nums">
             {formatResolutionRate(
@@ -550,7 +550,7 @@ export function CompanyCard({ company }: { company: Company }) {
         </div>
         <div className="border-x border-rule">
           <div className="text-[10px] uppercase tracking-wider text-navy-mid">
-            Şikayet
+            Жалби
           </div>
           <div className="font-bold text-[13px] mt-0.5 tabular-nums">
             {formatCompactCount(company.totalComplaints)}
@@ -558,7 +558,7 @@ export function CompanyCard({ company }: { company: Company }) {
         </div>
         <div>
           <div className="text-[10px] uppercase tracking-wider text-navy-mid">
-            Yanıt
+            Отговор
           </div>
           <div className="font-bold text-[13px] mt-0.5 tabular-nums">
             {formatResponseTime(company.avgResponseMinutes)}

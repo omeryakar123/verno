@@ -124,8 +124,8 @@ function readConfig(): AiConfig | null {
   const extraHeaders: Record<string, string> = {};
   if (provider === "openrouter" || baseUrl.includes("openrouter.ai")) {
     extraHeaders["HTTP-Referer"] =
-      env("AI_HTTP_REFERER") || env("SITE_URL") || "https://tepkimvar.com";
-    extraHeaders["X-Title"] = env("AI_APP_TITLE") || "tepkimvar";
+      env("AI_HTTP_REFERER") || env("SITE_URL") || "https://verno.bg";
+    extraHeaders["X-Title"] = env("AI_APP_TITLE") || "verno";
   }
 
   return {
