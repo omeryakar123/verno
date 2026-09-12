@@ -250,18 +250,19 @@ function Home() {
       {/* Горна лента — общ брой решения */}
       <Link
         to="/sikayetler"
+        search={{ durum: "cozuldu" }}
         className="home-top-bar z-10 flex h-[4.125rem] items-center lg:h-[4.375rem]"
       >
-        <div className="home-container flex h-full w-full max-w-6xl items-center justify-between px-4">
-          <div className="flex items-center gap-1 lg:gap-7">
-            <p className="font-medium text-[13px] text-white max-[361px]:text-[11px] lg:text-lg">
+        <div className="home-container flex h-full w-full max-w-6xl items-center justify-between gap-3 px-4">
+          <div className="flex min-w-0 items-center gap-2 lg:gap-7">
+            <p className="shrink-0 font-medium text-[13px] text-white max-[361px]:text-[11px] lg:text-lg">
               Общ брой решения
             </p>
             <div className="font-bold text-[#3ad08f] text-[15px] tabular-nums max-[361px]:text-[13px] lg:text-[26px]">
               {formatCounter(stats.resolvedComplaints)}
             </div>
           </div>
-          <span className="hidden text-[13px] text-white/70 sm:inline lg:text-base">
+          <span className="hidden truncate text-[13px] text-white/70 sm:inline lg:text-base">
             Проверете оценката на марката преди покупка →
           </span>
         </div>
@@ -313,10 +314,10 @@ function Home() {
                 <Link
                   to="/firma/$slug"
                   params={{ slug: b.slug }}
-                  className="relative flex w-full rounded-2xl bg-gray-100 lg:rounded-3xl hover:bg-gray-50 transition"
+                  className="home-solution-row group"
                 >
                   <div
-                    className={`flex w-max min-w-7.5 flex-col items-center justify-center gap-0.5 rounded-3xl px-0.5 py-3 font-bold text-xs leading-3.5 tracking-tight text-neutral-700 lg:min-w-11 lg:gap-1 lg:text-[13px] ${i === 0 ? "bg-blue-100" : "bg-transparent"}`}
+                    className={`home-solution-rank ${i === 0 ? "home-solution-rank--first" : ""}`}
                   >
                     {i + 1}
                   </div>
@@ -362,38 +363,49 @@ function Home() {
         </div>
       </section>
 
-      {/* Video — navbar link hedefi */}
+      {/* Видео — navbar anchor */}
       <section
         id="video"
-        className="home-container max-w-6xl scroll-mt-24 px-4 py-12 lg:py-20"
+        className="home-container relative max-w-6xl scroll-mt-24 px-4 py-12 lg:py-20"
       >
+        <div className="pointer-events-none absolute -right-8 top-8 hidden size-48 rounded-full bg-[#695de9]/15 lg:block" />
+        <div className="pointer-events-none absolute right-24 top-32 hidden size-32 rounded-full bg-[#3ad08f]/20 lg:block" />
         <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
           <div>
-            <h2 className="font-semibold text-2xl text-[#383838] lg:text-4xl">
-              Мнения
+            <h2 className="font-semibold text-2xl text-[#383838] lg:text-[42px] lg:leading-[1.15]">
+              Как работи {SITE_NAME}?
             </h2>
-            <p className="mt-4 text-[15px] leading-relaxed text-[#85878e] lg:text-base">
-              Гледайте потребителски истории на видео. Verno изгражда прозрачен
-              мост между марки и потребители.
+            <p className="mt-4 max-w-md text-[15px] leading-relaxed text-[#85878e] lg:text-base">
+              Подайте жалба, получете официален отговор от марката и проследете
+              процеса прозрачно — както правят хиляди потребители всеки ден.
             </p>
+            <Link
+              to="/info/$slug"
+              params={{ slug: "how-it-works" }}
+              className="mt-6 inline-flex items-center gap-2 text-[13px] font-semibold text-brand hover:gap-3 transition-all"
+            >
+              Научете повече <ArrowRight className="size-4" />
+            </Link>
           </div>
-          <div className="relative aspect-video overflow-hidden rounded-3xl bg-[#272635] shadow-lift">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#695de9]/40 to-[#3ad08f]/30" />
+          <div className="relative aspect-[4/3] overflow-hidden rounded-[32px] bg-[#272635] shadow-[0_24px_64px_rgba(39,38,53,0.18)]">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#695de9]/50 via-[#272635] to-[#3ad08f]/35" />
+            <div className="absolute -right-10 -top-10 size-40 rounded-full bg-[#695de9]/30" />
+            <div className="absolute -bottom-8 -left-8 size-32 rounded-full bg-[#3ad08f]/25" />
             <div className="absolute inset-0 grid place-items-center">
               <span className="grid size-16 place-items-center rounded-full bg-white/95 text-[#695de9] shadow-lg">
-                <Play className="size-7 fill-current ml-1" />
+                <Play className="ml-1 size-7 fill-current" />
               </span>
             </div>
-            <span className="absolute bottom-4 left-4 text-[12px] font-medium text-white/80">
+            <span className="absolute bottom-5 left-5 text-[12px] font-medium text-white/80">
               Видео — скоро
             </span>
           </div>
         </div>
       </section>
 
-      {/* Özellik ikonları */}
+      {/* Характеристики */}
       <section className="home-container max-w-6xl px-4 pb-12 lg:pb-20">
-        <ul className="grid grid-cols-2 gap-4 lg:grid-cols-5 lg:gap-6">
+        <ul className="flex flex-wrap items-start justify-center gap-x-8 gap-y-6 lg:gap-x-14">
           {[
             { icon: Shield, label: "Сигурна услуга" },
             { icon: Zap, label: "Бързо решение" },
@@ -403,12 +415,12 @@ function Home() {
           ].map(({ icon: Icon, label }) => (
             <li
               key={label}
-              className="flex flex-col items-center rounded-2xl bg-white px-4 py-6 text-center shadow-sm ring-1 ring-gray-100"
+              className="flex w-[calc(50%-1rem)] max-w-[140px] flex-col items-center text-center lg:w-auto"
             >
-              <span className="mb-3 grid size-12 place-items-center rounded-xl bg-brand/10 text-brand">
-                <Icon className="size-6" />
+              <span className="mb-2.5 grid size-14 place-items-center rounded-full bg-[#f3f4f8] text-[#626692]">
+                <Icon className="size-7" strokeWidth={1.5} />
               </span>
-              <span className="text-[13px] font-semibold text-[#383838]">
+              <span className="text-[13px] font-semibold leading-snug text-[#383838]">
                 {label}
               </span>
             </li>

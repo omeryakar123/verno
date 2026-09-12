@@ -2,11 +2,10 @@ import { Search } from "lucide-react";
 
 const BANNER = {
   mobile: {
-    frame:
-      "https://files.sikayetvar.com/web-files/public/images/home-banner/mobile/banner.svg",
+    frame: "/home-banner/mobile/banner.svg",
     slots: [
       {
-        src: "https://files.sikayetvar.com/web-files/public/images/home-banner/mobile/1.jpg",
+        src: "/home-banner/mobile/1.jpg",
         left: "24.939%",
         top: "0%",
         width: "38.499%",
@@ -14,7 +13,7 @@ const BANNER = {
         borderRadius: undefined,
       },
       {
-        src: "https://files.sikayetvar.com/web-files/public/images/home-banner/mobile/3.jpg",
+        src: "/home-banner/mobile/3.jpg",
         left: "0%",
         top: "0%",
         width: "24.939%",
@@ -22,7 +21,7 @@ const BANNER = {
         borderRadius: "70.874% 76.042% 0 0",
       },
       {
-        src: "https://files.sikayetvar.com/web-files/public/images/home-banner/mobile/2.jpg",
+        src: "/home-banner/mobile/2.jpg",
         left: "63.438%",
         top: "0%",
         width: "36.562%",
@@ -32,11 +31,10 @@ const BANNER = {
     ],
   },
   desktop: {
-    frame:
-      "https://files.sikayetvar.com/web-files/public/images/home-banner/desktop/banner.svg",
+    frame: "/home-banner/desktop/banner.svg",
     slots: [
       {
-        src: "https://files.sikayetvar.com/web-files/public/images/home-banner/desktop/1.jpg",
+        src: "/home-banner/desktop/1.jpg",
         left: "24.939%",
         top: "0%",
         width: "38.499%",
@@ -44,7 +42,7 @@ const BANNER = {
         borderRadius: undefined,
       },
       {
-        src: "https://files.sikayetvar.com/web-files/public/images/home-banner/desktop/3.jpg",
+        src: "/home-banner/desktop/3.jpg",
         left: "0%",
         top: "0%",
         width: "24.939%",
@@ -52,7 +50,7 @@ const BANNER = {
         borderRadius: "70.874% 76.042% 0 0",
       },
       {
-        src: "https://files.sikayetvar.com/web-files/public/images/home-banner/desktop/2.jpg",
+        src: "/home-banner/desktop/2.jpg",
         left: "63.438%",
         top: "0%",
         width: "36.562%",
@@ -112,17 +110,17 @@ function BannerCollage({ variant }: { variant: "mobile" | "desktop" }) {
 
 export function HeroSection({ search, onSearchChange, onSubmit }: Props) {
   return (
-    <div className="relative pt-2 pb-14 sm:pt-4 sm:pb-20 lg:pb-[247px] lg:before:absolute lg:before:top-[31px] lg:before:right-0 lg:before:block lg:before:h-[270px] lg:before:w-[calc(50%-720px)] lg:before:bg-[#e4e7f3] lg:before:content-['']">
+    <div className="home-hero-shell">
       <BannerCollage variant="mobile" />
       <BannerCollage variant="desktop" />
 
       <div className="home-container relative z-10 px-4 lg:max-w-6xl lg:px-0">
         <div className="lg:w-[46.3%] lg:pt-20">
           <div className="mb-5 lg:mb-28">
-            <h1 className="font-semibold text-[#383838] text-[36px] leading-[1.12] tracking-[0.5px] sm:text-[43px] sm:leading-tight sm:tracking-[1px] lg:text-[56px] lg:leading-[1.15]">
-              Сподели проблема.
-              <br />
-              <span className="text-brand">Намери решение.</span>
+            <h1 className="whitespace-pre-line font-normal text-[#383838] text-[43px] leading-tight tracking-[1px] lg:text-[61px] lg:leading-[1.12]">
+              <strong className="font-semibold">За решение</strong>
+              {"\n"}
+              verno.bg
             </h1>
           </div>
 

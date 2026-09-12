@@ -10,7 +10,7 @@ type Props = {
 
 function AgendaCard({ complaint }: { complaint: Complaint }) {
   return (
-    <article className="relative flex h-[8.75rem] shrink-0 gap-4 rounded-xl bg-white p-[1.125rem] mr-8 w-full md:mr-8 md:w-1/2 lg:mr-10 lg:w-[31vw] lg:h-[11.25rem]">
+    <article className="home-feed-card relative mr-8 flex h-[8.75rem] w-full shrink-0 gap-4 md:mr-8 md:w-1/2 lg:mr-10 lg:h-[11.25rem] lg:w-[31vw]">
       <div className="flex flex-1 flex-col justify-center min-w-0">
         <div className="flex items-center gap-2 lg:gap-3 mb-2 text-sm lg:mb-4 lg:text-base">
           <span className="grid size-8 shrink-0 place-items-center rounded-full bg-brand-soft text-brand text-[11px] font-bold lg:size-10">

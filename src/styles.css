@@ -544,8 +544,57 @@
 }
 
 @utility home-top-bar {
+  display: block;
   background-color: var(--sv-dark);
   color: #fff;
+  text-decoration: none;
+  transition: background-color 180ms ease;
+
+  &:hover {
+    background-color: var(--sv-dark-muted);
+  }
+}
+
+@utility home-hero-shell {
+  position: relative;
+  padding-top: 0.5rem;
+  padding-bottom: 3.5rem;
+
+  @media (min-width: 640px) {
+    padding-top: 1rem;
+    padding-bottom: 5rem;
+  }
+
+  @media (min-width: 1024px) {
+    padding-bottom: 15.4375rem;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 1.9375rem;
+      right: 0;
+      display: block;
+      height: 16.875rem;
+      width: calc(50% - 45rem);
+      background: var(--sv-surface);
+    }
+  }
+}
+
+@utility home-feed-card {
+  border-radius: 0.75rem;
+  border: 1px solid #ebecef;
+  background: #fff;
+  padding: 1.125rem;
+  box-shadow: 0 4px 24px rgb(39 38 53 / 0.06);
+  transition:
+    box-shadow 180ms ease,
+    transform 180ms ease;
+
+  &:hover {
+    box-shadow: 0 8px 32px rgb(39 38 53 / 0.1);
+    transform: translateY(-1px);
+  }
 }
 
 @utility home-hero-search {
@@ -691,6 +740,50 @@
 @utility home-solution-shell {
   background-color: var(--sv-dark);
   color: #fff;
+}
+
+@utility home-solution-row {
+  position: relative;
+  display: flex;
+  width: 100%;
+  border-radius: 1rem;
+  background: #f3f4f6;
+  transition: background-color 180ms ease;
+
+  &:hover {
+    background: #eef0f4;
+  }
+
+  @media (min-width: 1024px) {
+    border-radius: 1.5rem;
+  }
+}
+
+@utility home-solution-rank {
+  display: flex;
+  width: max-content;
+  min-width: 1.875rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.125rem;
+  border-radius: 1.5rem;
+  padding: 0.75rem 0.125rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 0.875rem;
+  letter-spacing: -0.025em;
+  color: #404040;
+
+  @media (min-width: 1024px) {
+    min-width: 2.75rem;
+    gap: 0.25rem;
+    font-size: 0.8125rem;
+  }
+}
+
+@utility home-solution-rank--first {
+  background: #dbeafe;
 }
 
 @utility home-brand-cta {

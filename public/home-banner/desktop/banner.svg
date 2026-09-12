@@ -1,0 +1,45 @@
+<svg viewBox="0 0 743 765" class="banner-img" focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="100%" preserveAspectRatio="none">
+  <!-- Sol üst blok -->
+  <rect width="287" height="297" fill="#695DE9"/>
+
+  <!-- Alt blok -->
+  <path d="M187 497H314C354.317 497 387 529.683 387 570V678H187V497Z" fill="#FCC915"/>
+
+  <!-- Üst yeşil blok -->
+  <path d="M287 281C287 195.948 355.948 127 441 127H560V397H287Z" fill="#3AD08F"/>
+
+  <!-- Ortadaki daire -->
+  <circle cx="423" cy="262" r="136" fill="#54E1A4"/>
+
+  <!-- Lila yarım daire -->
+  <path d="M378 497 A105 100 0 0 1 588 497 H378Z" fill="#9BA1FF"/>
+
+  <!-- Sol çeyrek yeşil daire -->
+  <path d="M87 397A100 100 0 0 0 187 497H187V397H87Z" fill="#3AD08F"/>
+
+  <!-- Dikey yeşil yarım daire -->
+  <path d="M469 497A91 91 0 0 0 469 678Z" fill="#53E1A4"/>
+
+  <!-- Diğer bloklar -->
+  <path d="M560 396C560 340.219 606.562 295 664 295C721.438 295 768 340.219 768 396C768 451.781 721.438 497 664 497C606.562 497 560 451.781 560 396Z" fill="#53E1A4"/>
+  <path d="M0 297H187V397H0V297Z" fill="#695DE9"/>
+  <path d="M187 397H287V497H187V397Z" fill="#53E1A4"/>
+  <path d="M544 550H691V575H544V550Z" fill="#E4E7F3"/>
+  <path d="M544 604H691V628H544V604Z" fill="#E4E7F3"/>
+  <path d="M187 297H287V397H187V297Z" fill="#E4E7F3"/>
+  <path d="M560 127H743V397H560V127Z" fill="#E4E7F3"/>
+
+  <!-- Sarı yıldızlı daire -->
+  <circle cx="337" cy="447" r="50" fill="#FCC915"/>
+  <path d="M337 428l6 12 13 2-9 9 2 13-12-6-12 6 2-13-9-9 13-2z" fill="white"/>
+
+  <!-- Alt bloklar -->
+  <path d="M187 678H314C354.317 678 387 710.683 387 751V765H187V678Z" fill="#E4E7F3"/>
+  <path d="M387 678H657V765H387V678Z" fill="#695DE9"/>
+  <path d="M743 765L657 765V678C704.496 678 743 716.504 743 764V765Z" fill="#3AD08F"/>
+
+  <!-- İkonlar -->
+  <circle cx="49" cy="347" r="11" fill="white"/>
+  <circle cx="94" cy="347" r="11" fill="white"/>
+  <circle cx="139" cy="347" r="11" fill="white"/>
+</svg>

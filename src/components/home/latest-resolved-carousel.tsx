@@ -1,12 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import {
-  CheckCircle2,
-  ChevronRight,
-  Clock,
-  Eye,
-  MessageCircle,
-  ThumbsUp,
-} from "lucide-react";
+import { Eye } from "lucide-react";
 import { complaintLinkId } from "@/lib/complaint-link";
 import { type Complaint } from "@/lib/mock-data";
 import { BrandAvatar } from "@/components/cards";
@@ -16,118 +9,76 @@ type Props = {
   items: Complaint[];
 };
 
-function ResolvedSlide({ c }: { c: Complaint }) {
+function ComplaintSlide({ c }: { c: Complaint }) {
   const logoPath = c.companySlug ? `/brand-logos/${c.companySlug}.png` : null;
 
   return (
     <Link
       to="/sikayet/$id"
       params={{ id: complaintLinkId(c) }}
-      className="flex h-full flex-col overflow-hidden rounded-[22px] bg-white shadow-[0_8px_32px_rgba(39,38,53,0.08)] ring-1 ring-gray-100 transition hover:shadow-[0_12px_40px_rgba(39,38,53,0.12)]"
+      className="home-feed-card group flex h-full min-h-[8.75rem] flex-col justify-between"
     >
-      <div className="flex items-center justify-between bg-success/10 px-4 py-2.5">
-        <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-success">
-          <CheckCircle2 className="size-3.5" />
-          Решена
+      <div className="flex items-start gap-3">
+        <span className="grid size-9 shrink-0 place-items-center rounded-full bg-brand-soft text-[11px] font-bold text-brand lg:size-10">
+          {c.userInitials}
         </span>
-        <span className="inline-flex items-center gap-1 text-[11px] text-[#85878e]">
-          <Clock className="size-3" />
-          {c.createdAgo}
-        </span>
-      </div>
-
-      <div className="flex flex-1 flex-col p-4">
-        <div className="mb-3 flex items-center gap-3">
-          <span className="grid size-10 shrink-0 place-items-center rounded-full bg-brand-soft text-[12px] font-bold text-brand">
-            {c.userInitials}
-          </span>
-          <div className="min-w-0">
-            <div className="truncate text-[14px] font-bold text-[#272635]">
-              {c.userName}
-            </div>
-            <div className="text-[11px] text-[#85878e]">
-              Сподели опит · получи решение
-            </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[13px] leading-tight lg:text-[14px]">
+            <span className="truncate font-bold text-[#272635]">{c.userName}</span>
+            {c.companySlug ? (
+              <span className="truncate font-semibold text-brand">{c.companyName}</span>
+            ) : null}
           </div>
-        </div>
-
-        <p className="line-clamp-3 flex-1 text-[17px] font-bold leading-snug text-[#272635]">
-          {c.title}
-        </p>
-
-        {c.companySlug ? (
-          <div className="mt-4 flex items-center gap-2.5 rounded-xl border border-gray-100 bg-gray-50 px-3 py-2.5">
-            <BrandAvatar
-              name={c.companyName}
-              slug={c.companySlug}
-              logoUrl={logoPath}
-              size={36}
-            />
-            <div className="min-w-0 flex-1">
-              <div className="truncate text-[13px] font-semibold text-brand">
-                {c.companyName}
-              </div>
-              <div className="text-[10px] text-[#85878e]">Виж марката</div>
-            </div>
-            <ChevronRight className="size-4 shrink-0 text-[#85878e]" />
-          </div>
-        ) : null}
-
-        <div className="mt-3 flex items-center gap-4 text-[11px] text-[#85878e]">
-          <span className="inline-flex items-center gap-1 tabular-nums">
-            <Eye className="size-3" />
-            {(c.views ?? 0).toLocaleString("bg-BG")}
+          <span className="mt-0.5 inline-flex items-center gap-1 text-[10px] text-[#85878e] lg:text-[11px]">
+            <Eye className="size-3 shrink-0" aria-hidden />
+            {(c.views ?? 0).toLocaleString("bg-BG")} · {c.createdAgo}
           </span>
-          <span className="inline-flex items-center gap-1 tabular-nums">
-            <ThumbsUp className="size-3 text-brand" />
-            {c.votes ?? 0}
-          </span>
-          {(c.comments ?? 0) > 0 ? (
-            <span className="inline-flex items-center gap-1 tabular-nums">
-              <MessageCircle className="size-3" />
-              {c.comments}
-            </span>
-          ) : null}
         </div>
       </div>
+
+      <p className="mt-3 line-clamp-2 font-semibold text-[15px] leading-snug text-[#272635] lg:text-[17px]">
+        {c.title}
+      </p>
+
+      {c.companySlug ? (
+        <div className="mt-3 flex items-center gap-2 opacity-80 transition group-hover:opacity-100">
+          <BrandAvatar
+            name={c.companyName}
+            slug={c.companySlug}
+            logoUrl={logoPath}
+            size={28}
+          />
+          <span className="truncate text-[12px] font-medium text-[#626692]">
+            {c.companyName}
+          </span>
+        </div>
+      ) : null}
     </Link>
   );
 }
 
-/** Последно решени жалби — yatay swiper (mobil + dar ekran). */
 export function LatestResolvedCarousel({ items }: Props) {
   if (items.length === 0) return null;
 
+  const slides = items.slice(0, 6);
+
   return (
     <section className="home-container max-w-6xl px-4 pb-10 lg:pb-16">
-      <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h2 className="font-semibold text-2xl tracking-tight text-[#85878e] lg:text-3xl">
-            Последно решени жалби
-          </h2>
-          <p className="mt-1 text-[13px] text-[#85878e]">
-            Реални истории с успешен край
-          </p>
-        </div>
-      </div>
-
-      {/* Mobil / tablet: swiper */}
       <div className="lg:hidden">
         <MobileCarousel
-          ariaLabel="Последно решени жалби"
+          ariaLabel="Последни жалби"
           slideClassName="w-[min(calc(100vw-3rem),340px)] snap-start shrink-0"
         >
-          {items.map((c) => (
-            <ResolvedSlide key={c.id} c={c} />
+          {slides.map((c) => (
+            <ComplaintSlide key={c.id} c={c} />
           ))}
         </MobileCarousel>
       </div>
 
-      {/* Geniş ekran: 3 sütun grid */}
       <ul className="hidden lg:grid lg:grid-cols-3 lg:gap-4">
-        {items.slice(0, 6).map((c) => (
+        {slides.map((c) => (
           <li key={c.id}>
-            <ResolvedSlide c={c} />
+            <ComplaintSlide c={c} />
           </li>
         ))}
       </ul>

@@ -48,19 +48,19 @@ export function TrendBrandMetrics({ brand, compact = false }: { brand: TrendBran
       {brand.recentComplaints > 0 ? (
         <span className="inline-flex items-center gap-1">
           <MessageSquare className="size-3.5 text-brand" />
-          {formatCompactCount(brand.recentComplaints)} şikayet
+          {formatCompactCount(brand.recentComplaints)} жалби
         </span>
       ) : null}
       {brand.recentViews > 0 ? (
         <span className="inline-flex items-center gap-1">
           <Eye className="size-3.5" />
-          {formatCompactCount(brand.recentViews)} okunma
+          {formatCompactCount(brand.recentViews)} прегледа
         </span>
       ) : null}
       {brand.recentSupports > 0 ? (
         <span className="inline-flex items-center gap-1">
           <Users className="size-3.5" />
-          {formatCompactCount(brand.recentSupports)} destek
+          {formatCompactCount(brand.recentSupports)} подкрепи
         </span>
       ) : null}
       {!brand.recentComplaints && !brand.recentViews && !brand.recentSupports ? (
