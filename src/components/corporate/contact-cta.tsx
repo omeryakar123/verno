@@ -17,12 +17,12 @@ export function CorporateContactCta({ variant = "mail", className = "" }: Corpor
         className={`inline-flex max-w-full cursor-pointer items-center gap-4 rounded-2xl bg-white px-6 py-4 transition hover:shadow-md ${className}`}
         aria-label={`${label}: ${SITE_CONTACT_EMAIL}`}
       >
-        <div className="flex size-16 shrink-0 items-center justify-center rounded-full bg-[#3ad08f]">
+        <div className="flex size-16 shrink-0 items-center justify-center rounded-full bg-brand">
           <Phone className="size-6 text-white" aria-hidden />
         </div>
         <div className="flex min-w-0 flex-col gap-2">
-          <p className="text-base font-semibold leading-snug text-[#272635] lg:text-lg lg:leading-none">{label}</p>
-          <span className="text-[28px] font-semibold leading-none text-[#3ad08f] lg:text-[32px]">{SITE_CONTACT_EMAIL}</span>
+          <p className="text-base font-semibold leading-snug text-ink lg:text-lg lg:leading-none">{label}</p>
+          <span className="text-[28px] font-semibold leading-none text-brand lg:text-[32px]">{SITE_CONTACT_EMAIL}</span>
         </div>
       </Link>
     );
@@ -34,12 +34,12 @@ export function CorporateContactCta({ variant = "mail", className = "" }: Corpor
       className={`inline-flex max-w-full cursor-pointer items-center gap-4 rounded-2xl bg-white px-6 py-4 transition hover:shadow-md ${className}`}
       aria-label={`${label}: ${SITE_CONTACT_EMAIL}`}
     >
-      <div className="flex size-16 shrink-0 items-center justify-center rounded-full bg-[#3ad08f]">
+      <div className="flex size-16 shrink-0 items-center justify-center rounded-full bg-brand">
         <Mail className="size-6 text-white" aria-hidden />
       </div>
       <div className="flex min-w-0 flex-col gap-2">
-        <p className="text-base font-semibold leading-snug text-[#272635] lg:text-lg lg:leading-none">{label}</p>
-        <span className="break-all text-xl font-semibold leading-none text-[#3ad08f] sm:text-[28px] lg:text-[32px]">
+        <p className="text-base font-semibold leading-snug text-ink lg:text-lg lg:leading-none">{label}</p>
+        <span className="break-all text-xl font-semibold leading-none text-brand sm:text-[28px] lg:text-[32px]">
           {SITE_CONTACT_EMAIL}
         </span>
       </div>

@@ -24,7 +24,7 @@ export function CorporateNav({
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-[#695de9] text-white shadow-sm">
+      <header className="sticky top-0 z-50 bg-primary text-white shadow-sm">
         <nav className="mx-auto flex h-[67px] max-w-[1170px] items-center justify-between px-4 sm:px-6 lg:h-[72px]">
           <Link to="/" title="Начало" className="shrink-0">
             <SiteLogoMark size={26} tone="on-dark" />
@@ -87,7 +87,7 @@ export function CorporateNav({
             className="fixed inset-0 z-40 bg-black/50 lg:hidden"
             onClick={closeMenu}
           />
-          <div className="fixed inset-y-0 right-0 z-50 flex w-[min(100vw-3rem,320px)] flex-col bg-[#695de9] text-white shadow-xl lg:hidden">
+          <div className="fixed inset-y-0 right-0 z-50 flex w-[min(100vw-3rem,320px)] flex-col bg-primary text-white shadow-xl lg:hidden">
             <div className="flex h-16 items-center justify-between border-b border-white/20 px-4">
               <span className="text-lg font-semibold">Меню</span>
               <button

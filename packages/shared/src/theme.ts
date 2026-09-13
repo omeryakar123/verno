@@ -15,7 +15,7 @@ export const colors = {
   success: palette.success.DEFAULT,
   danger: palette.danger.DEFAULT,
   media: palette.media.DEFAULT,
-  svDark: palette.sv.dark,
+  inkDeep: palette.inkDeep,
 } as const;
 
 export { palette };

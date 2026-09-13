@@ -17,34 +17,34 @@ export function ComplaintFeedCard({ complaint }: { complaint: Complaint }) {
   return (
     <article className="listing-card">
       <div className="flex items-start gap-3">
-        <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#ecfdf5] text-[12px] font-bold text-[#3ad08f] lg:size-11">
+        <span className="grid size-10 shrink-0 place-items-center rounded-full bg-brand-soft text-[12px] font-bold text-brand lg:size-11">
           {complaint.userInitials}
         </span>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-            <span className="truncate font-bold text-[#272635] lg:text-lg">
+            <span className="truncate font-bold text-ink lg:text-lg">
               {complaint.userName}
             </span>
             <Link
               to="/firma/$slug"
               params={{ slug: complaint.companySlug }}
-              className="truncate font-semibold text-[#3ad08f] hover:underline"
+              className="truncate font-semibold text-brand hover:underline"
             >
               {complaint.companyName}
             </Link>
             <span
               className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
                 complaint.status === "cozuldu"
-                  ? "bg-emerald-50 text-emerald-600"
+                  ? "bg-brand-soft text-brand"
                   : complaint.status === "yanitlandi"
-                    ? "bg-indigo-50 text-[#695de9]"
-                    : "bg-slate-100 text-slate-500"
+                    ? "bg-primary/10 text-primary"
+                    : "bg-surface text-navy-mid"
               }`}
             >
               {statusLabel[complaint.status]}
             </span>
           </div>
-          <div className="mt-0.5 flex flex-wrap items-center gap-x-3 text-[12px] text-[#85878e]">
+          <div className="mt-0.5 flex flex-wrap items-center gap-x-3 text-[12px] text-navy-mid">
             <span className="inline-flex items-center gap-1">
               <Eye className="size-3.5" aria-hidden />
               {views.toLocaleString("bg-BG")}
@@ -57,13 +57,13 @@ export function ComplaintFeedCard({ complaint }: { complaint: Complaint }) {
       <Link
         to="/sikayet/$id"
         params={{ id: complaintLinkId(complaint) }}
-        className="mt-3 block font-semibold text-[17px] leading-snug text-[#272635] transition-colors hover:text-[#695de9] lg:text-xl"
+        className="mt-3 block font-semibold text-[17px] leading-snug text-ink transition-colors hover:text-primary lg:text-xl"
       >
         {complaint.title}
       </Link>
 
       {complaint.body ? (
-        <p className="mt-2 line-clamp-2 text-sm leading-6 text-[#7c7b85]">
+        <p className="mt-2 line-clamp-2 text-sm leading-6 text-navy">
           {complaint.body}
         </p>
       ) : null}
@@ -75,7 +75,7 @@ export function ComplaintFeedCard({ complaint }: { complaint: Complaint }) {
           initialSupported={complaint.supported}
           size="sm"
         />
-        <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#85878e]">
+        <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-navy-mid">
           <MessageCircle className="size-4" aria-hidden />
           {commentLabel(complaint.comments ?? 0)}
         </span>

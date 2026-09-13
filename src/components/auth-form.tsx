@@ -246,7 +246,7 @@ export function AuthForm({
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 required
-                className="h-[52px] w-full rounded-2xl border border-[#d8dbe8] bg-white px-4 text-[15px] text-[#272635] outline-none transition placeholder:text-[#a0a4b8] focus:border-[#695de9] focus:ring-2 focus:ring-[#695de9]/20"
+                className="h-[52px] w-full rounded-2xl border border-[#d8dbe8] bg-white px-4 text-[15px] text-ink outline-none transition placeholder:text-[#a0a4b8] focus:border-primary focus:ring-2 focus:ring-primary/20"
               />
               <div>
                 <PhoneInput value={phone} onChange={setPhone} required />
@@ -259,7 +259,7 @@ export function AuthForm({
                   onChange={(e) => setPassword2(e.target.value)}
                   required
                   minLength={6}
-                  className="h-[52px] w-full rounded-2xl border border-[#d8dbe8] bg-white px-4 pr-12 text-[15px] text-[#272635] outline-none transition placeholder:text-[#a0a4b8] focus:border-[#695de9] focus:ring-2 focus:ring-[#695de9]/20"
+                  className="h-[52px] w-full rounded-2xl border border-[#d8dbe8] bg-white px-4 pr-12 text-[15px] text-ink outline-none transition placeholder:text-[#a0a4b8] focus:border-primary focus:ring-2 focus:ring-primary/20"
                 />
                 <button
                   type="button"

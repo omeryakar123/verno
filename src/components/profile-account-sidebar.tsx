@@ -78,7 +78,7 @@ export function ProfileAccountSidebar({ active, onSignOut, className }: Props) {
 
   return (
     <aside className={cn("shrink-0 lg:w-72", className)}>
-      <div className="overflow-hidden rounded-b-4xl bg-[#272635] text-white lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:rounded-3xl">
+      <div className="overflow-hidden rounded-b-4xl bg-ink-deep text-white lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:rounded-3xl">
         <div className="hidden px-6 pt-8 pb-4 lg:block">
           <Link to="/" title="Начало">
             <SiteLogoMark size={22} tone="on-dark" />
@@ -155,7 +155,7 @@ export function ProfileAccountSidebar({ active, onSignOut, className }: Props) {
         <div className="space-y-2 border-t border-white/10 p-3">
           <Link
             to="/sikayet-yaz"
-            className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#695de9] text-[13px] font-semibold text-white shadow-sm transition hover:brightness-110"
+            className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary text-[13px] font-semibold text-white shadow-sm transition hover:brightness-110"
           >
             <PenLine className="size-4" />
             Напиши жалба

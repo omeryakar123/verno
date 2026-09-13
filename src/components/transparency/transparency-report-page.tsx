@@ -52,10 +52,10 @@ export function TransparencyReportPage({ stats }: Props) {
   const resolutionPct = stats ? Math.round(stats.resolutionRate) : null;
 
   return (
-    <div data-page="transparency" className="bg-white text-[#272635]">
+    <div data-page="transparency" className="bg-white text-ink">
       {/* Hero */}
-      <section className="relative overflow-hidden bg-[#272635] text-white">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#695de9]/30 via-transparent to-[#3ad08f]/20" aria-hidden />
+      <section className="relative overflow-hidden bg-ink-deep text-white">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-transparent to-brand/20" aria-hidden />
         <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-24">
           <p className="mb-1.5 text-[32px] font-semibold leading-11 lg:text-[68px] lg:leading-tight">Добре дошли</p>
           <h1 className="text-[30px] font-bold leading-8 lg:text-[98px] lg:leading-[1.1]">
@@ -71,28 +71,28 @@ export function TransparencyReportPage({ stats }: Props) {
 
       {/* Intro */}
       <section className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:py-16">
-        <p className="text-lg leading-relaxed text-[#626692]">
+        <p className="text-lg leading-relaxed text-navy">
           Доверието е в основата на {SITE_NAME}. За да го направим{" "}
-          <strong className="text-[#272635]">измеримо, проследимо и отчетимо</strong>, от 2025 г. публикуваме
+          <strong className="text-ink">измеримо, проследимо и отчетимо</strong>, от 2025 г. публикуваме
           ежегоден доклад за прозрачност. Целта ни остава да бъдем символ на доверие между потребители и марки в
           България.
         </p>
         <div className="mt-10 grid gap-8 sm:grid-cols-3">
           <div>
             <h2 className="text-2xl font-semibold leading-8">Мисия</h2>
-            <p className="mt-3 text-[15px] leading-relaxed text-[#626692]">
+            <p className="mt-3 text-[15px] leading-relaxed text-navy">
               Свързваме потребители и марки чрез прозрачен процес за решаване на проблеми.
             </p>
           </div>
           <div>
             <h2 className="text-2xl font-semibold leading-8">Подход</h2>
-            <p className="mt-3 text-[15px] leading-relaxed text-[#626692]">
+            <p className="mt-3 text-[15px] leading-relaxed text-navy">
               Комбинираме технология, човешка модерация и общностна обратна връзка.
             </p>
           </div>
           <div>
             <h2 className="text-2xl font-semibold leading-8">Какво предлага докладът?</h2>
-            <p className="mt-3 text-[15px] leading-relaxed text-[#626692]">
+            <p className="mt-3 text-[15px] leading-relaxed text-navy">
               Реални числа, процеси, принципи на доверие и мерки срещу злоупотреби.
             </p>
           </div>
@@ -103,8 +103,8 @@ export function TransparencyReportPage({ stats }: Props) {
       <section className="bg-[#f0f3fe] py-12 lg:py-16">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="mb-8 text-center">
-            <h2 className="text-2xl font-semibold text-[#272635] lg:text-3xl">Платформата в цифри</h2>
-            <p className="mt-2 text-[#626692]">Актуални данни от {SITE_NAME}</p>
+            <h2 className="text-2xl font-semibold text-ink lg:text-3xl">Платформата в цифри</h2>
+            <p className="mt-2 text-navy">Актуални данни от {SITE_NAME}</p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard label="Регистрирани потребители" value={nf(stats?.totalUsers)} />
@@ -135,20 +135,20 @@ export function TransparencyReportPage({ stats }: Props) {
           ].map((item) => (
             <div
               key={item.label}
-              className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#695de9]/10 to-[#3ad08f]/10 p-6 ring-1 ring-[#695de9]/20"
+              className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/10 to-brand/10 p-6 ring-1 ring-primary/20"
             >
               <div className="relative z-1 mb-4.5 text-center text-xl font-medium">{item.label}</div>
-              <div className="relative z-1 text-center text-3xl font-black tabular-nums text-[#272635]">{item.value}</div>
+              <div className="relative z-1 text-center text-3xl font-black tabular-nums text-ink">{item.value}</div>
             </div>
           ))}
         </div>
       </section>
 
       {/* Trust + scale */}
-      <section className="bg-[#272635] py-16 text-white lg:py-24">
+      <section className="bg-ink-deep py-16 text-white lg:py-24">
         <div className="mx-auto max-w-4xl px-4 sm:px-6">
           <h2 className="text-2xl font-semibold leading-8 lg:text-3xl">Укрепваме доверието с мащаб</h2>
-          <p className="mt-4 text-lg font-semibold leading-7 text-[#3ad08f]">
+          <p className="mt-4 text-lg font-semibold leading-7 text-brand">
             С нарастване на обема данни намаляват фалшивите публикации, а прозрачността расте.
           </p>
           <p className="mt-6 leading-relaxed text-white/75">
@@ -167,7 +167,7 @@ export function TransparencyReportPage({ stats }: Props) {
           {TRUST_PRINCIPLES.map((p) => (
             <article key={p.title}>
               <h3 className="mb-4 mt-8 text-2xl font-semibold">{p.title}</h3>
-              <p className="text-[15px] leading-relaxed text-[#626692]">{p.text}</p>
+              <p className="text-[15px] leading-relaxed text-navy">{p.text}</p>
             </article>
           ))}
         </div>
@@ -199,7 +199,7 @@ export function TransparencyReportPage({ stats }: Props) {
                   <Icon className="size-5" />
                 </div>
                 <h3 className="font-semibold text-lg">{title}</h3>
-                <p className="mt-2 text-sm text-[#626692]">{desc}</p>
+                <p className="mt-2 text-sm text-navy">{desc}</p>
               </div>
             ))}
           </div>
@@ -244,7 +244,7 @@ export function TransparencyReportPage({ stats }: Props) {
       </section>
 
       {/* Platform protection */}
-      <section className="bg-[#272635] py-16 text-white">
+      <section className="bg-ink-deep py-16 text-white">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <h2 className="mb-4 text-[32px] font-medium leading-10 lg:text-5xl">Защита на платформата</h2>
           <p className="max-w-3xl text-white/75">
@@ -258,7 +258,7 @@ export function TransparencyReportPage({ stats }: Props) {
               { icon: Eye, title: "Екип", desc: "Модератори и специалисти по съдържание и измами." },
             ].map(({ icon: Icon, title, desc }) => (
               <div key={title} className="rounded-2xl bg-white/5 p-6 ring-1 ring-white/10">
-                <Icon className="mb-3 size-8 text-[#3ad08f]" />
+                <Icon className="mb-3 size-8 text-brand" />
                 <h3 className="text-xl font-semibold">{title}</h3>
                 <p className="mt-2 text-sm text-white/70">{desc}</p>
               </div>
@@ -270,7 +270,7 @@ export function TransparencyReportPage({ stats }: Props) {
       {/* Brand appeals */}
       <section className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
         <h2 className="text-[32px] font-medium leading-10 lg:text-4xl">Възражения от марки</h2>
-        <p className="mt-6 leading-relaxed text-[#626692]">
+        <p className="mt-6 leading-relaxed text-navy">
           Марките могат да оспорят публикация, когато съдържанието е неточно или нарушава политиките. Всяко
           възражение се преглежда от екип; решението се комуникира прозрачно и може да бъде обжалвано.
         </p>
@@ -289,7 +289,7 @@ export function TransparencyReportPage({ stats }: Props) {
                   {i === 4 ? "48K+" : `${Math.round((h / 100) * 48)}K`}
                 </div>
                 <div
-                  className="w-full rounded-t-md bg-gradient-to-t from-brand to-[#695de9]"
+                  className="w-full rounded-t-md bg-gradient-to-t from-brand to-primary"
                   style={{ height: `${h}%` }}
                 />
                 <div className="text-xs text-navy-mid">{2021 + i}</div>
@@ -300,11 +300,11 @@ export function TransparencyReportPage({ stats }: Props) {
       </section>
 
       {/* CTA */}
-      <section className="bg-[#695de9] py-12 text-center text-white">
+      <section className="bg-primary py-12 text-center text-white">
         <p className="text-lg font-medium">Искате повече информация?</p>
         <Link
           to="/iletisim"
-          className="mt-4 inline-flex rounded-full bg-white px-8 py-3 text-sm font-semibold text-[#272635] transition hover:bg-white/90"
+          className="mt-4 inline-flex rounded-full bg-white px-8 py-3 text-sm font-semibold text-ink transition hover:bg-white/90"
         >
           Свържете се с нас
         </Link>

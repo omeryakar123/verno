@@ -248,7 +248,7 @@ function Home() {
         updatedAt={talkedUpdatedAt}
       />
 
-      <section className="bg-[#272635]">
+      <section className="bg-ink-deep">
         <div className="container pt-17.5 pb-24 lg:max-w-6xl lg:px-35 lg:pt-27 lg:pb-26">
           <h2 className="text-center font-medium text-3xl text-white leading-snug lg:text-6xl">
             Успех в решаването
@@ -362,9 +362,9 @@ function Home() {
             return (
               <li
                 key={s.k}
-                className="flex items-center gap-4 rounded-3xl bg-white py-7.5 pr-4 pl-6 shadow-[0_8px_28px_rgba(47,44,105,0.06)] lg:flex-col lg:items-start lg:justify-between lg:px-7.5 lg:pt-9 lg:pb-9.5"
+                className="flex items-center gap-4 rounded-3xl bg-white py-7.5 pr-4 pl-6 shadow-[0_8px_28px_rgb(16_20_31/0.06)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_16px_36px_rgb(16_20_31/0.12)] lg:flex-col lg:items-start lg:justify-between lg:px-7.5 lg:pt-9 lg:pb-9.5"
               >
-                <Icon className="h-16 w-11 text-[#3ad08f] lg:mb-9 lg:w-25" />
+                <Icon className="h-16 w-11 text-brand lg:mb-9 lg:w-25" />
                 <div className="flex flex-col gap-2 font-medium text-xs text-zinc-500 leading-tight lg:text-base">
                   <span>{s.k}</span>
                   <span className="font-bold text-2xl text-neutral-700 leading-tight lg:text-3xl">
@@ -390,13 +390,13 @@ function Home() {
               className="w-8 lg:ml-1 lg:w-15"
               aria-hidden
             >
-              <path fill="#03E5B6" d="M3.8.4V21h3V.4z" />
+              <path fill="#1EC9B8" d="M3.8.4V21h3V.4z" />
               <path
-                fill="#03E5B6"
+                fill="#1EC9B8"
                 d="M3.5.4 0 5.7h3.5L6.9.4zM23 20.6a10.3 10.3 0 1 1 7.4-8.8l-3.1-.4a7.2 7.2 0 1 0-5.2 6.2z"
               />
               <path
-                fill="#03E5B6"
+                fill="#1EC9B8"
                 d="M28.1 1A10.3 10.3 0 1 1 22 7.3l3.4 1.2a6.7 6.7 0 1 0 4-4.1z"
               />
             </svg>
@@ -478,13 +478,13 @@ function Home() {
         </section>
         <Link
           to="/trend-100"
-          className="mx-auto mt-20 block w-fit rounded-full border border-emerald-400 px-12 py-5 text-center font-semibold text-emerald-400 leading-none tracking-wide hover:bg-emerald-400 hover:text-white lg:min-w-77 lg:py-6"
+          className="mx-auto mt-20 block w-fit rounded-full border-2 border-brand px-12 py-5 text-center font-semibold text-brand leading-none tracking-wide transition hover:bg-brand hover:text-white hover:shadow-[0_10px_24px_rgb(30_201_184/0.28)] lg:min-w-77 lg:py-6"
         >
           Виж повече
         </Link>
       </section>
 
-      <section className="bg-[#695de9] pt-15 pb-20 lg:py-28">
+      <section className="bg-primary pt-15 pb-20 lg:py-28">
         <div className="container">
           <div className="mx-auto text-center text-white">
             <h2 className="font-semibold text-4xl leading-tight tracking-wide lg:font-medium">
@@ -497,7 +497,7 @@ function Home() {
             </p>
             <Link
               to="/register/marka-basvuru"
-              className="mx-auto mt-16 block w-max rounded-[50px] border border-zinc-400 bg-white px-5 py-3.5 font-semibold text-slate-800 leading-none hover:border-slate-800 hover:bg-slate-800 hover:text-white lg:mt-13 lg:px-7.5 lg:py-5 lg:text-xl"
+              className="mx-auto mt-16 block w-max rounded-[50px] border border-white/30 bg-white px-5 py-3.5 font-semibold text-primary leading-none shadow-[0_10px_28px_rgb(16_20_31/0.12)] transition hover:bg-brand hover:text-white lg:mt-13 lg:px-7.5 lg:py-5 lg:text-xl"
             >
               Нека работим заедно
             </Link>

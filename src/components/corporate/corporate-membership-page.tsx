@@ -122,11 +122,11 @@ export function CorporateMembershipPage({ stats, proBrands }: CorporateMembershi
   ];
 
   return (
-    <div data-page="corporate" className="bg-white text-[#272635]">
+    <div data-page="corporate" className="bg-white text-ink">
       {/* Hero */}
       <div className="relative flex min-h-[320px] flex-col lg:mx-auto lg:max-w-[1170px] lg:min-h-[420px] lg:flex-row-reverse">
-        <div className="w-full overflow-hidden rounded-br-[110px] rounded-bl-[110px] bg-[#695de9] max-[414px]:rounded-br-[110px] max-[414px]:rounded-bl-[110px] min-[415px]:rounded-bl-[180px] lg:absolute lg:top-0 lg:right-0 lg:w-2/5 lg:rounded-bl-[180px] lg:rounded-br-none lg:pt-12">
-          <div className="flex w-[217px] items-center justify-start rounded-tr-[110px] rounded-bl-[110px] bg-[#3ad08f] max-[414px]:w-[217px] min-[415px]:w-[350px] min-[415px]:rounded-tr-[180px] min-[415px]:rounded-bl-[180px] lg:w-full lg:justify-start lg:rounded-tl-[180px] lg:rounded-tr-none">
+        <div className="w-full overflow-hidden rounded-br-[110px] rounded-bl-[110px] bg-primary max-[414px]:rounded-br-[110px] max-[414px]:rounded-bl-[110px] min-[415px]:rounded-bl-[180px] lg:absolute lg:top-0 lg:right-0 lg:w-2/5 lg:rounded-bl-[180px] lg:rounded-br-none lg:pt-12">
+          <div className="flex w-[217px] items-center justify-start rounded-tr-[110px] rounded-bl-[110px] bg-brand max-[414px]:w-[217px] min-[415px]:w-[350px] min-[415px]:rounded-tr-[180px] min-[415px]:rounded-bl-[180px] lg:w-full lg:justify-start lg:rounded-tl-[180px] lg:rounded-tr-none">
             <img
               alt=""
               width={369}
@@ -139,14 +139,14 @@ export function CorporateMembershipPage({ stats, proBrands }: CorporateMembershi
         </div>
 
         <div className="mx-auto w-full max-w-[1170px] px-4 py-12.5 sm:px-6 lg:pr-[40%] lg:pt-[calc(12%-96px)] lg:pb-12.5 xl:pt-15">
-          <div className="mt-4.5 mb-9 text-[28px] leading-9 text-[#272635] xl:text-[37px]">
+          <div className="mt-4.5 mb-9 text-[28px] leading-9 text-ink xl:text-[37px]">
             <h1 className="mb-5 inline font-semibold lg:block lg:leading-9">
               Превърнете жалбите в удовлетворение,
             </h1>{" "}
             изградете лоялност <br /> и спечелете нови клиенти
           </div>
           <p className="mb-8 text-xl font-medium leading-6 text-[#7c7b85]">
-            Открийте предимствата на <span className="font-semibold text-[#272635]">Pro членството</span> в {SITE_NAME}.
+            Открийте предимствата на <span className="font-semibold text-ink">Pro членството</span> в {SITE_NAME}.
           </p>
           <CorporateContactCta variant="phone" />
         </div>
@@ -158,7 +158,7 @@ export function CorporateMembershipPage({ stats, proBrands }: CorporateMembershi
           <div className="grid grid-cols-1 gap-16 sm:grid-cols-2 lg:grid-cols-4 lg:gap-12">
             {metrics.map((m) => (
               <div key={m.label} className="flex h-40 flex-col items-center justify-center leading-none">
-                <div className="mb-auto size-12 text-[#695de9]" aria-hidden>
+                <div className="mb-auto size-12 text-primary" aria-hidden>
                   <svg viewBox="0 0 48 46" fill="none" className="size-full">
                     <path
                       fill="currentColor"
@@ -168,7 +168,7 @@ export function CorporateMembershipPage({ stats, proBrands }: CorporateMembershi
                 </div>
                 <div className="flex flex-col">
                   <strong className="mb-3 text-center text-[30px] font-bold lg:text-[40px] xl:text-[46px]">{m.value}</strong>
-                  <span className="text-center text-[19px] font-medium tracking-[0.5px] text-[#85878e] lg:text-[22px]">
+                  <span className="text-center text-[19px] font-medium tracking-[0.5px] text-navy-mid lg:text-[22px]">
                     {m.label}
                   </span>
                 </div>
@@ -179,7 +179,7 @@ export function CorporateMembershipPage({ stats, proBrands }: CorporateMembershi
       </section>
 
       {/* Verno Plus intro */}
-      <section className="bg-[#695de9] py-15 text-white lg:py-22.5">
+      <section className="bg-primary py-15 text-white lg:py-22.5">
         <div className="mx-auto flex max-w-[1170px] flex-col items-center justify-center px-4 sm:px-6 lg:flex-row">
           <div className="mb-12.5 text-[28px] leading-11 lg:mb-0 lg:w-2/5 lg:text-[36px] lg:leading-12">
             Какво ви очаква в платформата за управление на жалби{" "}
@@ -196,7 +196,7 @@ export function CorporateMembershipPage({ stats, proBrands }: CorporateMembershi
             />
             <button
               type="button"
-              className="absolute top-1/2 left-1/2 flex size-15 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-[#3ad08f] transition-transform hover:scale-110 lg:size-20"
+              className="absolute top-1/2 left-1/2 flex size-15 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-brand transition-transform hover:scale-110 lg:size-20"
               aria-label="Пусни видео"
             >
               <svg viewBox="0 0 376 512" className="size-6 text-white lg:size-7.5" aria-hidden>
@@ -272,7 +272,7 @@ export function CorporateMembershipPage({ stats, proBrands }: CorporateMembershi
       </div>
 
       {/* Pro brands */}
-      <section className="bg-[#272635] py-13 lg:py-27.5">
+      <section className="bg-ink-deep py-13 lg:py-27.5">
         <div className="mx-auto flex max-w-[1170px] flex-col items-center justify-center px-4 sm:px-6 lg:items-start">
           <div className="flex flex-col lg:flex-col-reverse">
             <h3 className="mb-6 border-b border-[#b2c1f6] text-[35px] font-medium leading-9 text-[#b2c1f6] lg:mb-20">
@@ -310,7 +310,7 @@ export function CorporateMembershipPage({ stats, proBrands }: CorporateMembershi
       </section>
 
       {/* Final CTA */}
-      <section className="bg-[#695de9] py-15 lg:py-30">
+      <section className="bg-primary py-15 lg:py-30">
         <div className="mx-auto flex max-w-[65%] flex-col items-center justify-center px-4 text-center text-white sm:max-w-2xl lg:max-w-3xl">
           <h3 className="mb-15 text-[26px] font-semibold leading-8 lg:text-[38px] lg:leading-15">
             С Pro членство увеличете удовлетвореността и клиентската база
@@ -320,7 +320,7 @@ export function CorporateMembershipPage({ stats, proBrands }: CorporateMembershi
           </p>
           <a
             href={siteContactMailto("Pro корпоративно членство")}
-            className="rounded-[50px] border border-[#3ad08f] bg-[#3ad08f] px-5 py-3.5 text-base font-semibold leading-4 text-white transition hover:brightness-105 lg:h-15 lg:px-8 lg:text-[19px]"
+            className="rounded-[50px] border border-brand bg-brand px-5 py-3.5 text-base font-semibold leading-4 text-white transition hover:brightness-105 lg:h-15 lg:px-8 lg:text-[19px]"
           >
             Свържете се за Pro членство
           </a>

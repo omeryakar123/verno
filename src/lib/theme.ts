@@ -1,6 +1,6 @@
 export type Theme = "light" | "dark" | "system";
 
-export const THEME_KEY = "tepkimvar-theme";
+export const THEME_KEY = "verno-theme";
 
 /**
  * <head> içine INLINE konur ve React'ten ÖNCE çalışır.

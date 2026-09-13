@@ -60,7 +60,7 @@ export function GlobalSearchIconTrigger({ className }: { className?: string }) {
         onClick={openModal}
         className={
           className ??
-          "grid size-10 shrink-0 place-items-center rounded-lg text-[#626692] transition hover:bg-[#f3f4f8] hover:text-[#272635]"
+          "grid size-10 shrink-0 place-items-center rounded-lg text-navy transition hover:bg-[#f3f4f8] hover:text-ink"
         }
       >
         <Search className="size-5" />

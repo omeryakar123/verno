@@ -45,14 +45,14 @@ export function SiteNav() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-[#ebecef] bg-white">
+      <header className="sticky top-0 z-50 border-b border-rule bg-white/90 shadow-[0_1px_16px_rgb(16_20_31/0.05)] backdrop-blur-md">
         <div className="container relative flex h-[67px] items-center justify-between">
           {/* Mobile — logo + compact CTA + search + menu */}
           <div className="flex min-w-0 flex-1 items-center gap-2.5 md:hidden">
             <SiteLogoNav className="h-[24px]" />
             <Link
               to="/sikayet-yaz"
-              className="inline-flex h-9 shrink-0 items-center justify-center rounded-full bg-[#695de9] px-3.5 text-[13px] font-semibold text-white transition hover:bg-[#5a4fd9]"
+              className="inline-flex h-9 shrink-0 items-center justify-center rounded-full bg-primary px-3.5 text-[13px] font-semibold text-white transition hover:bg-primary-hover"
             >
               + Жалба
             </Link>
@@ -63,7 +63,7 @@ export function SiteNav() {
               aria-label={menuOpen ? "Затвори менюто" : "Отвори менюто"}
               aria-expanded={menuOpen}
               onClick={() => setMenuOpen((o) => !o)}
-              className="grid size-10 shrink-0 place-items-center rounded-lg border border-[#e8eaef] text-[#272635]"
+              className="grid size-10 shrink-0 place-items-center rounded-lg border border-rule text-ink"
             >
               {menuOpen ? (
                 <X className="size-5" />
@@ -76,22 +76,22 @@ export function SiteNav() {
           {/* Desktop — logo + nav | spacer | login + CTA */}
           <div className="hidden min-w-0 flex-1 items-center md:flex md:flex-initial">
             <SiteLogoNav className="h-[28px] lg:h-[32px]" />
-            <nav className="ml-4 hidden items-center whitespace-nowrap font-semibold text-gray-400 md:flex lg:gap-5 xl:ml-8 xl:gap-8">
+            <nav className="ml-4 hidden items-center whitespace-nowrap font-semibold text-navy-mid md:flex lg:gap-5 xl:ml-8 xl:gap-8">
               {navLinks.map((l) => (
                 <Link
                   key={l.to}
                   to={l.to}
-                  className="inline-flex items-baseline gap-1 whitespace-nowrap hover:text-gray-800"
+                  className="inline-flex items-baseline gap-1 whitespace-nowrap transition-colors hover:text-ink"
                 >
                   <span>{l.label}</span>
                   {l.badge ? (
-                    <span className="font-normal text-xs text-gray-800">{l.badge}</span>
+                    <span className="font-normal text-xs text-primary">{l.badge}</span>
                   ) : null}
                 </Link>
               ))}
               <a
                 href={videoLink.href}
-                className="whitespace-nowrap transition-colors hover:text-[#272635]"
+                className="whitespace-nowrap transition-colors hover:text-ink"
               >
                 {videoLink.label}
               </a>
@@ -106,7 +106,7 @@ export function SiteNav() {
                 {panelHref !== "/" && (
                   <Link
                     to={panelHref}
-                    className="whitespace-nowrap text-[14px] font-medium text-[#626692] hover:text-[#272635]"
+                    className="whitespace-nowrap text-[14px] font-medium text-navy hover:text-ink"
                   >
                     Панел
                   </Link>
@@ -116,7 +116,7 @@ export function SiteNav() {
             ) : (
               <Link
                 to="/login"
-                className="whitespace-nowrap text-[14px] font-medium text-[#626692] transition-colors hover:text-[#272635]"
+                className="whitespace-nowrap text-[14px] font-medium text-navy transition-colors hover:text-ink"
               >
                 Вход / Регистрация
               </Link>
@@ -124,7 +124,7 @@ export function SiteNav() {
 
             <Link
               to="/sikayet-yaz"
-              className="inline-flex h-[42px] shrink-0 items-center justify-center rounded-full bg-[#695de9] px-6 text-[14px] font-semibold text-white transition hover:bg-[#5a4fd9]"
+              className="inline-flex h-[42px] shrink-0 items-center justify-center rounded-full bg-primary px-6 text-[14px] font-semibold text-white shadow-[0_8px_20px_rgb(53_80_242/0.28)] transition hover:bg-primary-hover hover:shadow-[0_10px_24px_rgb(53_80_242/0.36)]"
             >
               + Напиши жалба
             </Link>

@@ -1,29 +1,31 @@
 {
   "brand": {
-    "DEFAULT": "#3AD08F",
-    "hover": "#42E29D",
-    "soft": "#ECFDF5",
+    "DEFAULT": "#1EC9B8",
+    "hover": "#2ED9C8",
+    "soft": "#E7FBF8",
     "foreground": "#FFFFFF"
   },
   "primary": {
-    "DEFAULT": "#695DE9",
+    "DEFAULT": "#3550F2",
+    "hover": "#4B63F5",
     "foreground": "#FFFFFF"
   },
-  "paper": "#FCFCFD",
-  "surface": "#F4F5F9",
+  "paper": "#F7F8FC",
+  "surface": "#EEF1F8",
   "elevated": "#FFFFFF",
-  "ink": "#2A2A38",
+  "ink": "#0B0D12",
+  "inkDeep": "#10141F",
   "navy": {
-    "DEFAULT": "#565870",
-    "mid": "#78798E"
+    "DEFAULT": "#4A5168",
+    "mid": "#7A8196"
   },
   "rule": {
-    "DEFAULT": "#E8EAF0",
-    "strong": "#D5D8E2"
+    "DEFAULT": "#E4E7F0",
+    "strong": "#CDD3E0"
   },
   "success": {
-    "DEFAULT": "#2DAF7A",
-    "soft": "#E8FAF2"
+    "DEFAULT": "#1EC9B8",
+    "soft": "#E7FBF8"
   },
   "warning": {
     "DEFAULT": "#C4922A",
@@ -34,20 +36,11 @@
     "soft": "#FEF0EF"
   },
   "info": {
-    "DEFAULT": "#4A6FD4",
-    "soft": "#F0F4FC"
+    "DEFAULT": "#3550F2",
+    "soft": "#EEF1FE"
   },
   "media": {
-    "DEFAULT": "#222230",
+    "DEFAULT": "#10141F",
     "foreground": "#F5F6FA"
-  },
-  "sv": {
-    "dark": "#272635",
-    "dark-muted": "#3A384A",
-    "purple": "#695DE9",
-    "surface": "#E4E7F3",
-    "text-muted": "#85878E",
-    "text-body": "#383838",
-    "text-navy": "#626692"
   }
 }

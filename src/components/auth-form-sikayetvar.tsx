@@ -50,7 +50,7 @@ export function SikayetvarAuthShell({
       <div className="relative flex w-full max-w-[920px] overflow-hidden rounded-[28px] bg-white shadow-[0_24px_80px_rgba(39,38,53,0.18)]">
         <Link
           to="/"
-          className="absolute right-4 top-4 z-20 grid size-9 place-items-center rounded-full bg-[#eef0f5] text-[#85878e] transition hover:bg-[#e4e7f3]"
+          className="absolute right-4 top-4 z-20 grid size-9 place-items-center rounded-full bg-[#eef0f5] text-navy-mid transition hover:bg-[#e4e7f3]"
           aria-label="Затвори"
         >
           <X className="size-5" />
@@ -66,17 +66,17 @@ export function SikayetvarAuthShell({
           </div>
 
           <div className="mb-6 flex flex-wrap items-baseline justify-between gap-2">
-            <h1 className="text-[22px] font-bold tracking-tight text-[#272635]">
+            <h1 className="text-[22px] font-bold tracking-tight text-ink">
               {isLogin ? "Вход" : "Регистрация"}
             </h1>
-            <p className="text-[13px] text-[#85878e]">
+            <p className="text-[13px] text-navy-mid">
               {isLogin ? (
                 <>
                   Нямате акаунт?{" "}
                   <button
                     type="button"
                     onClick={() => setMode("register")}
-                    className="font-semibold text-[#272635] underline underline-offset-2"
+                    className="font-semibold text-ink underline underline-offset-2"
                   >
                     Регистрирайте се.
                   </button>
@@ -87,7 +87,7 @@ export function SikayetvarAuthShell({
                   <button
                     type="button"
                     onClick={() => setMode("login")}
-                    className="font-semibold text-[#272635] underline underline-offset-2"
+                    className="font-semibold text-ink underline underline-offset-2"
                   >
                     Влезте.
                   </button>
@@ -150,7 +150,7 @@ export function SikayetvarAuthShell({
               onChange={(e) => setEmail(e.target.value)}
               required
               autoComplete="email"
-              className="h-[52px] w-full rounded-2xl border border-[#d8dbe8] bg-white px-4 text-[15px] text-[#272635] outline-none transition placeholder:text-[#a0a4b8] focus:border-[#695de9] focus:ring-2 focus:ring-[#695de9]/20"
+              className="h-[52px] w-full rounded-2xl border border-[#d8dbe8] bg-white px-4 text-[15px] text-ink outline-none transition placeholder:text-[#a0a4b8] focus:border-primary focus:ring-2 focus:ring-primary/20"
             />
 
             <div className="relative">
@@ -162,12 +162,12 @@ export function SikayetvarAuthShell({
                 required
                 minLength={6}
                 autoComplete={isLogin ? "current-password" : "new-password"}
-                className="h-[52px] w-full rounded-2xl border border-[#d8dbe8] bg-white px-4 pr-12 text-[15px] text-[#272635] outline-none transition placeholder:text-[#a0a4b8] focus:border-[#695de9] focus:ring-2 focus:ring-[#695de9]/20"
+                className="h-[52px] w-full rounded-2xl border border-[#d8dbe8] bg-white px-4 pr-12 text-[15px] text-ink outline-none transition placeholder:text-[#a0a4b8] focus:border-primary focus:ring-2 focus:ring-primary/20"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[#a0a4b8] hover:text-[#626692]"
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[#a0a4b8] hover:text-navy"
                 aria-label={showPassword ? "Скрий паролата" : "Покажи паролата"}
               >
                 {showPassword ? (
@@ -185,13 +185,13 @@ export function SikayetvarAuthShell({
                     type="checkbox"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className="size-[18px] rounded border-[#d8dbe8] text-[#3ad08f] focus:ring-[#3ad08f]/30"
+                    className="size-[18px] rounded border-[#d8dbe8] text-brand focus:ring-brand/30"
                   />
-                  <span className="text-[14px] text-[#626692]">Запомни ме</span>
+                  <span className="text-[14px] text-navy">Запомни ме</span>
                 </label>
                 <Link
                   to="/forgot-password"
-                  className="text-[14px] text-[#85878e] underline underline-offset-2 hover:text-[#272635]"
+                  className="text-[14px] text-navy-mid underline underline-offset-2 hover:text-ink"
                 >
                   Забравена парола
                 </Link>
@@ -201,7 +201,7 @@ export function SikayetvarAuthShell({
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 flex h-[52px] w-full items-center justify-center gap-2 rounded-full bg-[#3ad08f] text-[16px] font-bold text-white shadow-sm transition hover:bg-[#42e29d] disabled:opacity-60"
+              className="mt-2 flex h-[52px] w-full items-center justify-center gap-2 rounded-full bg-brand text-[16px] font-bold text-white shadow-sm transition hover:bg-brand-hover disabled:opacity-60"
             >
               {loading && <Loader2 className="size-4 animate-spin" />}
               {isLogin ? "Вход" : "Регистрация"}
@@ -212,12 +212,12 @@ export function SikayetvarAuthShell({
             Продължавайки, приемате{" "}
             <Link
               to="/kullanim-kosullari"
-              className="underline hover:text-[#626692]"
+              className="underline hover:text-navy"
             >
               Условията за ползване
             </Link>{" "}
             и{" "}
-            <Link to="/gizlilik" className="underline hover:text-[#626692]">
+            <Link to="/gizlilik" className="underline hover:text-navy">
               Политиката за поверителност
             </Link>
             .
@@ -268,7 +268,7 @@ function SocialBtn({
     },
     apple: {
       label: "Вход с Apple",
-      cls: "bg-[#272635] text-white hover:brightness-110",
+      cls: "bg-ink-deep text-white hover:brightness-110",
       icon: (
         <svg
           className="size-[18px] shrink-0"
@@ -307,8 +307,8 @@ export function SikayetvarPattern({ className }: { className?: string }) {
       preserveAspectRatio="xMidYMid meet"
       aria-hidden
     >
-      <rect x="16" y="16" width="72" height="72" rx="8" fill="#3ad08f" />
-      <circle cx="200" cy="52" r="36" fill="#695de9" />
+      <rect x="16" y="16" width="72" height="72" rx="8" fill="#1EC9B8" />
+      <circle cx="200" cy="52" r="36" fill="#3550F2" />
       <rect
         x="248"
         y="16"
@@ -324,7 +324,7 @@ export function SikayetvarPattern({ className }: { className?: string }) {
         width="56"
         height="56"
         rx="28"
-        fill="#695de9"
+        fill="#3550F2"
         opacity="0.85"
       />
       <rect
@@ -333,10 +333,10 @@ export function SikayetvarPattern({ className }: { className?: string }) {
         width="72"
         height="72"
         rx="8"
-        fill="#3ad08f"
+        fill="#1EC9B8"
         opacity="0.75"
       />
-      <circle cx="248" cy="148" r="28" fill="#3ad08f" />
+      <circle cx="248" cy="148" r="28" fill="#1EC9B8" />
       <rect x="16" y="208" width="72" height="72" rx="8" fill="#b8c4f0" />
       <rect
         x="112"
@@ -344,18 +344,18 @@ export function SikayetvarPattern({ className }: { className?: string }) {
         width="56"
         height="56"
         rx="8"
-        fill="#695de9"
+        fill="#3550F2"
         opacity="0.7"
       />
-      <circle cx="248" cy="244" r="36" fill="#3ad08f" opacity="0.8" />
-      <rect x="16" y="304" width="56" height="56" rx="28" fill="#695de9" />
+      <circle cx="248" cy="244" r="36" fill="#1EC9B8" opacity="0.8" />
+      <rect x="16" y="304" width="56" height="56" rx="28" fill="#3550F2" />
       <rect
         x="96"
         y="304"
         width="72"
         height="72"
         rx="8"
-        fill="#3ad08f"
+        fill="#1EC9B8"
         opacity="0.6"
       />
       <circle cx="248" cy="340" r="28" fill="#b8c4f0" />

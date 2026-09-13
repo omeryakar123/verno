@@ -82,15 +82,15 @@ export function ComplaintSupportButton({
       aria-label={supported ? "Премахни подкрепата" : "Подкрепи жалбата"}
       className={`inline-flex items-center gap-1.5 rounded-full font-semibold transition-all disabled:opacity-60 ${
         supported
-          ? "bg-[#3ad08f] text-white ring-1 ring-[#3ad08f] shadow-sm"
-          : "bg-[#f3f5fb] text-[#626692] ring-1 ring-[#e6e8f0] hover:ring-[#3ad08f]/40 hover:text-[#3ad08f]"
+          ? "bg-brand text-white ring-1 ring-brand shadow-sm"
+          : "bg-surface text-navy ring-1 ring-rule hover:ring-brand/40 hover:text-brand"
       } ${compact ? "px-2.5 h-7 text-[10.5px]" : "px-3.5 h-9 text-[12px]"} ${className}`}
     >
       <Megaphone className={compact ? "size-3" : "size-3.5"} />
       <span>{supported ? "Подкрепена" : "Подкрепи"}</span>
       {votes > 0 && (
         <span
-          className={`tabular-nums ${supported ? "text-white/90" : "text-[#85878e]"}`}
+          className={`tabular-nums ${supported ? "text-white/90" : "text-navy-mid"}`}
         >
           · {votes.toLocaleString("bg-BG")}
         </span>

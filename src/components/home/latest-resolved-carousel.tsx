@@ -24,19 +24,19 @@ function ComplaintSlide({ c }: { c: Complaint }) {
         </span>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[13px] leading-tight lg:text-[14px]">
-            <span className="truncate font-bold text-[#272635]">{c.userName}</span>
+            <span className="truncate font-bold text-ink">{c.userName}</span>
             {c.companySlug ? (
               <span className="truncate font-semibold text-brand">{c.companyName}</span>
             ) : null}
           </div>
-          <span className="mt-0.5 inline-flex items-center gap-1 text-[10px] text-[#85878e] lg:text-[11px]">
+          <span className="mt-0.5 inline-flex items-center gap-1 text-[10px] text-navy-mid lg:text-[11px]">
             <Eye className="size-3 shrink-0" aria-hidden />
             {(c.views ?? 0).toLocaleString("bg-BG")} · {c.createdAgo}
           </span>
         </div>
       </div>
 
-      <p className="mt-3 line-clamp-2 font-semibold text-[15px] leading-snug text-[#272635] lg:text-[17px]">
+      <p className="mt-3 line-clamp-2 font-semibold text-[15px] leading-snug text-ink lg:text-[17px]">
         {c.title}
       </p>
 
@@ -48,7 +48,7 @@ function ComplaintSlide({ c }: { c: Complaint }) {
             logoUrl={logoPath}
             size={28}
           />
-          <span className="truncate text-[12px] font-medium text-[#626692]">
+          <span className="truncate text-[12px] font-medium text-navy">
             {c.companyName}
           </span>
         </div>

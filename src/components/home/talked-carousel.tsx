@@ -41,7 +41,7 @@ function TalkedCard({
           <span
             className={cn(
               "relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full text-[13px] font-bold transition-all duration-300 lg:size-20 lg:text-2xl",
-              active ? "bg-[#ecfdf5] text-[#059669]" : "bg-white/15 text-white",
+              active ? "bg-brand-soft text-brand" : "bg-white/15 text-white",
             )}
           >
             {complaint.userInitials.slice(0, 1)}
@@ -71,7 +71,7 @@ function TalkedCard({
         <span
           className={cn(
             "flex items-center gap-1 font-semibold text-base leading-none lg:text-xl",
-            active ? "text-[#3ad08f]" : "text-white",
+            active ? "text-brand" : "text-white",
           )}
         >
           <MessageCircle className="size-4" />
@@ -95,7 +95,7 @@ function TalkedCard({
         params={{ slug: complaint.companySlug }}
         className={cn(
           "inline-flex max-w-full items-center gap-2.5 text-[13px] font-semibold lg:text-base",
-          active ? "text-[#626692]" : "text-white",
+          active ? "text-navy" : "text-white",
         )}
       >
         <BrandListLogo
@@ -112,14 +112,29 @@ function TalkedCard({
 
 export function TalkedCarousel({ items, updatedAt }: Props) {
   const trackRef = useRef<HTMLDivElement>(null);
+  const visibleRef = useRef(true);
   const [index, setIndex] = useState(0);
   const list = items.slice(0, 8);
 
   useEffect(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visibleRef.current = entry.isIntersecting;
+      },
+      { threshold: 0.25 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
     if (list.length <= 1) return;
     const timer = window.setInterval(() => {
+      if (!visibleRef.current) return;
       setIndex((i) => (i + 1) % list.length);
-    }, 5000);
+    }, 6000);
     return () => window.clearInterval(timer);
   }, [list.length]);
 
@@ -127,7 +142,12 @@ export function TalkedCarousel({ items, updatedAt }: Props) {
     const el = trackRef.current;
     if (!el || list.length === 0) return;
     const child = el.children[index] as HTMLElement | undefined;
-    child?.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" });
+    if (!child) return;
+    const left =
+      child.getBoundingClientRect().left -
+      el.getBoundingClientRect().left +
+      el.scrollLeft;
+    el.scrollTo({ left, behavior: "smooth" });
   }, [index, list.length]);
 
   const scrollBy = (dir: -1 | 1) => {
@@ -140,10 +160,10 @@ export function TalkedCarousel({ items, updatedAt }: Props) {
   };
 
   return (
-    <div className="relative overflow-hidden pt-13 pb-24 md:pb-48 before:absolute before:right-0 before:bottom-0 before:-z-[1] before:-mr-16 before:h-48 before:w-48 before:rounded-tr-full before:bg-[#3ad08f] md:before:left-[44%] md:before:h-1/2 md:before:w-1/4 after:absolute after:top-0 after:right-0 after:-z-[2] after:h-full after:w-32 after:rounded-tl-[90px] after:bg-[#695de9] md:after:w-[56%]">
+    <div className="relative overflow-hidden pt-13 pb-24 md:pb-48 before:absolute before:right-0 before:bottom-0 before:-z-[1] before:-mr-16 before:h-48 before:w-48 before:rounded-tr-full before:bg-brand md:before:left-[44%] md:before:h-1/2 md:before:w-1/4 after:absolute after:top-0 after:right-0 after:-z-[2] after:h-full after:w-32 after:rounded-tl-[90px] after:bg-primary md:after:w-[56%]">
       <section aria-roledescription="carousel">
         <div className="container mb-12 flex max-w-6xl items-center justify-between px-4 lg:mb-24 lg:justify-start">
-          <h2 className="font-semibold text-[#85878e] text-xl lg:font-medium lg:text-[30px]">
+          <h2 className="font-semibold text-navy-mid text-xl lg:font-medium lg:text-[30px]">
             Най-обсъждани
           </h2>
           <div className="flex items-center gap-3 text-white lg:ml-[15%]">
