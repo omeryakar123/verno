@@ -92,7 +92,7 @@ type Props = {
 
 export function HeroSection({ search, onSearchChange, onSubmit }: Props) {
   return (
-    <div className="hero-glow relative pt-4 pb-20 lg:pb-[247px] lg:before:absolute lg:before:top-[31px] lg:before:right-0 lg:before:bottom-auto lg:before:block lg:before:h-[270px] lg:before:w-[calc(50%-720px)] lg:before:bg-surface lg:before:content-['']">
+    <div className="relative pt-4 pb-20 lg:pb-[247px] lg:before:absolute lg:before:top-[31px] lg:before:right-0 lg:before:bottom-auto lg:before:block lg:before:h-[270px] lg:before:w-[calc(50%-720px)] lg:before:bg-[#e4e7f3] lg:before:content-['']">
       <div className="relative mb-8 block h-[50.1vw] w-full lg:hidden">
         <img
           src="/home-banner/mobile/banner.svg"
@@ -121,7 +121,7 @@ export function HeroSection({ search, onSearchChange, onSubmit }: Props) {
 
       <div className="relative z-10 container px-4 lg:max-w-6xl lg:px-0">
         <div className="lg:w-[46.3%] lg:pt-20">
-          <h1 className="mb-5 whitespace-pre-line font-normal text-ink text-[43px] leading-tight tracking-[1px] lg:mb-28 lg:text-[61px] lg:leading-[1.12]">
+          <h1 className="mb-5 whitespace-pre-line font-normal text-[#383838] text-[43px] leading-tight tracking-[1px] lg:mb-28 lg:text-[61px] lg:leading-[1.12]">
             <strong className="font-semibold">За решение</strong>
             {"\n"}
             verno.bg
@@ -136,18 +136,18 @@ export function HeroSection({ search, onSearchChange, onSubmit }: Props) {
                 aria-label="Търси марка, модел, продукт"
                 autoComplete="off"
                 spellCheck={false}
-                className="home-search-field placeholder:truncate"
+                className="h-15 w-full min-w-0 overflow-hidden text-ellipsis rounded-4xl border-0 bg-white pr-24 pl-6 outline-none placeholder:truncate placeholder:text-gray-400 lg:pr-38 lg:pl-14 [&::-webkit-search-cancel-button]:appearance-none"
               />
               <button
                 type="submit"
                 aria-label="Търси"
-                className="absolute top-0 right-0 flex h-full w-22 rounded-4xl bg-brand text-white lg:pointer-events-none lg:right-auto lg:left-4 lg:w-auto lg:bg-transparent lg:text-navy"
+                className="absolute top-0 right-0 flex h-full w-22 rounded-4xl bg-[#3ad08f] text-white lg:pointer-events-none lg:right-auto lg:left-4 lg:w-auto lg:bg-transparent lg:text-[#626692]"
               >
                 <Search className="m-auto size-6" aria-hidden />
               </button>
               <button
                 type="submit"
-                className="absolute top-0 right-0 z-10 hidden h-full w-32 cursor-pointer items-center justify-center rounded-full bg-brand font-semibold text-lg text-white shadow-[0_8px_24px_rgb(30_201_184/0.35)] transition hover:bg-brand-hover lg:flex"
+                className="absolute top-0 right-0 z-10 hidden h-full w-32 cursor-pointer items-center justify-center rounded-full bg-[#3ad08f] font-semibold text-lg text-white transition-opacity hover:bg-[#42e29d] lg:flex"
               >
                 Търси
               </button>

@@ -28,7 +28,7 @@ export function TrendSparkline({
       <path
         d={d}
         fill="none"
-        stroke="#1EC9B8"
+        stroke="#03E5B6"
         strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"

@@ -45,14 +45,14 @@ export function SiteNav() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-rule bg-white/90 shadow-[0_1px_16px_rgb(16_20_31/0.05)] backdrop-blur-md">
+      <header className="sticky top-0 z-50 border-b border-[#ebecef] bg-white">
         <div className="container relative flex h-[67px] items-center justify-between">
           {/* Mobile — logo + compact CTA + search + menu */}
           <div className="flex min-w-0 flex-1 items-center gap-2.5 md:hidden">
             <SiteLogoNav className="h-[24px]" />
             <Link
               to="/sikayet-yaz"
-              className="inline-flex h-9 shrink-0 items-center justify-center rounded-full bg-primary px-3.5 text-[13px] font-semibold text-white transition hover:bg-primary-hover"
+              className="inline-flex h-9 shrink-0 items-center justify-center rounded-full bg-[#695de9] px-3.5 text-[13px] font-semibold text-white transition hover:bg-[#5a4fd9]"
             >
               + Жалба
             </Link>
@@ -76,16 +76,16 @@ export function SiteNav() {
           {/* Desktop — logo + nav | spacer | login + CTA */}
           <div className="hidden min-w-0 flex-1 items-center md:flex md:flex-initial">
             <SiteLogoNav className="h-[28px] lg:h-[32px]" />
-            <nav className="ml-4 hidden items-center whitespace-nowrap font-semibold text-navy-mid md:flex lg:gap-5 xl:ml-8 xl:gap-8">
+            <nav className="ml-4 hidden items-center whitespace-nowrap font-semibold text-gray-400 md:flex lg:gap-5 xl:ml-8 xl:gap-8">
               {navLinks.map((l) => (
                 <Link
                   key={l.to}
                   to={l.to}
-                  className="inline-flex items-baseline gap-1 whitespace-nowrap transition-colors hover:text-ink"
+                  className="inline-flex items-baseline gap-1 whitespace-nowrap hover:text-gray-800"
                 >
                   <span>{l.label}</span>
                   {l.badge ? (
-                    <span className="font-normal text-xs text-primary">{l.badge}</span>
+                    <span className="font-normal text-xs text-gray-800">{l.badge}</span>
                   ) : null}
                 </Link>
               ))}
@@ -124,7 +124,7 @@ export function SiteNav() {
 
             <Link
               to="/sikayet-yaz"
-              className="inline-flex h-[42px] shrink-0 items-center justify-center rounded-full bg-primary px-6 text-[14px] font-semibold text-white shadow-[0_8px_20px_rgb(53_80_242/0.28)] transition hover:bg-primary-hover hover:shadow-[0_10px_24px_rgb(53_80_242/0.36)]"
+              className="inline-flex h-[42px] shrink-0 items-center justify-center rounded-full bg-[#695de9] px-6 text-[14px] font-semibold text-white transition hover:bg-[#5a4fd9]"
             >
               + Напиши жалба
             </Link>
