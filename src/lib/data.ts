@@ -371,6 +371,10 @@ export type ComplaintLoadState =
   | { kind: "not_public" };
 
 export async function loadComplaintById(id: string): Promise<ComplaintLoadState> {
+  const { getPlaceholderComplaint } = await import("@/lib/placeholder-complaints");
+  const placeholder = getPlaceholderComplaint(id);
+  if (placeholder) return { kind: "ok", complaint: placeholder };
+
   await ensureCategoryCache();
   const isBrowser = typeof window !== "undefined";
   const res = await fetch(resolveUrl(`/api/complaints/${encodeURIComponent(id)}`), {

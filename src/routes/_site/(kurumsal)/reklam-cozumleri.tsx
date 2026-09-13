@@ -24,31 +24,32 @@ function AdsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-paper">
-      <section className="relative overflow-hidden border-b border-rule bg-gradient-to-b from-brand-soft/40 to-paper">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-12 sm:py-20">
+    <div className="listing-page">
+      <section className="relative overflow-hidden bg-white">
+        <div className="pointer-events-none absolute -top-24 right-0 size-80 rounded-full bg-[#695de9]/12" aria-hidden />
+        <div className="pointer-events-none absolute -bottom-16 left-8 size-48 rounded-full bg-[#3ad08f]/18" aria-hidden />
+        <div className="relative mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:py-20">
           <div className="max-w-2xl">
-            <span className="inline-flex items-center gap-2 rounded-full bg-card text-brand px-3 h-8 text-[12px] font-semibold ring-1 ring-brand/20 mb-5">
+            <span className="mb-5 inline-flex h-8 items-center gap-2 rounded-full bg-[#695de9]/10 px-3 text-[12px] font-semibold text-[#695de9]">
               <Sparkles className="size-3.5" /> Корпоративни решения
             </span>
-            <h1 className="font-display font-black text-[26px] sm:text-[42px] leading-[1.08] tracking-[-0.02em] text-ink">
-              Достигнете до милиони, които вземат решения на{" "}
-              <span className="text-brand">{SITE_NAME}</span>
+            <h1 className="font-display text-3xl font-black leading-tight tracking-[-0.02em] text-ink sm:text-5xl">
+              Достигнете до хора, които вземат решения на{" "}
+              <span className="text-[#695de9]">{SITE_NAME}</span>
             </h1>
-            <p className="mt-4 text-[14px] sm:text-[16px] text-navy leading-relaxed">
-              Premium, таргетирани и programmatic модели — покажете марката си в правилния момент
-              пред правилната аудитория.
+            <p className="mt-4 text-[16px] leading-relaxed text-navy-mid">
+              Premium и таргетирани формати — покажете марката си в момента, в който потребителят сравнява преди покупка.
             </p>
-            <div className="mt-6 flex flex-col sm:flex-row gap-3">
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <a
                 href={siteContactMailto("Рекламни решения")}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-brand text-brand-foreground px-6 h-11 text-[13px] font-semibold hover:bg-brand-hover transition"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#3ad08f] px-6 text-[14px] font-semibold text-white shadow-[0_10px_24px_rgb(58_208_143/0.32)] hover:bg-[#42e29d]"
               >
                 Свържете се с нас <ArrowRight className="size-4" />
               </a>
               <Link
                 to="/register/marka-basvuru"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-card ring-1 ring-rule px-6 h-11 text-[13px] font-semibold hover:bg-surface transition"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-white px-6 text-[14px] font-semibold text-ink shadow-[0_8px_24px_rgb(16_20_31/0.08)]"
               >
                 Заявка от марка
               </Link>
@@ -57,33 +58,31 @@ function AdsPage() {
         </div>
       </section>
 
-      <section className="border-b border-rule bg-surface">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8 sm:py-10">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
             {metrics.map((m) => {
               const Icon = m.icon;
               return (
-                <div key={m.k} className="bg-card rounded-2xl p-4 sm:p-5 ring-1 ring-rule">
-                  <span className="inline-grid place-items-center size-9 rounded-xl bg-brand-soft text-brand mb-3">
+                <div key={m.k} className="rounded-3xl bg-white p-5 shadow-[0_12px_32px_rgb(16_20_31/0.07)]">
+                  <span className="mb-3 inline-grid size-10 place-items-center rounded-2xl bg-[#3ad08f]/12 text-[#1f9d6a]">
                     <Icon className="size-4" />
                   </span>
-                  <div className="font-display font-black text-[20px] sm:text-[26px] text-ink tabular-nums">{m.v}</div>
-                  <div className="text-[11px] sm:text-[12px] text-navy-mid mt-1">{m.k}</div>
+                  <div className="font-display text-[22px] font-black tabular-nums text-ink sm:text-[26px]">{m.v}</div>
+                  <div className="mt-1 text-[12px] text-navy-mid">{m.k}</div>
                 </div>
               );
             })}
           </div>
-        </div>
       </section>
 
-      <section className="py-12 sm:py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 grid md:grid-cols-2 gap-8 items-center">
-          <div className="rounded-3xl bg-gradient-to-br from-ink to-brand p-8 sm:p-10 text-paper min-h-[220px] flex flex-col justify-end">
-            <ShieldCheck className="size-10 text-brand mb-4" />
-            <h2 className="font-display font-bold text-[22px] sm:text-[26px] leading-snug">
+      <section className="mx-auto max-w-6xl px-4 py-6 pb-16 sm:px-6">
+        <div className="grid items-center gap-8 md:grid-cols-2">
+          <div className="flex min-h-[220px] flex-col justify-end rounded-3xl bg-[#272635] p-8 text-white sm:p-10">
+            <ShieldCheck className="mb-4 size-10 text-[#3ad08f]" />
+            <h2 className="font-display text-[22px] font-bold leading-snug sm:text-[26px]">
               Защо да рекламирате на {SITE_NAME}?
             </h2>
-            <p className="mt-3 text-[13px] sm:text-[14px] text-paper/80 leading-relaxed">
+            <p className="mt-3 text-[14px] leading-relaxed text-white/75">
               Потребителите проучват опита с марките преди покупка. Правилната видимост изгражда доверие и конверсии.
             </p>
           </div>
@@ -95,13 +94,13 @@ function AdsPage() {
             ].map((item) => {
               const Icon = item.icon;
               return (
-                <li key={item.t} className="flex gap-4 bg-card rounded-2xl p-4 ring-1 ring-rule">
-                  <span className="grid place-items-center size-10 rounded-xl bg-brand-soft text-brand shrink-0">
+                <li key={item.t} className="flex gap-4 rounded-2xl bg-white p-4 shadow-[0_10px_28px_rgb(16_20_31/0.06)]">
+                  <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-[#695de9]/10 text-[#695de9]">
                     <Icon className="size-5" />
                   </span>
                   <div>
-                    <div className="font-semibold text-[14px] text-ink">{item.t}</div>
-                    <div className="text-[13px] text-navy-mid mt-0.5">{item.d}</div>
+                    <div className="text-[14px] font-semibold text-ink">{item.t}</div>
+                    <div className="mt-0.5 text-[13px] text-navy-mid">{item.d}</div>
                   </div>
                 </li>
               );
@@ -110,7 +109,7 @@ function AdsPage() {
         </div>
       </section>
 
-      <section className="relative overflow-hidden site-cta-shell">
+      <section className="relative overflow-hidden bg-[#695de9] text-white">
         <div
           className="pointer-events-none absolute -right-24 -top-24 size-80 rounded-full bg-brand/14 blur-3xl"
           aria-hidden
@@ -119,27 +118,27 @@ function AdsPage() {
           className="pointer-events-none absolute -left-20 bottom-0 size-64 rounded-full bg-primary/14 blur-3xl"
           aria-hidden
         />
-        <div className="relative mx-auto max-w-3xl px-4 sm:px-6 py-12 sm:py-16 text-center">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-brand/15 text-brand px-3 h-7 text-[11px] font-bold uppercase tracking-wider ring-1 ring-brand/30 mb-5">
+        <div className="relative mx-auto max-w-3xl px-4 py-14 text-center sm:px-6 sm:py-16">
+          <span className="mb-5 inline-flex h-7 items-center gap-1.5 rounded-full bg-white/12 px-3 text-[11px] font-bold uppercase tracking-wider text-white">
             <ShieldCheck className="size-3.5" />
             {SITE_NAME} Pro
           </span>
-          <h2 className="font-display font-bold text-[20px] sm:text-[26px] leading-snug">
+          <h2 className="font-display text-[22px] font-bold leading-snug sm:text-[28px]">
             Разширете клиентската си база с {SITE_NAME} Pro
           </h2>
-          <p className="mt-3 text-[13px] sm:text-[14px] site-cta-muted max-w-md mx-auto leading-relaxed">
+          <p className="mx-auto mt-3 max-w-md text-[14px] leading-relaxed text-white/75">
             Присъединете се към марки, които предлагат решения и се възползват от Pro членство.
           </p>
-          <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+          <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
             <a
               href={siteContactMailto("Pro членство")}
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-brand text-brand-foreground px-6 h-11 text-[13px] font-semibold hover:bg-brand-hover transition shadow-soft"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-white px-6 text-[14px] font-semibold text-ink"
             >
               Запитване за Pro
             </a>
             <Link
               to="/register/marka-basvuru"
-              className="inline-flex items-center justify-center gap-2 rounded-full ring-1 ring-brand/45 px-6 h-11 text-[13px] font-semibold hover:bg-brand/15 transition"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-white/30 px-6 text-[14px] font-semibold text-white hover:bg-white/10"
             >
               Заявка от марка
             </Link>

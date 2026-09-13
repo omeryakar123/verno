@@ -29,26 +29,26 @@ export function trendBadge(
 }
 
 export const TREND_BADGE_LABEL: Record<TrendBadge, string> = {
-  hot: "Çok konuşulan",
-  rising: "Yükselişte",
-  views: "Yüksek ilgi",
-  support: "Destek alıyor",
-  active: "Aktif",
+  hot: "Най-обсъждана",
+  rising: "Във възход",
+  views: "Висок интерес",
+  support: "С подкрепа",
+  active: "Активна",
 };
 
 export function trendPrimaryReason(
   brand: Pick<TrendBrand, "recentComplaints" | "recentViews" | "recentSupports">,
 ): string {
   if (brand.recentComplaints >= 1) {
-    return `Son 7 günde ${formatCompactCount(brand.recentComplaints)} yeni şikayet`;
+    return `${formatCompactCount(brand.recentComplaints)} нови жалби за 7 дни`;
   }
   if (brand.recentViews >= 100) {
-    return `${formatCompactCount(brand.recentViews)} görüntülenme`;
+    return `${formatCompactCount(brand.recentViews)} прегледа`;
   }
   if (brand.recentSupports >= 1) {
-    return `${formatCompactCount(brand.recentSupports)} topluluk desteği`;
+    return `${formatCompactCount(brand.recentSupports)} подкрепи от общността`;
   }
-  return "Son hafta gündemde";
+  return "В дневния ред тази седмица";
 }
 
 export function trendSecondaryDetail(
@@ -57,13 +57,13 @@ export function trendSecondaryDetail(
   const growth = trendGrowthPct(brand.recentComplaints, brand.priorComplaints);
   if (growth != null && brand.recentComplaints > 0) {
     const sign = growth >= 0 ? "+" : "";
-    return `Geçen haftaya göre ${sign}${growth}% şikayet`;
+    return `${sign}${growth}% жалби спрямо миналата седмица`;
   }
   if (brand.recentViews >= 50 && brand.recentComplaints > 0) {
-    return `${formatCompactCount(brand.recentViews)} okunma`;
+    return `${formatCompactCount(brand.recentViews)} прегледа`;
   }
   if (brand.recentSupports > 0 && brand.recentComplaints === 0) {
-    return `${formatCompactCount(brand.recentSupports)} destek oyu`;
+    return `${formatCompactCount(brand.recentSupports)} гласа подкрепа`;
   }
   return null;
 }

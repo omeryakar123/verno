@@ -41,7 +41,7 @@ export function SiteNav() {
     { to: "/sikayetler" as const, label: "Жалби" },
     { to: "/trend-100" as const, label: "Trend", badge: "100" },
   ];
-  const videoLink = { href: "/#video", label: "Видео" };
+  const awardsLink = { href: "/#awards", label: "Награди" };
 
   return (
     <>
@@ -90,10 +90,10 @@ export function SiteNav() {
                 </Link>
               ))}
               <a
-                href={videoLink.href}
+                href={awardsLink.href}
                 className="whitespace-nowrap transition-colors hover:text-ink"
               >
-                {videoLink.label}
+                {awardsLink.label}
               </a>
             </nav>
           </div>
@@ -171,11 +171,11 @@ export function SiteNav() {
                 </Link>
               ))}
               <a
-                href={videoLink.href}
+                href={awardsLink.href}
                 onClick={closeMenu}
                 className="flex h-11 items-center gap-2 rounded-lg px-3 text-[14px] font-medium text-ink hover:bg-surface"
               >
-                {videoLink.label}
+                {awardsLink.label}
               </a>
               <Link
                 to="/sikayet-yaz"
@@ -309,7 +309,6 @@ export function SiteFooter() {
     ["Избор на марка", "/info/$slug", { slug: "choose-brand" }],
     ["Pro членство", "/kurumsal-uyelik"],
     ["Рекламни решения", "/reklam-cozumleri"],
-    ["Блог", "/blog"],
     ["Отчет за прозрачност", "/seffaflik-raporu"],
     ["Контакт", "/iletisim"],
   ] as const;

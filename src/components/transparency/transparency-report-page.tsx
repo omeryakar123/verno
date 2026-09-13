@@ -22,7 +22,7 @@ function nf(n?: number): string {
 
 function StatCard({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-rule">
+    <div className="rounded-3xl bg-white p-6 shadow-[0_12px_32px_rgb(16_20_31/0.07)]">
       <div className="text-xs uppercase tracking-widest text-navy-mid">{label}</div>
       <div className="mt-2 text-3xl font-black tabular-nums text-ink">{value}</div>
       {sub ? <div className="mt-1 text-xs text-navy-mid">{sub}</div> : null}
@@ -52,13 +52,13 @@ export function TransparencyReportPage({ stats }: Props) {
   const resolutionPct = stats ? Math.round(stats.resolutionRate) : null;
 
   return (
-    <div data-page="transparency" className="bg-white text-ink">
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-ink-deep text-white">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-transparent to-brand/20" aria-hidden />
+    <div data-page="transparency" className="listing-page text-ink">
+      <section className="relative overflow-hidden bg-[#272635] text-white">
+        <div className="pointer-events-none absolute -top-20 right-0 size-80 rounded-full bg-[#695de9]/30" aria-hidden />
+        <div className="pointer-events-none absolute -bottom-16 left-10 size-56 rounded-full bg-[#3ad08f]/25" aria-hidden />
         <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-24">
-          <p className="mb-1.5 text-[32px] font-semibold leading-11 lg:text-[68px] lg:leading-tight">Добре дошли</p>
-          <h1 className="text-[30px] font-bold leading-8 lg:text-[98px] lg:leading-[1.1]">
+          <p className="mb-2 text-lg font-semibold text-[#3ad08f] lg:text-2xl">Добре дошли</p>
+          <h1 className="text-4xl font-black leading-tight lg:text-7xl">
             2025 Доклад
             <br />
             за прозрачност

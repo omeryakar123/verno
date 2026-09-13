@@ -110,7 +110,11 @@ function ComplaintPage() {
     setResolution(await fetchComplaintResolution(c.id));
     loadReplies(c.id);
   }
-  useEffect(() => { load(); /* eslint-disable-next-line */ }, [id]);
+  useEffect(() => {
+    if (id.startsWith("ph-") && initialResult?.kind === "ok") return;
+    load();
+    /* eslint-disable-next-line */
+  }, [id]);
 
   useEffect(() => {
     if (loadState.kind !== "ok") return;
@@ -124,7 +128,7 @@ function ComplaintPage() {
   // Canlı güncelleme (SSE). Sunucu yalnızca "değişiklik oldu" sinyali yollar;
   // veriyi normal API'den çekeriz, böylece yetki kuralları tek yerde kalır.
   useEffect(() => {
-    if (!complaint?.id) return;
+    if (!complaint?.id || complaint.id.startsWith("ph-")) return;
     const es = new EventSource(`/api/events/${complaint.id}`);
     const onComment = () => { fetchComments(complaint.id).then(setComments).catch(() => {}); };
     const onComplaint = () => { load(); };
@@ -138,7 +142,7 @@ function ComplaintPage() {
 
   // Topluluk yorumları şikayetten saatler/günler sonra kademeli gelir — ara sıra yenile.
   useEffect(() => {
-    if (!complaint?.id) return;
+    if (!complaint?.id || complaint.id.startsWith("ph-")) return;
     const t = setInterval(() => {
       fetchComments(complaint.id).then(setComments).catch(() => {});
     }, 15 * 60_000);
@@ -217,9 +221,14 @@ function ComplaintPage() {
   const realCommentCount = comments.filter((c) => !c.is_preview).length;
 
   return (
-    <div>
+    <div className="listing-page">
 
       <div className="mx-auto max-w-5xl px-4 sm:px-6 py-8 pb-24">
+        {complaint.id.startsWith("ph-") ? (
+          <div className="mb-4 rounded-2xl bg-[#695de9]/10 px-4 py-3 text-sm font-medium text-[#695de9]">
+            Примерен запис за преглед на дизайна. Реалните жалби ще се отварят по същия начин.
+          </div>
+        ) : null}
         <div className="flex items-center gap-2 text-xs text-navy-mid mb-4">
           <Link to="/" className="hover:text-brand">Начало</Link><span>/</span>
           <Link to="/firma/$slug" params={{ slug: complaint.companySlug }} className="hover:text-brand">{complaint.companyName}</Link>
@@ -247,7 +256,7 @@ function ComplaintPage() {
         </div>
 
 
-        <article className="bg-card rounded-2xl ring-1 ring-rule p-6 sm:p-8">
+        <article className="rounded-3xl bg-white p-6 shadow-[0_16px_40px_rgb(16_20_31/0.08)] sm:p-8">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-3">
               <span className="size-10 rounded-full bg-surface flex items-center justify-center text-sm font-bold text-navy-mid">{complaint.userInitials}</span>

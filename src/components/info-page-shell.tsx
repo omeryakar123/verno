@@ -49,7 +49,7 @@ const ICONS: Record<string, LucideIcon> = {
 function CardIcon({ name }: { name: string }) {
   const Icon = ICONS[name] ?? Shield;
   return (
-    <span className="grid place-items-center size-10 rounded-xl bg-primary/10 text-primary shrink-0">
+    <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-[#695de9]/10 text-[#695de9]">
       <Icon className="size-5" />
     </span>
   );
@@ -57,18 +57,18 @@ function CardIcon({ name }: { name: string }) {
 
 function StepsBlock({ items }: { items: { title: string; body: string }[] }) {
   return (
-    <div className="mt-6 space-y-0">
+    <div className="mt-8 space-y-0">
       {items.map((s, i) => (
         <div key={s.title} className="flex gap-4">
           <div className="flex flex-col items-center">
-            <div className="size-9 rounded-full bg-primary text-white grid place-items-center text-sm font-bold shrink-0">
+            <div className="grid size-10 shrink-0 place-items-center rounded-full bg-[#695de9] text-sm font-bold text-white shadow-[0_8px_20px_rgb(105_93_233/0.28)]">
               {i + 1}
             </div>
-            {i < items.length - 1 ? <div className="w-0.5 flex-1 bg-rule min-h-6" /> : null}
+            {i < items.length - 1 ? <div className="min-h-8 w-0.5 flex-1 bg-[#ebecef]" /> : null}
           </div>
-          <div className={`flex-1 min-w-0 ${i < items.length - 1 ? "pb-6" : ""}`}>
-            <h3 className="font-semibold text-[15px] text-ink">{s.title}</h3>
-            <p className="mt-1.5 text-[13px] leading-relaxed text-navy-mid">{s.body}</p>
+          <div className={`min-w-0 flex-1 ${i < items.length - 1 ? "pb-8" : ""}`}>
+            <h3 className="text-[17px] font-semibold text-ink">{s.title}</h3>
+            <p className="mt-1.5 text-[14px] leading-relaxed text-navy-mid">{s.body}</p>
           </div>
         </div>
       ))}
@@ -78,14 +78,17 @@ function StepsBlock({ items }: { items: { title: string; body: string }[] }) {
 
 function CardsBlock({ items }: { items: { icon: string; title: string; body: string }[] }) {
   return (
-    <div className="mt-6 grid gap-3 sm:grid-cols-2">
+    <div className="mt-8 grid gap-4 sm:grid-cols-2">
       {items.map((c) => (
-        <div key={c.title} className="rounded-2xl ring-1 ring-rule bg-card p-4">
+        <div
+          key={c.title}
+          className="rounded-3xl bg-white p-5 shadow-[0_12px_32px_rgb(16_20_31/0.07)]"
+        >
           <div className="flex items-center gap-3">
             <CardIcon name={c.icon} />
-            <h3 className="font-semibold text-[15px] text-ink">{c.title}</h3>
+            <h3 className="text-[16px] font-semibold text-ink">{c.title}</h3>
           </div>
-          <p className="mt-2 text-[13px] leading-relaxed text-navy-mid">{c.body}</p>
+          <p className="mt-3 text-[14px] leading-relaxed text-navy-mid">{c.body}</p>
         </div>
       ))}
     </div>
@@ -101,21 +104,21 @@ function ContactBlock({ phone, email, address }: { phone: string; email: string;
   ] as const;
 
   return (
-    <div className="mt-6 overflow-hidden rounded-2xl ring-1 ring-rule bg-card divide-y divide-rule">
+    <div className="mt-8 overflow-hidden rounded-3xl bg-white shadow-[0_12px_32px_rgb(16_20_31/0.07)] divide-y divide-[#ebecef]">
       {rows.map((r) => {
         const Inner = r.href ? "a" : "div";
         return (
           <Inner
             key={r.label}
             {...(r.href ? { href: r.href } : {})}
-            className="flex items-center gap-3 px-4 py-4 hover:bg-surface/60 transition"
+            className="flex items-center gap-3 px-5 py-5 transition hover:bg-[#f4f6fb]"
           >
-            <span className="grid place-items-center size-11 rounded-xl bg-brand/10 text-brand shrink-0">
+            <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-[#3ad08f]/12 text-[#1f9d6a]">
               <r.icon className="size-5" />
             </span>
-            <div className="flex-1 min-w-0">
+            <div className="min-w-0 flex-1">
               <div className="text-[12px] font-medium text-navy-mid">{r.label}</div>
-              <div className="mt-0.5 text-[15px] font-semibold text-ink break-all">{r.value}</div>
+              <div className="mt-0.5 break-all text-[16px] font-semibold text-ink">{r.value}</div>
             </div>
           </Inner>
         );
@@ -128,32 +131,32 @@ export function InfoPageShell({ page }: { page: InfoPage }) {
   const HeroIcon = ICONS[page.icon] ?? HelpCircle;
 
   return (
-    <div className="min-h-screen bg-paper">
-      <section className="relative overflow-hidden border-b border-rule bg-white">
+    <div className="listing-page">
+      <section className="relative overflow-hidden bg-white">
         <div
-          className="pointer-events-none absolute -top-4 right-0 size-40 rounded-full bg-primary/10"
+          className="pointer-events-none absolute -top-16 -right-10 size-56 rounded-full bg-[#695de9]/12"
           aria-hidden
         />
         <div
-          className="pointer-events-none absolute bottom-0 left-0 size-28 rounded-full bg-brand/10"
+          className="pointer-events-none absolute -bottom-16 left-0 size-40 rounded-full bg-[#3ad08f]/18"
           aria-hidden
         />
-        <div className="relative mx-auto max-w-3xl px-4 sm:px-6 py-12 lg:py-14">
-          <div className="size-12 rounded-2xl bg-primary/10 text-primary grid place-items-center mb-4">
-            <HeroIcon className="size-6" />
+        <div className="relative mx-auto max-w-3xl px-4 py-14 sm:px-6 lg:py-20">
+          <div className="mb-5 grid size-14 place-items-center rounded-2xl bg-[#695de9] text-white shadow-[0_12px_28px_rgb(105_93_233/0.28)]">
+            <HeroIcon className="size-7" />
           </div>
-          <h1 className="font-display text-3xl sm:text-4xl font-black text-ink leading-tight">
+          <h1 className="font-display text-3xl font-black leading-tight text-ink sm:text-5xl">
             {page.title}
           </h1>
-          <p className="mt-3 text-[15px] leading-relaxed text-navy-mid">{page.subtitle}</p>
+          <p className="mt-4 max-w-2xl text-[16px] leading-relaxed text-navy-mid">{page.subtitle}</p>
         </div>
       </section>
 
-      <div className="mx-auto max-w-3xl px-4 sm:px-6 py-10 pb-16">
+      <div className="mx-auto max-w-3xl px-4 py-10 pb-20 sm:px-6">
         {page.blocks.map((block: InfoBlock, i) => {
           if (block.type === "text") {
             return (
-              <p key={i} className="mt-6 text-[14px] leading-relaxed text-navy first:mt-0">
+              <p key={i} className="mt-6 text-[15px] leading-relaxed text-navy first:mt-0">
                 {block.body}
               </p>
             );
@@ -174,7 +177,7 @@ export function InfoPageShell({ page }: { page: InfoPage }) {
           <Link
             to={page.cta.to}
             search={page.cta.search as never}
-            className="mt-10 inline-flex items-center justify-center rounded-full bg-brand text-brand-foreground px-6 h-11 text-[13px] font-semibold hover:brightness-105 transition"
+            className="mt-10 inline-flex h-12 items-center justify-center rounded-full bg-[#3ad08f] px-7 text-[14px] font-semibold text-white shadow-[0_10px_24px_rgb(58_208_143/0.32)] transition hover:bg-[#42e29d]"
           >
             {page.cta.label}
           </Link>

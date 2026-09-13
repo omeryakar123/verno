@@ -37,6 +37,11 @@ export function ComplaintSupportButton({
     e.stopPropagation();
     if (loading) return;
 
+    if (complaintId.startsWith("ph-")) {
+      toast.message("Това е примерен запис — реалната подкрепа ще е активна при публикувани жалби.");
+      return;
+    }
+
     if (!user) {
       toast.error("Влезте, за да подкрепите жалбата");
       navigate({ to: "/login" });

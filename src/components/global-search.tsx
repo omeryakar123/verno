@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Search, X, Building2, MessageSquare, FileText, Loader2 } from "lucide-react";
+import { Search, X, Building2, MessageSquare, Loader2 } from "lucide-react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { BrandAvatar } from "@/components/cards";
 import { complaintLinkId } from "@/lib/complaint-link";
@@ -149,15 +149,6 @@ function GlobalSearchModal({ open, onClose }: { open: boolean; onClose: () => vo
             </Section>
           )}
 
-          {blogs.length > 0 && (
-            <Section icon={FileText} title="Blog">
-              {blogs.map((b) => (
-                <Link key={b.id} to="/" onClick={onClose} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-brand-soft/40 text-left">
-                  <span className="text-[13.5px] text-ink">{b.title}</span>
-                </Link>
-              ))}
-            </Section>
-          )}
         </div>
     </Modal>
   );

@@ -13,6 +13,10 @@ import {
   type ComplaintSort,
 } from "@/lib/data";
 import { seoHead, breadcrumbLd, clamp, SITE_NAME } from "@/lib/seo";
+import {
+  PLACEHOLDER_COMPLAINTS,
+  complaintsOrPlaceholders,
+} from "@/lib/placeholder-complaints";
 
 type SP = {
   kategori?: string;
@@ -127,11 +131,11 @@ function SikayetlerPage() {
 
       <AgendaMarquee
         compact
-        items={
+        items={complaintsOrPlaceholders(
           loaded.agenda.length > 0
             ? loaded.agenda
-            : loaded.first.items.slice(0, 8)
-        }
+            : loaded.first.items.slice(0, 8),
+        )}
       />
 
       <div className="container max-w-6xl px-4 pb-16">
@@ -140,7 +144,7 @@ function SikayetlerPage() {
             Последни жалби
           </h2>
           <p className="text-sm font-semibold text-navy-mid">
-            {total.toLocaleString("bg-BG")} жалби
+            {(total > 0 ? total : PLACEHOLDER_COMPLAINTS.length).toLocaleString("bg-BG")} жалби
           </p>
         </div>
 
@@ -241,23 +245,29 @@ function SikayetlerPage() {
           <div className="rounded-2xl bg-white px-6 py-16 text-center text-navy-mid shadow-[0_4px_20px_rgb(16_20_31/0.06)]">
             Зареждане…
           </div>
-        ) : items.length === 0 ? (
+        ) : items.length === 0 && (sp.q || sp.kategori || sp.durum) ? (
           <div className="rounded-2xl bg-white px-6 py-16 text-center text-navy-mid shadow-[0_4px_20px_rgb(16_20_31/0.06)]">
             Няма намерени резултати.
           </div>
         ) : (
           <>
             <div className="flex flex-col gap-3 lg:gap-4">
-              {items.map((c) => (
+              {(items.length > 0 ? items : PLACEHOLDER_COMPLAINTS).map((c) => (
                 <ComplaintFeedCard key={c.id} complaint={c} />
               ))}
             </div>
-            <Pagination
-              page={page}
-              pageSize={PAGE_SIZE}
-              total={total}
-              onChange={setPage}
-            />
+            {items.length > 0 ? (
+              <Pagination
+                page={page}
+                pageSize={PAGE_SIZE}
+                total={total}
+                onChange={setPage}
+              />
+            ) : (
+              <p className="mt-6 text-center text-sm text-navy-mid">
+                Примерни записи за преглед на дизайна. Реалните жалби ще се появят тук след публикуване.
+              </p>
+            )}
           </>
         )}
       </div>
