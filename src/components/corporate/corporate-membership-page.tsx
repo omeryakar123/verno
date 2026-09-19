@@ -1,19 +1,10 @@
 import { Link } from "@tanstack/react-router";
-import {
-  ArrowRight,
-  BarChart3,
-  Headphones,
-  LineChart,
-  Megaphone,
-  ShieldCheck,
-  Sparkles,
-  Star,
-  Users,
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import type { Company } from "@/lib/mock-data";
 import { SITE_NAME } from "@/lib/seo";
 import { siteContactMailto } from "@/lib/contact";
 import { BrandListLogo } from "@/components/cards";
+import { HomeWordmark } from "@/components/home/home-wordmark";
 
 type PlatformStats = {
   totalUsers: number;
@@ -40,32 +31,32 @@ function formatStat(n: number): string {
 
 const FEATURES = [
   {
-    icon: Headphones,
+    n: "01",
     title: "Личен консултант за марката",
     body: "Специалист от екипа ви помага на всяка стъпка — от първия отговор до затваряне на случая.",
   },
   {
-    icon: Users,
+    n: "02",
     title: "Директна връзка с клиентите",
     body: "Със съгласие на потребителя можете да се свържете директно и да решите проблема по-бързо.",
   },
   {
-    icon: Megaphone,
+    n: "03",
     title: "Рекламни зони на профила",
     body: "Показвайте оферти пред хора, които вече сравняват марки преди покупка.",
   },
   {
-    icon: ShieldCheck,
+    n: "04",
     title: "Видимост и доверие",
-    body: "Контакти, сайт и Trust Score на фирмената страница — клиентите ви намират по-лесно.",
+    body: "Контакти, сайт и оценка на фирмената страница — клиентите ви намират по-лесно.",
   },
   {
-    icon: Star,
+    n: "05",
     title: "Оценки след решение",
     body: "Напомняйте за оценка след отговор и покажете как подобрявате клиентския опит.",
   },
   {
-    icon: LineChart,
+    n: "06",
     title: "Анализ на конкуренцията",
     body: "Сравнете процент решени, време за отговор и активност с марки в същия сектор.",
   },
@@ -134,18 +125,13 @@ export function CorporateMembershipPage({ stats, proBrands }: CorporateMembershi
             <span className="text-[#3ad08f]">{SITE_NAME} Plus</span>
           </h2>
           <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {FEATURES.map((f) => {
-              const Icon = f.icon;
-              return (
-                <article key={f.title} className="rounded-3xl bg-white/6 p-6 ring-1 ring-white/10">
-                  <span className="grid size-11 place-items-center rounded-2xl bg-[#3ad08f]/16 text-[#3ad08f]">
-                    <Icon className="size-5" />
-                  </span>
-                  <h3 className="mt-4 text-lg font-semibold">{f.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-white/70">{f.body}</p>
-                </article>
-              );
-            })}
+            {FEATURES.map((f) => (
+              <article key={f.title} className="rounded-3xl bg-white/6 p-6 ring-1 ring-white/10">
+                <span className="text-2xl font-semibold tabular-nums text-brand">{f.n}</span>
+                <h3 className="mt-4 text-lg font-semibold">{f.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-white/70">{f.body}</p>
+              </article>
+            ))}
           </div>
         </div>
       </section>
@@ -167,8 +153,7 @@ export function CorporateMembershipPage({ stats, proBrands }: CorporateMembershi
           </div>
           <div className="rounded-3xl bg-white p-8 shadow-[0_18px_40px_rgb(16_20_31/0.1)]">
             <div className="flex items-center gap-3">
-              <BarChart3 className="size-6 text-[#695de9]" />
-              <span className="font-semibold text-ink">Секторно сравнение</span>
+              <span className="font-semibold text-[#10141F]">Секторно сравнение</span>
             </div>
             <ul className="mt-6 space-y-4">
               {[
@@ -195,15 +180,15 @@ export function CorporateMembershipPage({ stats, proBrands }: CorporateMembershi
                 key={brand.slug}
                 to="/firma/$slug"
                 params={{ slug: brand.slug }}
-                className="flex h-24 items-center justify-center rounded-2xl bg-[#f4f6fb] px-4"
+                className="flex h-28 items-center justify-center rounded-2xl bg-white px-5 ring-1 ring-black/5"
               >
                 <BrandListLogo
                   name={brand.name}
                   slug={brand.slug}
                   logoUrl={brand.logoUrl}
                   website={brand.website}
-                  size={72}
-                  className="max-h-12 w-auto object-contain"
+                  size={80}
+                  className="bg-transparent"
                 />
               </Link>
             ))}
@@ -221,10 +206,12 @@ export function CorporateMembershipPage({ stats, proBrands }: CorporateMembershi
         </div>
       </section>
 
-      <section className="bg-[#695de9] py-16 text-center text-white">
-        <div className="mx-auto max-w-3xl px-4">
-          <Sparkles className="mx-auto size-8 text-[#3ad08f]" />
-          <h2 className="mt-4 text-3xl font-semibold leading-snug">
+      <section className="relative overflow-hidden bg-primary py-16 text-center text-white">
+        <div className="pointer-events-none absolute -top-10 right-8 size-32 rounded-full bg-brand/40" aria-hidden />
+        <div className="pointer-events-none absolute -bottom-12 left-10 size-24 rounded-full bg-white/10" aria-hidden />
+        <div className="relative mx-auto max-w-3xl px-4">
+          <HomeWordmark heightClass="mx-auto h-8 brightness-0 invert" />
+          <h2 className="mt-6 text-3xl font-semibold leading-snug">
             Увеличете удовлетвореността и клиентската база
           </h2>
           <p className="mt-4 text-white/80">
@@ -232,7 +219,7 @@ export function CorporateMembershipPage({ stats, proBrands }: CorporateMembershi
           </p>
           <a
             href={siteContactMailto("Pro корпоративно членство")}
-            className="mt-8 inline-flex h-12 items-center rounded-full bg-white px-7 text-[14px] font-semibold text-ink hover:bg-white/90"
+            className="mt-8 inline-flex h-12 items-center rounded-full bg-brand px-7 text-[14px] font-semibold text-white hover:bg-brand-hover"
           >
             Свържете се за Pro членство
           </a>

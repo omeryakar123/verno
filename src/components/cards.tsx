@@ -376,7 +376,7 @@ export function BrandListLogo({
 
   return (
     <div
-      className={`relative grid shrink-0 place-items-center overflow-hidden rounded-xl bg-white ${src ? "" : "ring-1 ring-rule/60 bg-surface"} ${className}`}
+      className={`relative grid shrink-0 place-items-center overflow-visible rounded-xl bg-white ${src ? "" : "ring-1 ring-rule/60 bg-surface"} ${className}`}
       style={className.includes("size-full") ? undefined : { width: size, height: size }}
     >
       {src ? (

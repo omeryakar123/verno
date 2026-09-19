@@ -28,14 +28,14 @@ export function HomeMediaBlock({ src, alt }: Props) {
 
 export function HomeAwardsSeal() {
   return (
-    <div className="relative mx-auto mt-14 flex w-full max-w-[22rem] flex-col items-center justify-center px-6 lg:mt-0 lg:min-w-[28rem] lg:max-w-[32rem]">
+    <div className="relative mx-auto mt-14 flex w-full max-w-[28rem] flex-col items-center justify-center px-4 lg:mt-0 lg:min-w-[34rem] lg:max-w-[38rem]">
       <div className="relative grid place-items-center">
         <div
-          className="absolute size-64 rounded-full bg-brand/35 blur-3xl animate-seal-glow lg:size-80"
+          className="absolute size-80 rounded-full bg-brand/35 blur-3xl animate-seal-glow lg:size-[28rem]"
           aria-hidden
         />
         <div
-          className="absolute size-56 rounded-full border-2 border-primary/25 animate-seal-pulse-ring lg:size-72"
+          className="absolute size-72 rounded-full border-2 border-primary/25 animate-seal-pulse-ring lg:size-[26rem]"
           aria-hidden
         />
         <img
@@ -43,7 +43,7 @@ export function HomeAwardsSeal() {
           alt={`${SITE_NAME} печат`}
           width={640}
           height={640}
-          className="relative z-10 w-56 drop-shadow-[0_22px_40px_rgb(16_20_31/0.22)] lg:w-72"
+          className="relative z-10 w-80 drop-shadow-[0_22px_40px_rgb(16_20_31/0.22)] lg:w-[26rem]"
           loading="lazy"
         />
       </div>

@@ -1,28 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  ShieldCheck,
-  Users,
-  Sparkles,
-  TrendingUp,
-  PenLine,
-  MessageCircle,
-  CheckCircle2,
-  Scale,
-  Eye,
-  HeartHandshake,
-  Megaphone,
-  BadgeCheck,
-  Star,
-  Search,
-  Building2,
-  BarChart3,
-  ShieldAlert,
-  Lock,
-  UserX,
-  Gavel,
-} from "lucide-react";
+import { PenLine, Search } from "lucide-react";
 import { fetchPlatformStats } from "@/lib/data";
 import { seoHead, breadcrumbLd, SITE_NAME } from "@/lib/seo";
+import { HomeWordmark } from "@/components/home/home-wordmark";
 
 export const Route = createFileRoute("/_site/(kurumsal)/hakkimizda")({
   loader: async () => ({ stats: await fetchPlatformStats().catch(() => null) }),
@@ -47,43 +27,40 @@ function Page() {
   const s = Route.useLoaderData().stats;
   const nf = (n: number) => n.toLocaleString("bg-BG");
   const stats = [
-    { icon: Users, label: "Регистрирани членове", value: s ? nf(s.totalUsers) : "—" },
-    { icon: ShieldCheck, label: "Регистрирани марки", value: s ? nf(s.totalCompanies) : "—" },
-    { icon: TrendingUp, label: "Решени жалби", value: s ? nf(s.resolvedComplaints) : "—" },
-    { icon: Sparkles, label: "Процент решение", value: s ? `%${Math.round(s.resolutionRate)}` : "—" },
+    { label: "Регистрирани членове", value: s ? nf(s.totalUsers) : "—" },
+    { label: "Регистрирани марки", value: s ? nf(s.totalCompanies) : "—" },
+    { label: "Решени жалби", value: s ? nf(s.resolvedComplaints) : "—" },
+    { label: "Процент решение", value: s ? `${Math.round(s.resolutionRate)}%` : "—" },
   ];
 
   const steps = [
     {
-      icon: PenLine,
-      t: "1. Подайте жалба",
+      n: "01",
+      t: "Подайте жалба",
       p: "Опишете проблема за минути; добавете документи и снимки или публикувайте анонимно. След модерация жалбата става публична и получава уникален код за проследяване.",
     },
     {
-      icon: MessageCircle,
-      t: "2. Марката отговаря",
+      n: "02",
+      t: "Марката отговаря",
       p: "Съответната марка вижда жалбата и публикува официален отговор на страницата ви. При нужда може да ви пише и на лични съобщения. Целият процес е прозрачен.",
     },
     {
-      icon: CheckCircle2,
-      t: "3. Потвърдете решението и оценете",
+      n: "03",
+      t: "Потвърдете решението и оценете",
       p: "Ако проблемът е решен, само ВИЕ маркирате жалбата като решена; оценявате марката и по желание оставяте благодарност. Оценката ви директно влияе на рейтинга на марката.",
     },
   ];
 
   const values = [
     {
-      icon: Scale,
       t: "Независимост",
       p: "Не заемаме страната на никоя марка. Класирането се базира на реални резултати при решаване, не на плащания. Никоя марка не може да плати за премахване на жалби или промяна на оценката си.",
     },
     {
-      icon: Eye,
       t: "Прозрачност",
       p: "Оценките на марките, процентът на решение и времето за отговор се изчисляват от реални данни. Редовно публикуваме процесите си в Доклада за прозрачност.",
     },
     {
-      icon: HeartHandshake,
       t: "Решение на първо място",
       p: "Целта ни не е да събираме жалби, а да сближим потребители и марки и да приключим проблемите. Успехът измерваме с решени жалби, не с публикувани.",
     },
@@ -91,22 +68,18 @@ function Page() {
 
   const forConsumers = [
     {
-      icon: Megaphone,
       t: "Нека гласът ви се чуе",
       p: "Жалбата ви не изчезва — тя стига директно до марката и остава публична.",
     },
     {
-      icon: Search,
       t: "Проучете преди покупка",
       p: "Преди да купите, вижте реални клиентски опити, процент на решение и скорост на отговор.",
     },
     {
-      icon: UserX,
       t: "Останете анонимни",
       p: "Можете да подадете анонимно — името ви е скрито от марката и другите потребители.",
     },
     {
-      icon: Star,
       t: "Оценете опита си",
       p: "Оценете процеса на решение по 5-звездна скала и помогнете на други потребители.",
     },
@@ -114,22 +87,18 @@ function Page() {
 
   const forBrands = [
     {
-      icon: BadgeCheck,
       t: "Верифициран профил",
       p: "Верифицирайте марката си, отговаряйте официално и изградете доверие със значка за потвърждение.",
     },
     {
-      icon: MessageCircle,
       t: "Управление от един панел",
       p: "Вижте всички жалби, отговаряйте и пишете на клиенти от едно табло.",
     },
     {
-      icon: BarChart3,
       t: "Статистика в реално време",
       p: "Следете процента на решение, скоростта на отговор и удовлетвореността на клиентите на живо.",
     },
     {
-      icon: TrendingUp,
       t: "Изградете репутация",
       p: "Всяка решена жалба подобрява оценката ви; историите за успех се показват на страницата на марката.",
     },
@@ -137,17 +106,14 @@ function Page() {
 
   const trust = [
     {
-      icon: ShieldAlert,
       t: "Предварителна модерация",
       p: "Всяка жалба минава автоматични проверки преди публикуване; злоупотреби, спам и лични данни се блокират; съмнително съдържание отива при човешки модератори.",
     },
     {
-      icon: Lock,
       t: "Сигурност на данните",
       p: "Данните се предават по криптирани връзки; достъпът до документи е с права. Чувствителните доказателства са видими само за упълномощени страни.",
     },
     {
-      icon: Gavel,
       t: "Справедлив процес на обжалване",
       p: "Всеки, който смята, че съдържанието е незаконно, може да го докладва; екипът ни по модерация преглежда и решава всеки случай.",
     },
@@ -155,13 +121,17 @@ function Page() {
 
   return (
     <div>
-      <div className="relative h-64 bg-gradient-to-br from-dark via-navy to-brand/40 grid place-items-center">
-        <div className="text-center px-6">
-          <p className="text-white/60 text-xs uppercase tracking-widest mb-2">{SITE_NAME}.</p>
-          <h1 className="text-white text-3xl sm:text-5xl font-display font-black">
-            Независимата българска
-            <br />
-            платформа за клиентски опит
+      <div className="relative overflow-hidden bg-white">
+        <div className="pointer-events-none absolute inset-0" aria-hidden>
+          <div className="absolute -top-10 right-[8%] size-40 rounded-full bg-primary/16" />
+          <div className="absolute top-16 right-[28%] size-10 rounded-full bg-brand" />
+          <div className="absolute bottom-8 left-[10%] size-24 rounded-full bg-brand/20" />
+          <div className="absolute top-10 left-[36%] size-5 rounded-full bg-[#F5D76E]" />
+        </div>
+        <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-24">
+          <HomeWordmark heightClass="h-8 lg:h-11" />
+          <h1 className="mt-6 max-w-3xl text-left font-semibold text-[#10141F] text-3xl leading-tight sm:text-5xl">
+            Независимата българска платформа за клиентски опит
           </h1>
         </div>
       </div>
@@ -218,11 +188,9 @@ function Page() {
         <h2 className="text-center font-display font-bold text-[24px] text-ink mb-10">Как работи</h2>
         <div className="grid md:grid-cols-3 gap-6">
           {steps.map((st) => (
-            <div key={st.t} className="bg-card rounded-2xl p-6 ring-1 ring-rule">
-              <div className="size-11 rounded-xl bg-brand-soft text-brand grid place-items-center mb-4">
-                <st.icon className="size-5" />
-              </div>
-              <h3 className="font-display font-bold text-[16px] text-ink">{st.t}</h3>
+            <div key={st.t} className="rounded-2xl bg-white p-6 ring-1 ring-rule">
+              <div className="mb-4 font-semibold text-brand text-2xl tabular-nums">{st.n}</div>
+              <h3 className="font-semibold text-[16px] text-[#10141F]">{st.t}</h3>
               <p className="mt-2 text-[13.5px] text-navy leading-relaxed">{st.p}</p>
             </div>
           ))}
@@ -233,10 +201,7 @@ function Page() {
         <div className="mx-auto max-w-6xl px-4 sm:px-6 py-12 grid grid-cols-2 md:grid-cols-4 gap-6">
           {stats.map((st) => (
             <div key={st.label} className="text-center">
-              <div className="mx-auto size-12 rounded-2xl bg-brand-soft grid place-items-center mb-3">
-                <st.icon className="size-6 text-brand" />
-              </div>
-              <div className="text-2xl font-black text-ink tabular-nums">{st.value}</div>
+              <div className="text-2xl font-black text-[#10141F] tabular-nums">{st.value}</div>
               <div className="text-xs text-navy-mid mt-1">{st.label}</div>
             </div>
           ))}
@@ -246,44 +211,30 @@ function Page() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6 py-16">
         <div className="grid md:grid-cols-2 gap-8">
           <div className="bg-card rounded-3xl ring-1 ring-rule p-8">
-            <div className="inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-wider text-brand mb-4">
-              <Users className="size-4" /> За потребители
-            </div>
+            <div className="mb-4 text-[13px] font-semibold text-brand">За потребители</div>
             <h3 className="font-display font-bold text-[20px] text-ink mb-6">
               Не сте сами — платформата е зад вас.
             </h3>
             <div className="space-y-5">
               {forConsumers.map((f) => (
-                <div key={f.t} className="flex gap-3">
-                  <div className="size-9 rounded-lg bg-brand-soft text-brand grid place-items-center shrink-0">
-                    <f.icon className="size-4" />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-[14px] text-ink">{f.t}</div>
-                    <p className="text-[13px] text-navy leading-relaxed mt-0.5">{f.p}</p>
-                  </div>
+                <div key={f.t} className="border-l-2 border-brand/40 pl-3">
+                  <div className="font-semibold text-[14px] text-[#10141F]">{f.t}</div>
+                  <p className="text-[13px] text-navy leading-relaxed mt-0.5">{f.p}</p>
                 </div>
               ))}
             </div>
           </div>
 
           <div className="bg-card rounded-3xl ring-1 ring-rule p-8">
-            <div className="inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-wider text-primary mb-4">
-              <Building2 className="size-4" /> За марки
-            </div>
+            <div className="mb-4 text-[13px] font-semibold text-primary">За марки</div>
             <h3 className="font-display font-bold text-[20px] text-ink mb-6">
               Превърнете жалбите в най-силния си инструмент за привличане на клиенти.
             </h3>
             <div className="space-y-5">
               {forBrands.map((f) => (
-                <div key={f.t} className="flex gap-3">
-                  <div className="size-9 rounded-lg bg-primary/10 text-primary grid place-items-center shrink-0">
-                    <f.icon className="size-4" />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-[14px] text-ink">{f.t}</div>
-                    <p className="text-[13px] text-navy leading-relaxed mt-0.5">{f.p}</p>
-                  </div>
+                <div key={f.t} className="border-l-2 border-primary/40 pl-3">
+                  <div className="font-semibold text-[14px] text-[#10141F]">{f.t}</div>
+                  <p className="text-[13px] text-navy leading-relaxed mt-0.5">{f.p}</p>
                 </div>
               ))}
             </div>
@@ -302,12 +253,12 @@ function Page() {
             справедливо.
           </p>
           <div className="grid md:grid-cols-3 gap-6">
-            {trust.map((t) => (
-              <div key={t.t} className="bg-card rounded-2xl p-6 ring-1 ring-rule">
-                <div className="size-11 rounded-xl bg-brand-soft text-brand grid place-items-center mb-4">
-                  <t.icon className="size-5" />
+            {trust.map((t, i) => (
+              <div key={t.t} className="rounded-2xl bg-white p-6 ring-1 ring-rule">
+                <div className="mb-4 font-semibold text-brand text-2xl tabular-nums">
+                  {String(i + 1).padStart(2, "0")}
                 </div>
-                <h3 className="font-display font-bold text-[16px] text-ink">{t.t}</h3>
+                <h3 className="font-semibold text-[16px] text-[#10141F]">{t.t}</h3>
                 <p className="mt-2 text-[13.5px] text-navy leading-relaxed">{t.p}</p>
               </div>
             ))}
@@ -330,26 +281,22 @@ function Page() {
         <h2 className="text-center font-display font-bold text-[24px] text-ink mb-10">Нашите ценности</h2>
         <div className="grid md:grid-cols-3 gap-6">
           {values.map((v) => (
-            <div key={v.t} className="text-center px-4">
-              <div className="mx-auto size-12 rounded-full bg-brand-soft text-brand grid place-items-center mb-4">
-                <v.icon className="size-6" />
-              </div>
-              <h3 className="font-display font-bold text-[16px] text-ink">{v.t}</h3>
+            <div key={v.t} className="text-left px-1">
+              <div className="mb-4 h-1 w-10 rounded-full bg-brand" />
+              <h3 className="font-semibold text-[16px] text-[#10141F]">{v.t}</h3>
               <p className="mt-2 text-[13.5px] text-navy leading-relaxed">{v.p}</p>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="bg-ink text-paper dark:bg-surface dark:text-ink py-16">
-        <div className="mx-auto max-w-3xl px-4 sm:px-6 text-center">
-          <div className="mx-auto size-14 rounded-full bg-brand grid place-items-center mb-6">
-            <ShieldCheck className="size-7 text-white" />
-          </div>
+      <div className="relative overflow-hidden bg-ink-deep py-16 text-white">
+        <div className="pointer-events-none absolute -right-8 -bottom-10 size-40 rounded-full bg-brand/30" aria-hidden />
+        <div className="relative mx-auto max-w-3xl px-4 sm:px-6 text-center">
           <p className="text-lg">
             95% от хората четат клиентски опити в {SITE_NAME} преди покупка
           </p>
-          <div className="text-brand text-5xl font-black mt-4">%95</div>
+          <div className="mt-4 text-5xl font-black text-brand">95%</div>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link
               to="/sikayet-yaz"

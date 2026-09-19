@@ -174,13 +174,15 @@ export function InfoPageShell({ page }: { page: InfoPage }) {
         })}
 
         {page.cta ? (
-          <Link
-            to={page.cta.to}
-            search={page.cta.search as never}
-            className="mt-10 inline-flex h-12 items-center justify-center rounded-full bg-brand px-7 text-[14px] font-semibold text-white shadow-[0_10px_24px_rgb(30_201_184/0.32)] transition hover:bg-brand-hover"
-          >
-            {page.cta.label}
-          </Link>
+          <div className="mt-10 flex justify-center">
+            <Link
+              to={page.cta.to}
+              search={page.cta.search as never}
+              className="inline-flex h-12 items-center justify-center rounded-full bg-brand px-7 text-[14px] font-semibold text-white shadow-[0_10px_24px_rgb(30_201_184/0.32)] transition hover:bg-brand-hover"
+            >
+              {page.cta.label}
+            </Link>
+          </div>
         ) : null}
       </div>
     </div>

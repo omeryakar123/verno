@@ -180,8 +180,16 @@ function Home() {
         updatedAt={talkedUpdatedAt}
       />
 
-      <section className="bg-ink-deep">
-        <div className="container pt-17.5 pb-24 lg:max-w-6xl lg:px-35 lg:pt-27 lg:pb-26">
+      <section className="relative overflow-hidden bg-ink-deep">
+        <div className="pointer-events-none absolute inset-0" aria-hidden>
+          <div className="absolute top-[6%] left-[4%] size-28 rounded-full bg-primary/28" />
+          <div className="absolute top-[14%] right-[10%] size-10 rounded-full bg-brand" />
+          <div className="absolute top-[38%] left-[18%] size-4 rounded-full bg-[#F5D76E]" />
+          <div className="absolute right-[6%] bottom-[18%] size-36 rounded-full bg-brand/20" />
+          <div className="absolute bottom-[8%] left-[8%] size-16 rounded-full bg-primary" />
+          <div className="absolute top-[52%] right-[22%] size-8 rounded-full bg-[#C4B5FD]" />
+        </div>
+        <div className="container relative z-10 pt-17.5 pb-24 lg:max-w-6xl lg:px-35 lg:pt-27 lg:pb-26">
           <h2 className="text-center font-medium text-3xl text-white leading-snug lg:text-6xl">
             Успех в решаването
           </h2>
