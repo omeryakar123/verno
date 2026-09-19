@@ -376,8 +376,8 @@ export function BrandListLogo({
 
   return (
     <div
-      className={`relative shrink-0 rounded-xl overflow-hidden grid place-items-center ${src ? "" : "ring-1 ring-rule/60 bg-surface"} ${className}`}
-      style={{ width: size, height: size }}
+      className={`relative grid shrink-0 place-items-center overflow-hidden rounded-xl bg-white ${src ? "" : "ring-1 ring-rule/60 bg-surface"} ${className}`}
+      style={className.includes("size-full") ? undefined : { width: size, height: size }}
     >
       {src ? (
         <img
@@ -387,7 +387,7 @@ export function BrandListLogo({
           height={px}
           loading="lazy"
           decoding="async"
-          className="size-full object-contain p-1"
+          className="size-full object-contain p-1.5"
           onError={() => setCandidateIdx((i) => i + 1)}
         />
       ) : (

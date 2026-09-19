@@ -1,7 +1,6 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { CorporateNav } from "@/components/corporate/corporate-nav";
 import { SiteFooter } from "@/components/site-chrome";
-import { TawkChat } from "@/components/tawk-chat";
 
 /**
  * Корпоративни landing страници (Pro членство и др.) — отделна навигация от
@@ -19,7 +18,6 @@ function CorporateLayout() {
         <Outlet />
       </main>
       <SiteFooter />
-      <TawkChat />
     </div>
   );
 }

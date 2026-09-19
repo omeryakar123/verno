@@ -6,8 +6,8 @@
     "foreground": "#FFFFFF"
   },
   "primary": {
-    "DEFAULT": "#3550F2",
-    "hover": "#4B63F5",
+    "DEFAULT": "#695DE9",
+    "hover": "#7B71EC",
     "foreground": "#FFFFFF"
   },
   "paper": "#F7F8FC",
@@ -36,8 +36,8 @@
     "soft": "#FEF0EF"
   },
   "info": {
-    "DEFAULT": "#3550F2",
-    "soft": "#EEF1FE"
+    "DEFAULT": "#695DE9",
+    "soft": "#F1EFFE"
   },
   "media": {
     "DEFAULT": "#10141F",

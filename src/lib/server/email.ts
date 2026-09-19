@@ -3,7 +3,7 @@
 import nodemailer from "nodemailer";
 import { SITE_NAME, SITE_URL } from "@/lib/seo";
 
-const BRAND_PRIMARY = "#3550F2";
+const BRAND_PRIMARY = "#695DE9";
 const BRAND_GREEN = "#1EC9B8";
 
 export function resolveFromAddress(): string {

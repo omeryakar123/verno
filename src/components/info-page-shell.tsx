@@ -49,7 +49,7 @@ const ICONS: Record<string, LucideIcon> = {
 function CardIcon({ name }: { name: string }) {
   const Icon = ICONS[name] ?? Shield;
   return (
-    <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-[#695de9]/10 text-[#695de9]">
+    <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-primary/10 text-primary">
       <Icon className="size-5" />
     </span>
   );
@@ -61,7 +61,7 @@ function StepsBlock({ items }: { items: { title: string; body: string }[] }) {
       {items.map((s, i) => (
         <div key={s.title} className="flex gap-4">
           <div className="flex flex-col items-center">
-            <div className="grid size-10 shrink-0 place-items-center rounded-full bg-[#695de9] text-sm font-bold text-white shadow-[0_8px_20px_rgb(105_93_233/0.28)]">
+            <div className="grid size-10 shrink-0 place-items-center rounded-full bg-primary text-sm font-bold text-white shadow-[0_8px_20px_rgb(105_93_233/0.28)]">
               {i + 1}
             </div>
             {i < items.length - 1 ? <div className="min-h-8 w-0.5 flex-1 bg-[#ebecef]" /> : null}
@@ -113,7 +113,7 @@ function ContactBlock({ phone, email, address }: { phone: string; email: string;
             {...(r.href ? { href: r.href } : {})}
             className="flex items-center gap-3 px-5 py-5 transition hover:bg-[#f4f6fb]"
           >
-            <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-[#3ad08f]/12 text-[#1f9d6a]">
+            <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-brand/12 text-brand">
               <r.icon className="size-5" />
             </span>
             <div className="min-w-0 flex-1">
@@ -134,15 +134,15 @@ export function InfoPageShell({ page }: { page: InfoPage }) {
     <div className="listing-page">
       <section className="relative overflow-hidden bg-white">
         <div
-          className="pointer-events-none absolute -top-16 -right-10 size-56 rounded-full bg-[#695de9]/12"
+          className="pointer-events-none absolute -top-16 -right-10 size-56 rounded-full bg-primary/12"
           aria-hidden
         />
         <div
-          className="pointer-events-none absolute -bottom-16 left-0 size-40 rounded-full bg-[#3ad08f]/18"
+          className="pointer-events-none absolute -bottom-16 left-0 size-40 rounded-full bg-brand/18"
           aria-hidden
         />
         <div className="relative mx-auto max-w-3xl px-4 py-14 sm:px-6 lg:py-20">
-          <div className="mb-5 grid size-14 place-items-center rounded-2xl bg-[#695de9] text-white shadow-[0_12px_28px_rgb(105_93_233/0.28)]">
+          <div className="mb-5 grid size-14 place-items-center rounded-2xl bg-primary text-white shadow-[0_12px_28px_rgb(105_93_233/0.28)]">
             <HeroIcon className="size-7" />
           </div>
           <h1 className="font-display text-3xl font-black leading-tight text-ink sm:text-5xl">
@@ -177,7 +177,7 @@ export function InfoPageShell({ page }: { page: InfoPage }) {
           <Link
             to={page.cta.to}
             search={page.cta.search as never}
-            className="mt-10 inline-flex h-12 items-center justify-center rounded-full bg-[#3ad08f] px-7 text-[14px] font-semibold text-white shadow-[0_10px_24px_rgb(58_208_143/0.32)] transition hover:bg-[#42e29d]"
+            className="mt-10 inline-flex h-12 items-center justify-center rounded-full bg-brand px-7 text-[14px] font-semibold text-white shadow-[0_10px_24px_rgb(30_201_184/0.32)] transition hover:bg-brand-hover"
           >
             {page.cta.label}
           </Link>

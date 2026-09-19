@@ -18,8 +18,8 @@ export function HomeMediaBlock({ src, alt }: Props) {
           src={src}
           loading="lazy"
         />
-        <span className="group/play absolute top-1/2 left-1/2 flex size-20 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow-pop hover:bg-[#3ad08f]">
-          <Play className="w-5 fill-emerald-400 text-white group-hover/play:fill-white group-hover/play:text-[#3ad08f]" />
+        <span className="group/play absolute top-1/2 left-1/2 flex size-20 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow-pop hover:bg-brand">
+          <Play className="w-5 fill-brand text-white group-hover/play:fill-white group-hover/play:text-brand" />
         </span>
       </div>
     </div>
@@ -31,11 +31,11 @@ export function HomeAwardsSeal() {
     <div className="relative mx-auto mt-14 flex w-full max-w-[22rem] flex-col items-center justify-center px-6 lg:mt-0 lg:min-w-[28rem] lg:max-w-[32rem]">
       <div className="relative grid place-items-center">
         <div
-          className="absolute size-64 rounded-full bg-[#3ad08f]/35 blur-3xl animate-seal-glow lg:size-80"
+          className="absolute size-64 rounded-full bg-brand/35 blur-3xl animate-seal-glow lg:size-80"
           aria-hidden
         />
         <div
-          className="absolute size-56 rounded-full border-2 border-[#695de9]/25 animate-seal-pulse-ring lg:size-72"
+          className="absolute size-56 rounded-full border-2 border-primary/25 animate-seal-pulse-ring lg:size-72"
           aria-hidden
         />
         <img
@@ -55,7 +55,7 @@ export function HomeAwardsSeal() {
           height={45}
           className="h-8 w-auto object-contain lg:h-10"
         />
-        <p className="font-semibold tracking-[0.18em] text-[#695de9] uppercase text-sm lg:text-base">
+        <p className="font-semibold tracking-[0.18em] text-primary uppercase text-sm lg:text-base">
           verno награди
         </p>
       </div>
@@ -65,12 +65,11 @@ export function HomeAwardsSeal() {
 
 export function HomeDecorBlobs() {
   return (
-    <div className="hidden lg:block" aria-hidden>
-      <div className="absolute top-10 left-80/100 size-75 rounded-full bg-indigo-100" />
-      <div className="absolute top-5 left-72/100 size-28 rounded-full bg-emerald-400" />
-      <div className="absolute top-80.5 left-70/100 h-60 w-125 -rotate-30 rounded-t-full bg-indigo-500" />
-      <div className="absolute bottom-0 left-80/100 h-46 w-94 rounded-t-full bg-emerald-300" />
-      <div className="absolute bottom-0 left-73/100 size-15 rounded-full bg-yellow-400" />
+    <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[42%] overflow-hidden lg:block" aria-hidden>
+      <div className="absolute top-8 right-8 size-40 rounded-full bg-primary/10" />
+      <div className="absolute top-16 right-40 size-16 rounded-full bg-brand" />
+      <div className="absolute bottom-0 right-0 h-36 w-56 rounded-tl-full bg-brand/25" />
+      <div className="absolute bottom-6 right-48 size-10 rounded-full bg-[#F5D76E]" />
     </div>
   );
 }

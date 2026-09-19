@@ -308,7 +308,7 @@ export function SikayetvarPattern({ className }: { className?: string }) {
       aria-hidden
     >
       <rect x="16" y="16" width="72" height="72" rx="8" fill="#1EC9B8" />
-      <circle cx="200" cy="52" r="36" fill="#3550F2" />
+      <circle cx="200" cy="52" r="36" fill="#695DE9" />
       <rect
         x="248"
         y="16"
@@ -324,7 +324,7 @@ export function SikayetvarPattern({ className }: { className?: string }) {
         width="56"
         height="56"
         rx="28"
-        fill="#3550F2"
+        fill="#695DE9"
         opacity="0.85"
       />
       <rect
@@ -344,11 +344,11 @@ export function SikayetvarPattern({ className }: { className?: string }) {
         width="56"
         height="56"
         rx="8"
-        fill="#3550F2"
+        fill="#695DE9"
         opacity="0.7"
       />
       <circle cx="248" cy="244" r="36" fill="#1EC9B8" opacity="0.8" />
-      <rect x="16" y="304" width="56" height="56" rx="28" fill="#3550F2" />
+      <rect x="16" y="304" width="56" height="56" rx="28" fill="#695DE9" />
       <rect
         x="96"
         y="304"

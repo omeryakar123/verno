@@ -17,19 +17,16 @@ import {
   fetchLiveFeed,
   fetchPlatformStats,
 } from "@/lib/data";
-import { trendGrowthPct, type TrendBrand } from "@/lib/trend-brand";
+import { type TrendBrand } from "@/lib/trend-brand";
 import { publicPlatformStats } from "@/lib/public-stats";
 import { SITE_CONTACT_EMAIL } from "@/lib/contact";
 import { BrandListLogo } from "@/components/cards";
 import { HeroSection } from "@/components/home/hero-section";
 import { AgendaMarquee } from "@/components/home/agenda-marquee";
 import { TalkedCarousel } from "@/components/home/talked-carousel";
-import {
-  HomeAwardsSeal,
-  HomeDecorBlobs,
-  HomeMediaBlock,
-} from "@/components/home/home-media-block";
-import { TrendSparkline } from "@/components/home/trend-sparkline";
+import { HomeAwardsSeal, HomeDecorBlobs } from "@/components/home/home-media-block";
+import { HomeWordmark } from "@/components/home/home-wordmark";
+import { TrendStrip } from "@/components/home/trend-strip";
 import {
   brandsOrPlaceholders,
   complaintsOrPlaceholders,
@@ -183,7 +180,7 @@ function Home() {
         updatedAt={talkedUpdatedAt}
       />
 
-      <section className="bg-[#272635]">
+      <section className="bg-ink-deep">
         <div className="container pt-17.5 pb-24 lg:max-w-6xl lg:px-35 lg:pt-27 lg:pb-26">
           <h2 className="text-center font-medium text-3xl text-white leading-snug lg:text-6xl">
             Успех в решаването
@@ -197,90 +194,74 @@ function Home() {
             Класирането се базира единствено на удовлетвореността на
             потребителите — независимо от размера на фирмата или броя жалби.
           </p>
-          <ul className="mt-10 space-y-5 lg:mt-12 lg:space-y-2.5 lg:px-2.5">
-            {brandsOrPlaceholders(top).map((b, i) => (
-              <li key={b.slug}>
-                <Link
-                  to="/firma/$slug"
-                  params={{ slug: b.slug }}
-                  className="relative flex w-full rounded-2xl bg-gray-100 shadow-[0_10px_28px_rgb(0_0_0/0.18)] transition-colors hover:bg-[#eef0f4] lg:rounded-3xl"
-                >
-                  <div
-                    className={`flex w-max min-w-7.5 flex-col items-center justify-center gap-0.5 rounded-3xl px-0.5 font-bold text-neutral-700 text-xs leading-3.5 tracking-tight lg:min-w-11 lg:gap-1 lg:text-[13px] ${i === 0 ? "bg-blue-100" : ""}`}
+          <ul className="mt-10 space-y-3 lg:mt-12">
+            {brandsOrPlaceholders(top).map((b, i) => {
+              const rate = Math.min(100, Math.max(0, Math.round(b.resolutionRate)));
+              return (
+                <li key={b.slug}>
+                  <Link
+                    to="/firma/$slug"
+                    params={{ slug: b.slug }}
+                    className="flex items-center gap-3 rounded-2xl bg-white/95 px-3 py-3 shadow-[0_10px_28px_rgb(0_0_0/0.16)] transition hover:bg-white lg:gap-5 lg:rounded-3xl lg:px-5 lg:py-4"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 492 492"
-                      className="w-3"
-                      aria-hidden
+                    <span
+                      className={`grid size-10 shrink-0 place-items-center rounded-2xl text-[15px] font-bold lg:size-12 lg:text-lg ${
+                        i === 0
+                          ? "bg-primary text-white"
+                          : i === 1
+                            ? "bg-brand text-white"
+                            : i === 2
+                              ? "bg-ink-deep text-white"
+                              : "bg-paper text-navy"
+                      }`}
                     >
-                      <path
-                        fill="#4C698C"
-                        d="M465 207.6H27a27 27 0 0 0-27 27v22.7c0 14.9 12 27.1 27 27.1h438c14.9 0 27-12.2 27-27v-22.9a27 27 0 0 0-27-27"
-                      />
-                    </svg>
-                    <span className="hidden lg:block">{i + 1}</span>
-                  </div>
-                  <div className="ml-2.5 flex flex-1 items-center py-4 pr-2.5 lg:ml-7 lg:pr-7.5">
-                    <div className="flex h-16 w-19 items-center justify-center rounded-xl bg-white px-1 py-2.5 shadow-soft lg:h-22 lg:w-27">
+                      {i + 1}
+                    </span>
+                    <div className="grid size-14 shrink-0 place-items-center rounded-xl bg-white ring-1 ring-black/6 lg:size-16">
                       <BrandListLogo
                         name={b.name}
                         slug={b.slug}
                         logoUrl={b.logoUrl}
                         website={b.website}
-                        size={64}
-                        className="size-full object-contain"
+                        size={56}
+                        className="size-full object-contain p-1"
                       />
                     </div>
-                    <div className="ml-3.5 flex min-w-0 flex-1 flex-col gap-1.5 text-neutral-700 lg:ml-7 lg:flex-row lg:items-center lg:justify-between lg:gap-4">
-                      <div className="min-w-0 lg:grow">
-                        <span className="mr-1 align-baseline font-bold lg:text-xl">
-                          {i + 1}.
-                        </span>
-                        <h3 className="mr-1 inline align-baseline font-medium leading-tight [word-break:break-word] lg:max-w-72 lg:truncate lg:text-xl">
-                          {b.name}
-                        </h3>
-                        <div className="mt-1 text-sm text-zinc-500 lg:hidden">
-                          {b.categoryName}
-                        </div>
-                      </div>
-                      <div className="hidden text-sm text-zinc-500 lg:block lg:text-base">
-                        {b.categoryName}
-                      </div>
-                      <div className="flex shrink-0 items-center gap-3">
-                        <div className="text-right">
-                          <div className="font-black tabular-nums text-[#3ad08f] text-2xl leading-none lg:text-[32px]">
-                            {Math.round(b.resolutionRate)}%
-                          </div>
-                          <div className="mt-1 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
-                            решени
-                          </div>
-                        </div>
-                        <div className="hidden h-2 w-16 overflow-hidden rounded-full bg-zinc-200 lg:block">
-                          <div
-                            className="h-full rounded-full bg-[#3ad08f]"
-                            style={{ width: `${Math.min(100, Math.max(0, b.resolutionRate))}%` }}
-                          />
-                        </div>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="truncate font-semibold text-ink lg:text-xl">{b.name}</h3>
+                      <p className="mt-0.5 truncate text-[13px] text-navy-mid">{b.categoryName}</p>
+                      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-zinc-200">
+                        <div
+                          className="h-full rounded-full bg-brand"
+                          style={{ width: `${rate}%` }}
+                        />
                       </div>
                     </div>
-                  </div>
-                </Link>
-              </li>
-            ))}
+                    <div className="shrink-0 text-right">
+                      <div className="font-black tabular-nums text-brand text-2xl leading-none lg:text-[30px]">
+                        {rate}%
+                      </div>
+                      <div className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-navy-mid">
+                        решени
+                      </div>
+                    </div>
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </div>
       </section>
 
       <section
         id="awards"
-        className="relative overflow-hidden bg-white pt-10 lg:pt-33 lg:pb-48"
+        className="relative overflow-hidden bg-white py-12 lg:py-20"
       >
-        <div className="relative flex flex-col lg:container lg:z-10 lg:max-w-6xl lg:flex-row lg:items-center lg:justify-center lg:gap-10">
-          <div className="container flex flex-col justify-center text-zinc-500">
-            <h2 className="font-semibold text-2xl leading-7 lg:text-[42px] lg:leading-[52px]">
-              <span className="font-normal">{SITE_NAME}</span>
-              <br className="hidden lg:block" /> Награди
+        <div className="relative z-10 flex flex-col lg:container lg:max-w-6xl lg:flex-row lg:items-center lg:justify-center lg:gap-10">
+          <div className="container flex flex-col justify-center text-navy-mid">
+            <h2 className="flex flex-col items-start gap-2 font-semibold text-2xl leading-7 text-ink lg:text-[42px] lg:leading-[52px]">
+              <HomeWordmark />
+              <span>Награди</span>
             </h2>
             <p className="mt-7.5 text-lg leading-6.5 lg:pr-10">
               Всяка година награждаваме марките, които правят разлика в
@@ -294,9 +275,10 @@ function Home() {
       </section>
 
       <section className="home-stats-band">
-        <div className="container pt-12 pb-15 lg:pt-36 lg:pb-50">
-          <h2 className="text-center font-semibold text-2xl text-zinc-500 leading-none lg:font-medium lg:text-4xl">
-            {SITE_NAME} в цифри
+        <div className="container py-12 lg:py-20">
+          <h2 className="flex items-center justify-center gap-2.5 font-semibold text-2xl text-ink leading-none lg:text-4xl">
+            <HomeWordmark heightClass="h-6 lg:h-9" />
+            <span>в цифри</span>
           </h2>
           <ul className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:mt-25 lg:grid-cols-5 lg:gap-7.5">
             {[
@@ -330,113 +312,9 @@ function Home() {
         </div>
       </section>
 
-      <section className="bg-white py-15 md:py-20 lg:py-25">
-        <header className="container text-center">
-          <h2 className="inline-flex items-center font-semibold text-3xl text-slate-800 leading-snug lg:text-6xl lg:tracking-wide">
-            Trend
-            <span className="sr-only">100</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 42 21"
-              className="w-8 lg:ml-1 lg:w-15"
-              aria-hidden
-            >
-              <path fill="#03E5B6" d="M3.8.4V21h3V.4z" />
-              <path
-                fill="#03E5B6"
-                d="M3.5.4 0 5.7h3.5L6.9.4zM23 20.6a10.3 10.3 0 1 1 7.4-8.8l-3.1-.4a7.2 7.2 0 1 0-5.2 6.2z"
-              />
-              <path
-                fill="#03E5B6"
-                d="M28.1 1A10.3 10.3 0 1 1 22 7.3l3.4 1.2a6.7 6.7 0 1 0 4-4.1z"
-              />
-            </svg>
-          </h2>
-          <p className="mt-[35px] mb-5.5 font-normal text-lg text-neutral-400 leading-6.5 lg:mt-9 lg:text-xl">
-            Марки с растяща посещаемост и популярност — следвайте тренда днес.
-          </p>
-        </header>
-        <ul className="container mt-15 hidden font-semibold text-[#afb0b6] text-sm leading-none lg:flex">
-          <li className="w-5/10 lg:ml-10 lg:w-[46%] xl:w-[50%]">Марка</li>
-          <li className="ml-6.5 w-1/6 lg:ml-0 lg:w-[12%]">Тренд</li>
-          <li className="ml-5.5 w-[14.5%] lg:ml-15 lg:w-[10%]">Ръст</li>
-        </ul>
-        <section className="mt-8 rounded-[40px] bg-gray-100 px-2 py-8 lg:container lg:mt-12 lg:rounded-[64px] lg:p-8">
-          <ul className="flex flex-col gap-2.5 lg:max-w-none lg:gap-1.5">
-            {trendOrPlaceholders(trend100).slice(0, 8).map((b, i) => {
-              const growth = trendGrowthPct(b.recentComplaints, b.priorComplaints);
-              return (
-                <li
-                  key={b.slug}
-                  className="group rounded-4xl transition-colors hover:bg-gray-50"
-                >
-                  <Link
-                    to="/firma/$slug"
-                    params={{ slug: b.slug }}
-                    className="relative flex rounded-4xl bg-white p-5 transition-colors group-hover:bg-gray-50 lg:p-6"
-                  >
-                    <div className="mt-4 min-w-9 font-semibold text-lg text-zinc-400 leading-6 lg:text-2xl">
-                      {i + 1}.
-                    </div>
-                    <div className="ml-5 flex w-full flex-col overflow-hidden lg:flex-row lg:items-center lg:gap-2">
-                      <div className="flex w-full justify-between lg:w-1/2 lg:flex-row-reverse lg:items-center lg:gap-5">
-                        <div className="mt-3.5 w-[calc(100%-105px)] lg:mt-0">
-                          <div className="inline-flex w-full items-center gap-0.5 font-semibold text-lg text-neutral-700 leading-5.5">
-                            <span className="truncate">{b.name}</span>
-                          </div>
-                          <div className="mt-1.5 truncate text-sm text-zinc-500 leading-4">
-                            {b.categoryName}
-                          </div>
-                        </div>
-                        <div className="inline-flex h-18 w-23 items-center justify-center rounded-2xl border border-[#dcdde1] bg-white px-3.5 py-3 lg:h-22 lg:w-27 lg:p-4">
-                          <BrandListLogo
-                            name={b.name}
-                            slug={b.slug}
-                            logoUrl={b.logoUrl}
-                            website={b.website}
-                            size={56}
-                            className="size-full object-contain"
-                          />
-                        </div>
-                      </div>
-                      <div className="mt-2.5 h-11 w-28 lg:mt-0">
-                        <TrendSparkline
-                          seed={b.slug}
-                          rising={(growth ?? 0) >= 0}
-                        />
-                      </div>
-                      <div className="hidden items-center lg:ml-24 lg:flex lg:w-[14.5%]">
-                        <span className="font-semibold text-[#7c7b85] text-lg leading-none">
-                          {growth != null ? `% ${growth}` : "—"}
-                        </span>
-                      </div>
-                      <div className="mt-12 flex flex-col gap-3 lg:hidden">
-                        <div className="flex items-center justify-between">
-                          <span className="font-semibold text-sm text-zinc-400 leading-6.5">
-                            Ръст
-                          </span>
-                          <span className="font-semibold text-[#7c7b85] text-lg leading-none">
-                            {growth != null ? `% ${growth}` : "—"}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-        <Link
-          to="/trend-100"
-          className="mx-auto mt-20 block w-fit rounded-full border border-emerald-400 px-12 py-5 text-center font-semibold text-emerald-400 leading-none tracking-wide hover:bg-emerald-400 hover:text-white lg:min-w-77 lg:py-6"
-        >
-          Виж повече
-        </Link>
-      </section>
+      <TrendStrip items={trendOrPlaceholders(trend100)} />
 
-      <section className="bg-[#695de9] pt-15 pb-20 lg:py-28">
+      <section className="bg-primary pt-15 pb-20 lg:py-28">
         <div className="container">
           <div className="mx-auto text-center text-white">
             <h2 className="font-semibold text-4xl leading-tight tracking-wide lg:font-medium">
@@ -457,34 +335,6 @@ function Home() {
         </div>
       </section>
 
-      <section className="relative overflow-hidden bg-white pt-10 lg:pt-33 lg:pb-48">
-        <div className="relative flex flex-col lg:container lg:z-10 lg:max-w-6xl lg:flex-row lg:justify-center lg:gap-10">
-          <div className="container flex flex-col justify-center text-zinc-500">
-            <h2 className="font-semibold text-2xl leading-7 lg:text-3xl lg:leading-9">
-              Проверете Trust Score на марката преди покупка
-            </h2>
-            <div className="mt-7.5 space-y-3 text-lg leading-6.5 lg:mt-6 lg:space-y-2.5 lg:pr-10 lg:text-base lg:leading-6">
-              <p>{SITE_NAME} е адресът на потребителското доверие в България.</p>
-              <p>
-                <strong>Trust Score</strong> прави нивото на доверие на марките
-                видимо за вас.
-              </p>
-              <p>
-                Преди да пазарувате, проверете оценката, скоростта на отговор и
-                реалните отзиви.
-              </p>
-              <p>
-                <strong>Открийте новия стандарт за сигурни покупки.</strong>
-              </p>
-            </div>
-          </div>
-          <HomeMediaBlock
-            src="/home/video-cover-trust.jpg"
-            alt="Trust Score"
-          />
-        </div>
-        <HomeDecorBlobs />
-      </section>
     </div>
   );
 }

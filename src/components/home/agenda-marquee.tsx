@@ -11,46 +11,44 @@ type Props = {
 
 function AgendaCard({ complaint }: { complaint: Complaint }) {
   return (
-    <article className="relative mr-8 flex h-35 w-full shrink-0 gap-4 rounded-xl bg-white p-4.5 md:mr-8 md:w-1/2 lg:mr-10 lg:h-45 lg:w-[31vw]">
-      <div className="flex flex-1 flex-col justify-center">
-        <div className="pointer-events-none relative z-20 mb-2 flex items-center gap-2 text-sm lg:mb-4 lg:gap-3 lg:text-base [&_a]:pointer-events-auto">
-          <span className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#ecfdf5] text-[11px] font-bold text-[#3ad08f] lg:size-10">
-            {complaint.userInitials}
-          </span>
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-x-1.5 leading-none text-neutral-700 lg:gap-x-3">
-              <span className="truncate font-bold xl:text-xl">{complaint.userName}</span>
-              <Link
-                to="/firma/$slug"
-                params={{ slug: complaint.companySlug }}
-                className="flex items-center gap-0.5 overflow-hidden text-xs font-semibold text-[#3ad08f] xl:gap-1 xl:text-sm"
-                title={complaint.companyName}
-              >
-                <span className="line-clamp-2 min-w-0 truncate">{complaint.companyName}</span>
-              </Link>
-            </div>
-            <span className="mt-0.5 flex items-center gap-1 text-[10px] leading-none text-neutral-400 xl:text-sm">
-              <Eye className="size-3 shrink-0" aria-hidden />
-              {(complaint.views ?? 0).toLocaleString("bg-BG")}
-            </span>
+    <article className="relative mr-4 flex h-auto min-h-[9.5rem] w-[min(86vw,22rem)] shrink-0 flex-col justify-between rounded-2xl bg-white p-4 shadow-[0_10px_28px_rgb(16_20_31/0.08)] ring-1 ring-black/4 md:mr-5 md:w-[20rem] lg:min-h-[10.5rem] lg:w-[22rem] lg:p-5">
+      <div className="flex items-center gap-3">
+        <span className="grid size-9 shrink-0 place-items-center rounded-full bg-brand-soft text-[11px] font-bold text-brand lg:size-10">
+          {complaint.userInitials}
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-baseline gap-x-2 text-[13px] leading-tight lg:text-[15px]">
+            <span className="truncate font-bold text-[#10141F]">{complaint.userName}</span>
+            <Link
+              to="/firma/$slug"
+              params={{ slug: complaint.companySlug }}
+              className="truncate font-semibold text-brand"
+              title={complaint.companyName}
+            >
+              {complaint.companyName}
+            </Link>
           </div>
+          <span className="mt-0.5 flex items-center gap-1 text-[11px] text-navy-mid">
+            <Eye className="size-3 shrink-0" aria-hidden />
+            {(complaint.views ?? 0).toLocaleString("bg-BG")}
+          </span>
         </div>
-        <Link
-          to="/sikayet/$id"
-          params={{ id: complaintLinkId(complaint) }}
-          className="line-clamp-2 h-10 font-semibold text-base leading-snug text-neutral-700 lg:h-14 lg:text-xl"
-          title={complaint.title}
-        >
-          {complaint.title}
-        </Link>
-        <div className="relative z-20 mt-3">
-          <ComplaintSupportButton
-            complaintId={complaint.id}
-            initialVotes={complaint.votes}
-            initialSupported={complaint.supported}
-            size="sm"
-          />
-        </div>
+      </div>
+      <Link
+        to="/sikayet/$id"
+        params={{ id: complaintLinkId(complaint) }}
+        className="mt-3 line-clamp-2 font-semibold text-[15px] leading-snug text-[#10141F] lg:text-[17px]"
+        title={complaint.title}
+      >
+        {complaint.title}
+      </Link>
+      <div className="mt-3">
+        <ComplaintSupportButton
+          complaintId={complaint.id}
+          initialVotes={complaint.votes}
+          initialSupported={complaint.supported}
+          size="sm"
+        />
       </div>
     </article>
   );
@@ -61,31 +59,19 @@ export function AgendaMarquee({ items, compact = false }: Props) {
   const doubled = [...list, ...list];
 
   return (
-    <div
-      className={
-        compact
-          ? "space-y-5 pb-8 md:space-y-6 lg:pb-12"
-          : "space-y-6 pb-12 md:space-y-8 lg:pb-33"
-      }
-    >
-      <div className="container mb-6 max-w-6xl px-4">
-        <h2
-          className={
-            compact
-              ? "mb-4 font-semibold text-xl text-navy-mid lg:mb-8 lg:font-medium lg:text-2xl"
-              : "mb-8 font-semibold text-2xl text-[#85878e] lg:mb-28 lg:font-medium lg:text-3xl"
-          }
-        >
+    <section className={compact ? "bg-[#F4F6FB] py-8" : "bg-[#F4F6FB] py-10 lg:py-14"}>
+      <div className="container mb-5 max-w-6xl px-4 lg:mb-8">
+        <h2 className="font-semibold text-[#10141F] text-xl lg:text-[28px]">
           Жалби в дневния ред
         </h2>
       </div>
 
-      <div className="relative mb-8 overflow-hidden lg:mb-10">
+      <div className="relative overflow-hidden">
         {list.length === 0 ? (
           <p className="container px-4 text-sm text-navy-mid">Все още няма жалби.</p>
         ) : (
           <div
-            className="flex w-max animate-home-marquee"
+            className="flex w-max animate-home-marquee py-1"
             style={
               {
                 "--marquee-duration": `${Math.max(list.length * 14, 60)}s`,
@@ -98,6 +84,6 @@ export function AgendaMarquee({ items, compact = false }: Props) {
           </div>
         )}
       </div>
-    </div>
+    </section>
   );
 }

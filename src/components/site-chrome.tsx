@@ -52,7 +52,7 @@ export function SiteNav() {
             <SiteLogoNav className="h-[24px]" />
             <Link
               to="/sikayet-yaz"
-              className="inline-flex h-9 shrink-0 items-center justify-center rounded-full bg-[#695de9] px-3.5 text-[13px] font-semibold text-white transition hover:bg-[#5a4fd9]"
+              className="inline-flex h-9 shrink-0 items-center justify-center rounded-full bg-primary px-3.5 text-[13px] font-semibold text-white transition hover:bg-primary-hover"
             >
               + Жалба
             </Link>
@@ -124,7 +124,7 @@ export function SiteNav() {
 
             <Link
               to="/sikayet-yaz"
-              className="inline-flex h-[42px] shrink-0 items-center justify-center rounded-full bg-[#695de9] px-6 text-[14px] font-semibold text-white transition hover:bg-[#5a4fd9]"
+              className="inline-flex h-[42px] shrink-0 items-center justify-center rounded-full bg-primary px-6 text-[14px] font-semibold text-white transition hover:bg-primary-hover"
             >
               + Напиши жалба
             </Link>

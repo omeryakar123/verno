@@ -1,54 +1,66 @@
 import { Search } from "lucide-react";
 
+const PEOPLE = {
+  phone: "/home-banner/people/phone.png",
+  sit: "/home-banner/people/sit.png",
+  celebrate: "/home-banner/people/celebrate.png",
+} as const;
+
 const MOBILE_SLOTS = [
   {
-    src: "/home-banner/mobile/1.jpg",
+    src: PEOPLE.phone,
     left: "24.939%",
     top: "0%",
     width: "38.499%",
     height: "46.377%",
+    position: "50% 18%",
   },
   {
-    src: "/home-banner/mobile/3.jpg",
+    src: PEOPLE.sit,
     left: "0%",
     top: "0%",
     width: "24.939%",
     height: "46.377%",
     borderTopRightRadius: "70.874% 76.042%",
+    position: "50% 22%",
   },
   {
-    src: "/home-banner/mobile/2.jpg",
+    src: PEOPLE.celebrate,
     left: "63.438%",
     top: "0%",
     width: "36.562%",
     height: "72.947%",
     rounded: true,
+    position: "50% 18%",
   },
 ] as const;
 
 const DESKTOP_SLOTS = [
   {
-    src: "/home-banner/desktop/1.jpg",
+    src: PEOPLE.celebrate,
     left: "0%",
     top: "0%",
     width: "38.628%",
     height: "38.824%",
+    position: "50% 18%",
   },
   {
-    src: "/home-banner/desktop/2.jpg",
+    src: PEOPLE.phone,
     left: "38.628%",
     top: "16.471%",
     width: "36.608%",
     height: "35.556%",
     rounded: true,
+    position: "50% 16%",
   },
   {
-    src: "/home-banner/desktop/3.jpg",
+    src: PEOPLE.sit,
     left: "25.168%",
     top: "64.967%",
     width: "26.918%",
     height: "23.66%",
     borderTopRightRadius: "36.5% 40.331%",
+    position: "48% 28%",
   },
 ] as const;
 
@@ -60,12 +72,13 @@ type Slot = {
   height: string;
   rounded?: boolean;
   borderTopRightRadius?: string;
+  position?: string;
 };
 
 function SlotImage({ slot }: { slot: Slot }) {
   return (
     <div
-      className={`absolute overflow-hidden${slot.rounded ? " rounded-full" : ""}`}
+      className={`absolute overflow-hidden bg-white${slot.rounded ? " rounded-full" : ""}`}
       style={{
         left: slot.left,
         top: slot.top,
@@ -79,6 +92,7 @@ function SlotImage({ slot }: { slot: Slot }) {
         alt=""
         fetchPriority="high"
         className="absolute inset-0 size-full object-cover"
+        style={{ objectPosition: slot.position ?? "50% 20%" }}
       />
     </div>
   );
@@ -92,7 +106,7 @@ type Props = {
 
 export function HeroSection({ search, onSearchChange, onSubmit }: Props) {
   return (
-    <div className="relative pt-4 pb-20 lg:pb-[247px] lg:before:absolute lg:before:top-[31px] lg:before:right-0 lg:before:bottom-auto lg:before:block lg:before:h-[270px] lg:before:w-[calc(50%-720px)] lg:before:bg-[#e4e7f3] lg:before:content-['']">
+    <section className="relative overflow-hidden bg-white pb-10 lg:pb-16">
       <div className="relative mb-8 block h-[50.1vw] w-full lg:hidden">
         <img
           src="/home-banner/mobile/banner.svg"
@@ -105,23 +119,9 @@ export function HeroSection({ search, onSearchChange, onSubmit }: Props) {
         ))}
       </div>
 
-      <div className="absolute inset-0 -top-24 mx-auto hidden max-w-[1440px] justify-end lg:flex">
-        <div className="relative h-[648px] w-[630px] xl:h-[765px] xl:w-[743px]">
-          <img
-            src="/home-banner/desktop/banner.svg"
-            alt=""
-            fetchPriority="high"
-            className="absolute inset-0 h-full w-full"
-          />
-          {DESKTOP_SLOTS.map((slot) => (
-            <SlotImage key={slot.src} slot={slot} />
-          ))}
-        </div>
-      </div>
-
-      <div className="relative z-10 container px-4 lg:max-w-6xl lg:px-0">
-        <div className="lg:w-[46.3%] lg:pt-20">
-          <h1 className="mb-5 whitespace-pre-line font-normal text-[#383838] text-[43px] leading-tight tracking-[1px] lg:mb-28 lg:text-[61px] lg:leading-[1.12]">
+      <div className="container relative z-10 px-4 lg:grid lg:max-w-6xl lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:items-center lg:gap-10 lg:px-0">
+        <div className="lg:py-16">
+          <h1 className="mb-6 whitespace-pre-line font-normal text-[#383838] text-[36px] leading-[1.12] tracking-[0.5px] sm:text-[43px] lg:mb-10 lg:text-[56px]">
             <strong className="font-semibold">За решение</strong>
             {"\n"}
             verno.bg
@@ -136,25 +136,37 @@ export function HeroSection({ search, onSearchChange, onSubmit }: Props) {
                 aria-label="Търси марка, модел, продукт"
                 autoComplete="off"
                 spellCheck={false}
-                className="h-15 w-full min-w-0 overflow-hidden text-ellipsis rounded-4xl border-0 bg-white pr-24 pl-6 outline-none placeholder:truncate placeholder:text-gray-400 lg:pr-38 lg:pl-14 [&::-webkit-search-cancel-button]:appearance-none"
+                className="home-search-field"
               />
               <button
                 type="submit"
                 aria-label="Търси"
-                className="absolute top-0 right-0 flex h-full w-22 rounded-4xl bg-[#3ad08f] text-white lg:pointer-events-none lg:right-auto lg:left-4 lg:w-auto lg:bg-transparent lg:text-[#626692]"
+                className="absolute top-0 right-0 flex h-full w-22 rounded-4xl bg-brand text-white lg:hidden"
               >
                 <Search className="m-auto size-6" aria-hidden />
               </button>
               <button
                 type="submit"
-                className="absolute top-0 right-0 z-10 hidden h-full w-32 cursor-pointer items-center justify-center rounded-full bg-[#3ad08f] font-semibold text-lg text-white transition-opacity hover:bg-[#42e29d] lg:flex"
+                className="absolute top-0 right-0 z-10 hidden h-full w-32 cursor-pointer items-center justify-center rounded-full bg-brand font-semibold text-lg text-white transition-opacity hover:bg-brand-hover lg:flex"
               >
                 Търси
               </button>
             </div>
           </form>
         </div>
+
+        <div className="relative mx-auto hidden h-[520px] w-full max-w-[620px] lg:block xl:h-[580px] xl:max-w-[680px]">
+          <img
+            src="/home-banner/desktop/banner.svg"
+            alt=""
+            fetchPriority="high"
+            className="absolute inset-0 h-full w-full"
+          />
+          {DESKTOP_SLOTS.map((slot) => (
+            <SlotImage key={slot.src} slot={slot} />
+          ))}
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
