@@ -206,8 +206,9 @@
     color-scheme: dark;
   }
 
-  /* Anasayfa her zaman açık zemin — dark class kartlardaki metni bozmasın. */
-  [data-page="home"] {
+  /* Genel site her zaman açık zemin — dark class beyaz yazı / siyah kart üretmesin. */
+  [data-page="home"],
+  [data-theme="light"] {
     color-scheme: light;
     --brand: #1ec9b8;
     --brand-hover: #2ed9c8;
@@ -223,6 +224,30 @@
     --navy-mid: #7a8196;
     --rule: #e4e7f0;
     --rule-strong: #cdd3e0;
+    --card: #ffffff;
+    --card-foreground: #0b0d12;
+    --background: #f7f8fc;
+    --foreground: #0b0d12;
+    --muted: #eef1f8;
+    --muted-foreground: #7a8196;
+    --color-ink: #0b0d12;
+    --color-ink-deep: #10141f;
+    --color-paper: #f7f8fc;
+    --color-surface: #eef1f8;
+    --color-elevated: #ffffff;
+    --color-card: #ffffff;
+    --color-card-foreground: #0b0d12;
+    --color-background: #f7f8fc;
+    --color-foreground: #0b0d12;
+    --color-navy: #4a5168;
+    --color-navy-mid: #7a8196;
+    --color-rule: #e4e7f0;
+    --color-primary: #695de9;
+    --color-primary-hover: #7b71ec;
+    --color-brand: #1ec9b8;
+    --color-brand-hover: #2ed9c8;
+    --color-brand-soft: #e7fbf8;
+    --color-canvas: #f7f8fc;
     color: #0b0d12;
     background: #fff;
   }
@@ -722,6 +747,7 @@
   display: block;
   border-radius: 1rem;
   background: #fff;
+  color: #10141f;
   padding: 1.25rem 1.5rem;
   box-shadow: 0 4px 20px rgb(16 20 31 / 0.06);
   transition:

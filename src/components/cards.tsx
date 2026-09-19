@@ -220,7 +220,7 @@ export function BrandProfileComplaintCard({
         params={{ id: complaintLinkId(complaint) }}
         className="group block"
       >
-        <h4 className="font-semibold text-[16px] leading-snug text-ink mb-2 line-clamp-2 group-hover:text-brand transition-colors">
+        <h4 className="font-semibold text-[16px] leading-snug text-[#10141F] mb-2 line-clamp-2 group-hover:text-brand transition-colors">
           {complaint.title}
         </h4>
         <p className="text-[13px] text-navy line-clamp-3 leading-relaxed">
@@ -627,7 +627,7 @@ export function ComplaintCard({
             {complaint.userInitials}
           </div>
           <div className="min-w-0 flex-1">
-            <div className="font-semibold text-[13px] text-ink truncate">
+            <div className="font-semibold text-[13px] text-[#10141F] truncate">
               {complaint.userName}
             </div>
             <div className="text-[11px] text-navy-mid">
@@ -648,7 +648,7 @@ export function ComplaintCard({
           <span className="font-medium">{complaint.categoryName}</span>
         </div>
 
-        <h4 className="font-semibold text-[16px] leading-snug text-ink mb-2 line-clamp-2 group-hover:text-brand transition-colors">
+        <h4 className="font-semibold text-[16px] leading-snug text-[#10141F] mb-2 line-clamp-2 group-hover:text-brand transition-colors">
           {complaint.title}
         </h4>
         <p className="text-[13px] text-navy line-clamp-2 leading-relaxed mb-3 flex-1">

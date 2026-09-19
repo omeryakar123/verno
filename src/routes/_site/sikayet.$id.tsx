@@ -262,7 +262,7 @@ function ComplaintPage() {
               <span className="size-10 rounded-full bg-surface flex items-center justify-center text-sm font-bold text-navy-mid">{complaint.userInitials}</span>
               <div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <p className="text-sm font-medium">{complaint.userName}</p>
+                  <p className="text-sm font-medium text-[#10141F]">{complaint.userName}</p>
                   {complaint.userBadges && complaint.userBadges.length > 0 && (
                     <UserBadgeRow badges={complaint.userBadges} limit={2} />
                   )}
@@ -273,7 +273,7 @@ function ComplaintPage() {
             <span className={`px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase ring-1 ring-inset ${statusClasses(complaint.status)}`}>{statusLabel[complaint.status]}</span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight leading-tight mb-4 text-balance">{complaint.title}</h1>
+          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight leading-tight mb-4 text-balance text-[#10141F]">{complaint.title}</h1>
 
           {(complaint.platformUsername || complaint.contactPhoneDisplay) && (
             <div className="mb-5 rounded-xl bg-surface ring-1 ring-rule px-4 py-3 text-[13px] text-navy">
@@ -490,15 +490,15 @@ function ComplaintPage() {
 
 function ThreadBubble({ isBrand, author, agoLabel, body }: { isBrand: boolean; author: string; agoLabel: string; body: string }) {
   return (
-    <div className={`rounded-2xl p-5 ring-1 ${isBrand ? "bg-card ring-brand/20" : "bg-surface ring-rule"}`}>
+    <div className={`rounded-2xl p-5 ring-1 ${isBrand ? "bg-white ring-brand/25" : "bg-[#F4F6FB] ring-[#E4E7F0]"}`}>
       <div className="flex items-center gap-2 mb-2">
-        <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${isBrand ? "bg-brand text-brand-foreground" : "bg-ink text-paper"}`}>
+        <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${isBrand ? "bg-brand text-white" : "bg-primary/10 text-primary"}`}>
           {isBrand ? "Марка" : "Потребител"}
         </span>
-        <span className="text-sm font-medium text-ink">{author}</span>
+        <span className="text-sm font-medium text-[#10141F]">{author}</span>
         <span className="text-xs text-navy-mid">· {agoLabel}</span>
       </div>
-      <p className="text-sm text-navy leading-relaxed whitespace-pre-line">{body}</p>
+      <p className="text-sm text-[#4A5168] leading-relaxed whitespace-pre-line">{body}</p>
     </div>
   );
 }
@@ -512,7 +512,7 @@ function CommentNode({ c, replies, onReply, onVote, onPin }: {
   const name = c.profiles?.full_name ?? c.profiles?.username ?? "Потребител";
   const initials = name.split(/\s+/).map((p) => p[0]).slice(0, 2).join("").toUpperCase();
   return (
-    <div className={`bg-card rounded-2xl ring-1 ring-rule p-4 ${c.pinned ? "ring-brand/40 bg-brand-soft/20" : ""}`}>
+    <div className={`rounded-2xl bg-white ring-1 ring-[#E4E7F0] p-4 ${c.pinned ? "ring-brand/40 bg-brand-soft/20" : ""}`}>
       <div className="flex items-start gap-3">
         <div className="size-9 shrink-0 rounded-full bg-surface grid place-items-center text-xs font-bold text-navy-mid">{initials}</div>
         <div className="flex-1 min-w-0">

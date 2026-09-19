@@ -259,7 +259,7 @@ function Home() {
       >
         <div className="relative z-10 flex flex-col lg:container lg:max-w-6xl lg:flex-row lg:items-center lg:justify-center lg:gap-10">
           <div className="container flex flex-col justify-center text-navy-mid">
-            <h2 className="flex flex-col items-start gap-2 font-semibold text-2xl leading-7 text-ink lg:text-[42px] lg:leading-[52px]">
+            <h2 className="flex flex-col items-start gap-2 text-left font-semibold text-2xl leading-7 text-[#10141F] lg:text-[42px] lg:leading-[52px]">
               <HomeWordmark />
               <span>Награди</span>
             </h2>
@@ -276,7 +276,7 @@ function Home() {
 
       <section className="home-stats-band">
         <div className="container py-12 lg:py-20">
-          <h2 className="flex items-center justify-center gap-2.5 font-semibold text-2xl text-ink leading-none lg:text-4xl">
+          <h2 className="flex items-center justify-start gap-2.5 font-semibold text-2xl text-[#10141F] leading-none lg:text-4xl">
             <HomeWordmark heightClass="h-6 lg:h-9" />
             <span>в цифри</span>
           </h2>

@@ -31,7 +31,7 @@ export function TrendStrip({ items }: { items: TrendBrand[] }) {
     <section className="bg-white py-12 lg:py-16">
       <header className="container mb-6 flex items-end justify-between gap-4 px-4 lg:mb-8">
         <div>
-          <h2 className="inline-flex items-center font-semibold text-2xl text-ink lg:text-4xl">
+          <h2 className="inline-flex items-center text-left font-semibold text-2xl text-[#10141F] lg:text-4xl">
             Trend
             <span className="sr-only">100</span>
             <svg

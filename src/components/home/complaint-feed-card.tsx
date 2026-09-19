@@ -22,7 +22,7 @@ export function ComplaintFeedCard({ complaint }: { complaint: Complaint }) {
         </span>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-            <span className="truncate font-bold text-ink lg:text-lg">
+            <span className="truncate font-bold text-[#10141F] lg:text-lg">
               {complaint.userName}
             </span>
             <Link
@@ -57,7 +57,7 @@ export function ComplaintFeedCard({ complaint }: { complaint: Complaint }) {
       <Link
         to="/sikayet/$id"
         params={{ id: complaintLinkId(complaint) }}
-        className="mt-3 block font-semibold text-[17px] leading-snug text-ink transition-colors hover:text-primary lg:text-xl"
+        className="mt-3 block font-semibold text-[17px] leading-snug text-[#10141F] transition-colors hover:text-primary lg:text-xl"
       >
         {complaint.title}
       </Link>

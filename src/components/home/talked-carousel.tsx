@@ -119,7 +119,7 @@ export function TalkedCarousel({ items, updatedAt }: Props) {
         aria-hidden
       />
       <div className="container relative z-10 mb-6 flex max-w-6xl items-center justify-between px-4 lg:mb-8">
-        <h2 className="font-semibold text-white text-xl lg:text-[28px]">Най-обсъждани</h2>
+        <h2 className="text-left font-semibold text-white text-xl lg:text-[28px]">Най-обсъждани</h2>
         <div className="flex items-center gap-2">
           <button
             type="button"

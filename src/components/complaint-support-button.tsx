@@ -88,14 +88,14 @@ export function ComplaintSupportButton({
       className={`inline-flex items-center gap-1.5 rounded-full font-semibold transition-all disabled:opacity-60 ${
         supported
           ? "bg-brand text-white ring-1 ring-brand shadow-sm"
-          : "bg-surface text-navy ring-1 ring-rule hover:ring-brand/40 hover:text-brand"
+          : "bg-brand-soft text-brand ring-1 ring-brand/25 hover:bg-brand hover:text-white"
       } ${compact ? "px-2.5 h-7 text-[10.5px]" : "px-3.5 h-9 text-[12px]"} ${className}`}
     >
       <Megaphone className={compact ? "size-3" : "size-3.5"} />
       <span>{supported ? "Подкрепена" : "Подкрепи"}</span>
       {votes > 0 && (
         <span
-          className={`tabular-nums ${supported ? "text-white/90" : "text-navy-mid"}`}
+          className={`tabular-nums ${supported ? "text-white/90" : "text-brand/80"}`}
         >
           · {votes.toLocaleString("bg-BG")}
         </span>

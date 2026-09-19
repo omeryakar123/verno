@@ -16,11 +16,26 @@ function mobileOrigins(): string[] {
   return [...out];
 }
 
+function isDevLanOrigin(origin: string): boolean {
+  try {
+    const u = new URL(origin);
+    if (u.port !== "8081" && u.port !== "8083") return false;
+    const host = u.hostname;
+    if (host === "localhost" || host === "127.0.0.1") return true;
+    return /^(192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+)$/.test(
+      host,
+    );
+  } catch {
+    return false;
+  }
+}
+
 function isAllowedOrigin(origin: string | null): boolean {
   if (!origin) return false;
   const allowed = new Set([...collectTrustedOrigins(), ...mobileOrigins()]);
   if (allowed.has(origin)) return true;
   if (origin.startsWith("exp://")) return true;
+  if (isDevLanOrigin(origin)) return true;
   for (const scheme of MOBILE_SCHEMES) {
     if (origin.startsWith(`${scheme}://`)) return true;
   }

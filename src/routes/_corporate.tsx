@@ -12,7 +12,7 @@ export const Route = createFileRoute("/_corporate")({
 
 function CorporateLayout() {
   return (
-    <div className="flex min-h-screen flex-col overflow-x-hidden bg-white">
+    <div data-theme="light" className="flex min-h-screen flex-col overflow-x-hidden bg-white">
       <CorporateNav />
       <main className="flex-1">
         <Outlet />

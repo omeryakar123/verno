@@ -1,4 +1,5 @@
 import { Search } from "lucide-react";
+import { HomeWordmark } from "@/components/home/home-wordmark";
 
 const PEOPLE = {
   phone: "/home-banner/people/phone.png",
@@ -119,12 +120,23 @@ export function HeroSection({ search, onSearchChange, onSubmit }: Props) {
         ))}
       </div>
 
-      <div className="container relative z-10 px-4 lg:grid lg:max-w-6xl lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:items-center lg:gap-10 lg:px-0">
-        <div className="lg:py-16">
-          <h1 className="mb-6 whitespace-pre-line font-normal text-[#383838] text-[36px] leading-[1.12] tracking-[0.5px] sm:text-[43px] lg:mb-10 lg:text-[56px]">
-            <strong className="font-semibold">За решение</strong>
-            {"\n"}
-            verno.bg
+      <div className="container relative z-10 px-4 lg:grid lg:max-w-[1280px] lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.25fr)] lg:items-center lg:gap-8 lg:px-0">
+        <div
+          className="pointer-events-none absolute inset-0 hidden overflow-hidden lg:block"
+          aria-hidden
+        >
+          <div className="absolute top-[8%] left-[6%] size-20 rounded-full bg-primary/18" />
+          <div className="absolute top-[18%] left-[36%] size-8 rounded-full bg-brand" />
+          <div className="absolute top-[42%] left-[28%] size-4 rounded-full bg-[#F5D76E]" />
+          <div className="absolute bottom-[22%] left-[4%] size-14 rounded-full bg-primary" />
+          <div className="absolute right-[46%] bottom-[28%] size-24 rounded-full bg-brand/20" />
+          <div className="absolute top-[62%] left-[40%] size-10 rounded-full bg-[#C4B5FD]" />
+          <div className="absolute top-[4%] right-[42%] size-6 rounded-full bg-[#F5D76E]/90" />
+        </div>
+        <div className="relative z-10 lg:py-16">
+          <h1 className="mb-6 font-normal text-[#383838] text-[36px] leading-[1.12] tracking-[0.5px] sm:text-[43px] lg:mb-10 lg:text-[56px]">
+            <strong className="block font-semibold">За решение</strong>
+            <HomeWordmark heightClass="mt-3 h-9 sm:h-11 lg:h-14" />
           </h1>
           <form onSubmit={onSubmit}>
             <div className="relative font-semibold text-base tracking-wide">
@@ -155,7 +167,7 @@ export function HeroSection({ search, onSearchChange, onSubmit }: Props) {
           </form>
         </div>
 
-        <div className="relative mx-auto hidden h-[520px] w-full max-w-[620px] lg:block xl:h-[580px] xl:max-w-[680px]">
+        <div className="relative z-10 mx-auto hidden h-[640px] w-full max-w-[780px] lg:block xl:h-[760px] xl:max-w-[900px]">
           <img
             src="/home-banner/desktop/banner.svg"
             alt=""

@@ -83,5 +83,9 @@ export function collectTrustedOrigins(): string[] {
   }
 
   origins.add("http://localhost:8080");
+  origins.add("http://localhost:8083");
+  origins.add("http://127.0.0.1:8083");
+  origins.add("http://localhost:8081");
+  origins.add("http://127.0.0.1:8081");
   return expandTrustedOrigins([...origins]);
 }

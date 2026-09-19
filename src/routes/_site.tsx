@@ -18,7 +18,7 @@ export const Route = createFileRoute("/_site")({
 
 function SiteLayout() {
   return (
-    <div className="min-h-screen bg-canvas flex flex-col overflow-x-hidden">
+    <div data-theme="light" className="min-h-screen bg-canvas flex flex-col overflow-x-hidden">
       <SiteNav />
       <div className="flex-1">
         <Outlet />

@@ -61,7 +61,7 @@ export function AgendaMarquee({ items, compact = false }: Props) {
   return (
     <section className={compact ? "bg-[#F4F6FB] py-8" : "bg-[#F4F6FB] py-10 lg:py-14"}>
       <div className="container mb-5 max-w-6xl px-4 lg:mb-8">
-        <h2 className="font-semibold text-[#10141F] text-xl lg:text-[28px]">
+        <h2 className="text-left font-semibold text-[#10141F] text-xl lg:text-[28px]">
           Жалби в дневния ред
         </h2>
       </div>

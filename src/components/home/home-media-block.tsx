@@ -47,18 +47,6 @@ export function HomeAwardsSeal() {
           loading="lazy"
         />
       </div>
-      <div className="relative z-10 mt-6 flex flex-col items-center gap-2 text-center">
-        <img
-          src="/mainlogo.png"
-          alt="verno.bg"
-          width={220}
-          height={45}
-          className="h-8 w-auto object-contain lg:h-10"
-        />
-        <p className="font-semibold tracking-[0.18em] text-primary uppercase text-sm lg:text-base">
-          verno награди
-        </p>
-      </div>
     </div>
   );
 }
