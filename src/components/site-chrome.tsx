@@ -330,7 +330,7 @@ export function SiteFooter() {
                 key={t}
                 to={to}
                 params={params as never}
-                className="hover:text-paper dark:hover:text-ink"
+                className="text-white/75 transition-colors hover:text-white"
               >
                 {t}
               </Link>
@@ -340,7 +340,7 @@ export function SiteFooter() {
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {columns.map((g) => (
             <div key={g.t}>
-              <h4 className="mb-3 text-[13px] font-semibold text-paper dark:text-ink">
+              <h4 className="mb-3 text-[13px] font-semibold text-white">
                 {g.t}
               </h4>
               <ul className="space-y-2 text-[12.5px]">
@@ -351,7 +351,7 @@ export function SiteFooter() {
                       {...(to === "/info/$slug"
                         ? { params: searchOrParams as never }
                         : { search: searchOrParams as never })}
-                      className="text-paper/60 transition-colors hover:text-paper dark:text-navy-mid dark:hover:text-ink"
+                      className="text-white/55 transition-colors hover:text-white"
                     >
                       {label}
                     </Link>
@@ -361,22 +361,22 @@ export function SiteFooter() {
             </div>
           ))}
         </div>
-        <div className="mt-12 flex flex-col justify-between gap-3 border-t border-paper/10 pt-6 text-[12px] text-paper/60 dark:border-rule dark:text-navy-mid md:flex-row">
+        <div className="mt-12 flex flex-col justify-between gap-3 border-t border-white/10 pt-6 text-[12px] text-white/55 md:flex-row">
           <span>© 2026 verno.bg — Всички права запазени</span>
           <div className="flex gap-6">
             <Link
               to="/kullanim-kosullari"
-              className="hover:text-paper dark:hover:text-ink"
+              className="transition-colors hover:text-white"
             >
               Условия за ползване
             </Link>
             <Link
               to="/gizlilik"
-              className="hover:text-paper dark:hover:text-ink"
+              className="transition-colors hover:text-white"
             >
               Поверителност
             </Link>
-            <Link to="/kvkk" className="hover:text-paper dark:hover:text-ink">
+            <Link to="/kvkk" className="transition-colors hover:text-white">
               GDPR
             </Link>
           </div>

@@ -387,7 +387,7 @@ export function BrandListLogo({
           height={px}
           loading="lazy"
           decoding="async"
-          className="size-full object-contain p-1.5"
+          className="size-full object-contain p-0.5"
           onError={() => setCandidateIdx((i) => i + 1)}
         />
       ) : (
@@ -665,7 +665,7 @@ export function ComplaintCard({
           <div className="flex items-center gap-4">
             <span className="inline-flex items-center gap-1.5">
               <Eye className="size-3.5" />{" "}
-              {complaint.views.toLocaleString("tr-TR")}
+              {complaint.views.toLocaleString("bg-BG")}
             </span>
             <span className="inline-flex items-center gap-1.5">
               <MessageSquare className="size-3.5" /> {complaint.comments}

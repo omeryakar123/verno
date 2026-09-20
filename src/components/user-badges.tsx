@@ -78,7 +78,7 @@ export function UserBadgeGrid({
       {next && (
         <div className="rounded-xl bg-surface ring-1 ring-rule p-4">
           <div className="flex items-center justify-between gap-3 text-[12px]">
-            <span className="font-medium text-ink">Sıradaki rozet: {USER_BADGE_DEFS[next.badge].title}</span>
+            <span className="font-medium text-ink">Следващ знак: {USER_BADGE_DEFS[next.badge].title}</span>
             <span className="text-navy-mid tabular-nums">
               {next.current}/{next.target}
             </span>
@@ -99,8 +99,8 @@ export function UserBadgeGrid({
           const has = earnedSet.has(id);
           const Icon = has ? ICONS[id] : Lock;
           let hint = def.description;
-          if (id === "complaint_10") hint = `${stats.complaintCount}/10 şikayet`;
-          if (id === "happy_user") hint = `${stats.resolvedCount}/6 çözülen şikayet`;
+          if (id === "complaint_10") hint = `${stats.complaintCount}/10 жалби`;
+          if (id === "happy_user") hint = `${stats.resolvedCount}/6 решени жалби`;
 
           return (
             <div
@@ -114,7 +114,7 @@ export function UserBadgeGrid({
                 <div className="text-[13px] font-semibold text-ink">{def.title}</div>
                 <div className="mt-0.5 text-[11px] text-navy-mid leading-snug">{hint}</div>
                 <div className="mt-1.5 text-[10px] font-bold uppercase tracking-wider text-navy-mid">
-                  {has ? "Kazanıldı" : "Kilitli"} · Seviye {def.tier}
+                  {has ? "Получен" : "Заключен"} · Ниво {def.tier}
                 </div>
               </div>
             </div>

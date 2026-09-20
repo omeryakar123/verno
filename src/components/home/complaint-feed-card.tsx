@@ -5,6 +5,7 @@ import { statusLabel } from "@/lib/mock-data";
 import { complaintLinkId } from "@/lib/complaint-link";
 import { displayComplaintViews } from "@/lib/display-views";
 import { ComplaintSupportButton } from "@/components/complaint-support-button";
+import { BrandListLogo } from "@/components/cards";
 
 function commentLabel(n: number) {
   if (n === 1) return "1 коментар";
@@ -28,9 +29,15 @@ export function ComplaintFeedCard({ complaint }: { complaint: Complaint }) {
             <Link
               to="/firma/$slug"
               params={{ slug: complaint.companySlug }}
-              className="truncate font-semibold text-brand hover:underline"
+              className="inline-flex max-w-full items-center gap-1.5 truncate font-semibold text-brand hover:underline"
             >
-              {complaint.companyName}
+              <BrandListLogo
+                name={complaint.companyName}
+                slug={complaint.companySlug}
+                size={20}
+                className="size-5 rounded-md"
+              />
+              <span className="truncate">{complaint.companyName}</span>
             </Link>
             <span
               className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${

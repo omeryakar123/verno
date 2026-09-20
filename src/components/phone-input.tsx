@@ -15,7 +15,7 @@ export function PhoneInput({
         value={value}
         onFocus={(e) => { if (!e.target.value) onChange("+359"); }}
         onChange={(e) => onChange(formatTrPhone(e.target.value))}
-        className="w-full h-[52px] lg:h-12 rounded-xl ring-1 ring-rule bg-card pl-10 pr-3 text-[16px] lg:text-[15px] text-ink placeholder:text-navy-mid/70 focus:outline-none focus:ring-2 focus:ring-brand/40 transition"
+        className="w-full h-[52px] lg:h-12 rounded-xl ring-1 ring-[#d8dbe8] bg-white pl-10 pr-3 text-[16px] lg:text-[15px] text-[#10141F] placeholder:text-[#a0a4b8] focus:outline-none focus:ring-2 focus:ring-primary/20 transition"
       />
     </div>
   );

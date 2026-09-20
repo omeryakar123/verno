@@ -26,29 +26,29 @@ export const USER_BADGE_ORDER: UserBadgeId[] = [
 export const USER_BADGE_DEFS: Record<UserBadgeId, UserBadgeDef> = {
   verified: {
     id: "verified",
-    title: "Doğrulanmış Kullanıcı",
-    description: "E-posta adresini doğruladın.",
+    title: "Потвърден потребител",
+    description: "Имейл адресът е потвърден.",
     tier: 1,
     tone: "brand",
   },
   first_complaint: {
     id: "first_complaint",
-    title: "İlk Ses",
-    description: "İlk şikayetini yazdın.",
+    title: "Първа жалба",
+    description: "Написахте първата си жалба.",
     tier: 2,
     tone: "info",
   },
   complaint_10: {
     id: "complaint_10",
-    title: "Aktif Şikayetçi",
-    description: "10 şikayet yazarak toplulukta aktif oldun.",
+    title: "Активен жалбоподател",
+    description: "Написахте 10 жалби и сте активни в общността.",
     tier: 3,
     tone: "warning",
   },
   happy_user: {
     id: "happy_user",
-    title: "Mutlu Kullanıcı",
-    description: "5'ten fazla şikayetin çözüldü — en üst seviye rozet.",
+    title: "Доволен потребител",
+    description: "Повече от 5 жалби са решени — най-високото ниво.",
     tier: 4,
     tone: "success",
   },
@@ -81,17 +81,17 @@ export type UserBadgeProgress = {
 
 export function nextUserBadgeProgress(stats: UserBadgeStats): UserBadgeProgress | null {
   if (!stats.emailVerified) {
-    return { badge: "verified", current: 0, target: 1, label: "E-postanı doğrula" };
+    return { badge: "verified", current: 0, target: 1, label: "Потвърдете имейла си" };
   }
   if (stats.complaintCount < 1) {
-    return { badge: "first_complaint", current: stats.complaintCount, target: 1, label: "İlk şikayetini yaz" };
+    return { badge: "first_complaint", current: stats.complaintCount, target: 1, label: "Напишете първата си жалба" };
   }
   if (stats.complaintCount < 10) {
     return {
       badge: "complaint_10",
       current: stats.complaintCount,
       target: 10,
-      label: "Aktif Şikayetçi rozeti",
+      label: "Знак „Активен жалбоподател“",
     };
   }
   if (stats.resolvedCount <= 5) {
@@ -99,7 +99,7 @@ export function nextUserBadgeProgress(stats: UserBadgeStats): UserBadgeProgress 
       badge: "happy_user",
       current: stats.resolvedCount,
       target: 6,
-      label: "Mutlu Kullanıcı rozeti",
+      label: "Знак „Доволен потребител“",
     };
   }
   return null;

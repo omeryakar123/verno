@@ -46,7 +46,7 @@ export function ComplaintTimeline({ complaintId }: { complaintId: string }) {
   }, [complaintId]);
 
   if (rows.length === 0) {
-    return <div className="text-[13px] text-navy-mid">Henüz durum kaydı yok.</div>;
+    return <div className="text-[13px] text-navy-mid">Все още няма записи в хронологията.</div>;
   }
 
   return (

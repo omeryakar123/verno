@@ -30,18 +30,22 @@ const JOURNEY_STEPS = [
   "Непрекъсната защита и санкции при нарушения",
 ];
 
-const GROWTH = [
-  { year: 2021, pct: 68 },
-  { year: 2022, pct: 74 },
-  { year: 2023, pct: 81 },
-  { year: 2024, pct: 89 },
-  { year: 2025, pct: 100 },
+const MONTHLY_GROWTH = [
+  { label: "Яну", pct: 42 },
+  { label: "Фев", pct: 49 },
+  { label: "Мар", pct: 56 },
+  { label: "Апр", pct: 63 },
+  { label: "Май", pct: 71 },
+  { label: "Юни", pct: 78 },
+  { label: "Юли", pct: 85 },
+  { label: "Авг", pct: 92 },
+  { label: "Сеп", pct: 100 },
 ];
 
 export function TransparencyReportPage({ stats }: Props) {
   const resolutionPct = stats ? Math.round(stats.resolutionRate) : null;
   const currentComplaints = stats?.totalComplaints ?? 41_256;
-  const series = GROWTH.map((row) => ({
+  const series = MONTHLY_GROWTH.map((row) => ({
     ...row,
     value: Math.round((currentComplaints * row.pct) / 100),
   }));
@@ -134,15 +138,16 @@ export function TransparencyReportPage({ stats }: Props) {
         </div>
       </section>
 
-      <section className="relative overflow-hidden bg-ink-deep py-16 text-white lg:py-20">
-        <div className="pointer-events-none absolute -right-8 top-8 size-32 rounded-full bg-primary/30" aria-hidden />
-        <div className="pointer-events-none absolute bottom-6 left-10 size-16 rounded-full bg-brand" aria-hidden />
+      <section className="relative overflow-hidden bg-white py-16 lg:py-20">
+        <div className="pointer-events-none absolute -right-8 top-8 size-32 rounded-full bg-primary/15" aria-hidden />
+        <div className="pointer-events-none absolute bottom-6 left-10 size-16 rounded-full bg-brand/35" aria-hidden />
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
-          <h2 className="text-2xl font-semibold lg:text-3xl">Укрепваме доверието с мащаб</h2>
+          <div className="mb-3 h-1 w-10 rounded-full bg-brand" />
+          <h2 className="text-2xl font-semibold text-[#10141F] lg:text-3xl">Укрепваме доверието с мащаб</h2>
           <p className="mt-4 max-w-3xl text-lg font-semibold text-brand">
             С нарастване на обема данни намаляват фалшивите публикации, а прозрачността расте.
           </p>
-          <p className="mt-6 max-w-3xl leading-relaxed text-white/75">
+          <p className="mt-6 max-w-3xl leading-relaxed text-navy">
             Автоматичните филтри не заместват човешкия преглед. Всяко спорно решение минава през модератор.
             За нас доверието се гради с етичен надзор, не само с технология.
           </p>
@@ -218,11 +223,12 @@ export function TransparencyReportPage({ stats }: Props) {
         </div>
       </section>
 
-      <section className="relative overflow-hidden bg-ink-deep py-16 text-white">
+      <section className="relative overflow-hidden bg-primary py-16 text-white">
         <div className="pointer-events-none absolute top-8 right-12 size-20 rounded-full bg-brand/35" aria-hidden />
+        <div className="pointer-events-none absolute -bottom-8 left-6 size-28 rounded-full bg-white/10" aria-hidden />
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
           <h2 className="text-2xl font-semibold lg:text-3xl">Защита на платформата</h2>
-          <p className="mt-4 max-w-3xl text-white/75">
+          <p className="mt-4 max-w-3xl text-white/80">
             За да запазим {SITE_NAME} полезен и безопасен, използваме три слоя: технология, общност и човешки екип.
           </p>
           <div className="mt-10 grid gap-6 sm:grid-cols-3">
@@ -231,10 +237,10 @@ export function TransparencyReportPage({ stats }: Props) {
               { n: "02", title: "Общност", desc: "Докладване и обратна връзка от потребители и марки." },
               { n: "03", title: "Екип", desc: "Модератори и специалисти по съдържание и измами." },
             ].map((item) => (
-              <div key={item.title} className="rounded-2xl bg-white/5 p-6 ring-1 ring-white/10">
+              <div key={item.title} className="rounded-2xl bg-white/10 p-6 ring-1 ring-white/15">
                 <div className="font-semibold text-brand tabular-nums">{item.n}</div>
                 <h3 className="mt-3 text-xl font-semibold">{item.title}</h3>
-                <p className="mt-2 text-sm text-white/70">{item.desc}</p>
+                <p className="mt-2 text-sm text-white/75">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -251,13 +257,13 @@ export function TransparencyReportPage({ stats }: Props) {
 
       <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
         <div className="rounded-2xl bg-white p-8 ring-1 ring-rule">
-          <h2 className="mb-2 text-xl font-semibold">Годишен растеж на жалбите</h2>
+          <h2 className="mb-2 text-xl font-semibold">Месечен растеж на жалбите</h2>
           <p className="mb-8 text-sm text-navy-mid">
-            Оценка спрямо текущия обем — {nf(currentComplaints)} жалби към 2025.
+            Платформата стартира през 2025. Показан е месечният обем през 2026 — {nf(currentComplaints)} жалби към септември.
           </p>
-          <div className="flex h-56 items-end gap-3 sm:gap-4">
+          <div className="flex h-56 items-end gap-2 sm:gap-3">
             {series.map((row) => (
-              <div key={row.year} className="flex h-full min-w-0 flex-1 flex-col items-center">
+              <div key={row.label} className="flex h-full min-w-0 flex-1 flex-col items-center">
                 <div className="flex min-h-0 w-full flex-1 items-end">
                   <div
                     className="w-full rounded-t-2xl bg-gradient-to-t from-brand to-primary"
@@ -265,10 +271,10 @@ export function TransparencyReportPage({ stats }: Props) {
                     title={`${nf(row.value)} жалби`}
                   />
                 </div>
-                <div className="mt-2 text-[12px] font-bold tabular-nums text-brand">
+                <div className="mt-2 text-[11px] font-bold tabular-nums text-brand sm:text-[12px]">
                   {nf(row.value)}
                 </div>
-                <div className="text-xs text-navy-mid">{row.year}</div>
+                <div className="text-[11px] text-navy-mid">{row.label}</div>
               </div>
             ))}
           </div>

@@ -112,7 +112,7 @@ export function LiveFeed({ items, loading, compact, updatedAt, className = "" }:
             </li>
           ))}
         {!loading && list.length === 0 && (
-          <li className="py-5 text-center text-[12px] sm:text-[13px] text-navy-mid">Henüz şikayet yok.</li>
+          <li className="py-5 text-center text-[12px] sm:text-[13px] text-navy-mid">Все още няма жалби.</li>
         )}
       </ul>
     </div>

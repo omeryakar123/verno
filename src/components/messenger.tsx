@@ -42,9 +42,9 @@ export function Messenger({ brandId }: { brandId?: string }) {
     <div className="grid md:grid-cols-[280px_1fr] gap-4 min-h-[460px]">
       {/* Yazışma listesi */}
       <aside className={`card-surface overflow-hidden ${activeId ? "hidden md:block" : ""}`}>
-        <div className="px-4 py-3 border-b border-rule text-[13px] font-semibold text-ink">Yazışmalar</div>
+        <div className="px-4 py-3 border-b border-rule text-[13px] font-semibold text-ink">Разговори</div>
         {convs.length === 0 ? (
-          <p className="px-4 py-8 text-center text-[13px] text-navy-mid">Henüz yazışma yok.</p>
+          <p className="px-4 py-8 text-center text-[13px] text-navy-mid">Все още няма разговори.</p>
         ) : (
           <ul className="divide-y divide-rule max-h-[420px] overflow-y-auto">
             {convs.map((c) => (

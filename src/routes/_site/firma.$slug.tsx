@@ -7,7 +7,6 @@ import {
 import { useEffect, useRef, useState } from "react";
 import {
   BadgeCheck,
-  Bell,
   Building2,
   Clock,
   Globe,
@@ -450,12 +449,6 @@ function CompanyPage() {
                   <BadgeCheck className="size-4" /> Заявка за потвърждение
                 </button>
               )}
-              <button
-                onClick={() => toast.success("Следвате марката")}
-                className="inline-flex items-center gap-1.5 text-sm font-medium text-navy px-3 py-2 rounded-lg ring-1 ring-rule hover:bg-surface transition-colors"
-              >
-                <Bell className="size-4" /> Следи
-              </button>
               <Link
                 to="/sikayet-yaz"
                 search={{ brand: slug } as never}

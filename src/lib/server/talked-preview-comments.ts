@@ -27,211 +27,207 @@ type CommentStyle =
   | "brief"
   | "experience";
 
-/** Şikayet yayınlandıktan sonra yorumların görünme gecikmeleri (dakika). */
+/** Жалбата е публикувана — забавяния преди коментарите да се появят (минути). */
 const REVEAL_BASE_MIN = [240, 1080, 4320] as const;
 
 const SLOT_STYLES: CommentStyle[] = ["empathy", "frustrated", "supportive"];
 
 const STYLE_OPENERS: Record<CommentStyle, string[]> = {
   empathy: [
-    "Okurken içim sıkıştı,",
-    "Gerçekten üzücü bir durum —",
-    "Benzer bir süreçten geçtim,",
-    "Umarım kısa sürede çözülür;",
-    "Mağduriyetini anlıyorum,",
-    "Bu kadar bekletmek kabul edilemez ama",
+    "Мъчно ми стана, докато чета,",
+    "Наистина неприятна ситуация —",
+    "Минавах през подобно,",
+    "Надявам се да се реши бързо;",
+    "Разбирам разочарованието ти,",
+    "Толкова дълго чакане е неприемливо, но",
   ],
   frustrated: [
-    "Yine mi aynı firma aynı bahane?",
-    "Artık şaşırmıyorum bile,",
-    "Bu konu {brand} tarafında sürekli tekrar ediyor;",
-    "Cidden sıkıldım bu tür cevaplardan —",
-    "Okuyunca sinirim bozuldu,",
-    "Her seferinde aynı kalıp:",
+    "Пак същата фирма, същите оправдания?",
+    "Вече дори не се изненадвам,",
+    "Тази тема при {brand} се повтаря постоянно;",
+    "Омръзнаха ми такива отговори —",
+    "Ядосах се, докато чета,",
+    "Всеки път един и същ шаблон:",
   ],
   skeptical: [
-    "Umarım gerçekten ilgilenirler;",
-    "Daha önce benzer şikayetlerde pek sonuç görmedim ama",
-    "Marka buradan cevap verir mi emin değilim,",
-    "Resmi yanıt gelene kadar temkinliyim;",
-    "SSS'te yazandan farklı işliyor gibi geliyor —",
-    "İddialı ama kanıtlayıcı belge var mı acaba?",
+    "Надявам се наистина да се заемат;",
+    "При подобни жалби рядко виждах резултат, но",
+    "Не съм сигурен, че марката ще отговори тук,",
+    "До официален отговор оставам резервиран;",
+    "Изглежда работи различно от написаното —",
+    "Звучи сериозно, има ли доказателства?",
   ],
   supportive: [
-    "Takipteyim,",
-    "Gündemde kalması iyi olur;",
-    "Ben de yazacaktım aslında,",
-    "Şeffaf çözüm bekliyoruz —",
-    "Topluluk olarak destekliyorum,",
-    "Haklısın, sesini duyurmak önemli;",
+    "Следя случая,",
+    "Добре е темата да остане видима;",
+    "И аз щях да пиша всъщност,",
+    "Очакваме прозрачно решение —",
+    "Подкрепям те от общността,",
+    "Прав си, важно е гласът ти да се чуе;",
   ],
   question: [
-    "Destekten yazılı dönüş aldın mı?",
-    "İşlem numaranı paylaştın mı peki?",
-    "Kaç gündür bu aşamadasın?",
-    "Hangi yöntemle {detail} yapmıştın?",
-    "Ekran görüntüsü ekledin mi şikayete?",
-    "Canlı destek mi mail mi denedin?",
+    "Получи ли писмен отговор от поддръжката?",
+    "Сподели ли номера на поръчката?",
+    "От колко дни си на този етап?",
+    "Как точно направи {detail}?",
+    "Добави ли снимка към жалбата?",
+    "Пробва ли чат или имейл?",
   ],
   tip: [
-    "Benzer durumda dekont + saat bilgisini birlikte iletmek işe yaramıştı.",
-    "Finans birimine yönlendirme istemek bazen hızlandırıyor.",
-    "Şikayet numarasını not al; takip kolaylaşır.",
-    "Bankadan alınan işlem referansını da ekle derim.",
-    "Sabah saatlerinde yazmak daha hızlı yanıt getirmişti bana.",
-    "Aynı konuyu tek mesajda toparlamak karışıklığı azaltıyor.",
+    "В подобен случай документът и часът заедно помогнаха.",
+    "Понякога пренасочването към друг отдел ускорява нещата.",
+    "Запиши номера на жалбата — по-лесно се проследява.",
+    "Добави и референцията от плащането, ако имаш.",
+    "Сутрин писането ми донесе по-бърз отговор.",
+    "Събери всичко в едно съобщение, за да няма объркване.",
   ],
   brief: [
-    "Geçmiş olsun, umarım çözülür.",
-    "+1, aynı tablo.",
-    "Takipteyim.",
-    "Ben de etkilendim.",
-    "Umarım hızlı dönerler.",
-    "Sesini duyur, haklısın.",
+    "Съчувствие, надявам се да се реши.",
+    "+1, същата картина.",
+    "Следя случая.",
+    "И аз съм засегнат.",
+    "Надявам се да отговорят бързо.",
+    "Прав си, не мълчи.",
   ],
   experience: [
-    "Geçen ay {brand} tarafında {detail} için ben de bekledim; {days} gün sürdü.",
-    "Benzerini yaşamıştım; sonunda finans ekibi çözdü ama uzun sürdü.",
-    "Arkadaşım da aynı firmada takıldı, {detail} konusu çok yaygın.",
-    "Ben farklı bir yöntem deneyince düzelmişti; belki işine yarar.",
-    "İlk kez değil — {brand} ile ilgili benzer şikayetler görüyorum.",
-    "Benimkinde de «{snippet}» geçiyordu, neredeyse aynı cümle.",
+    "Миналия месец при {brand} чаках за {detail}; отне {days}.",
+    "Имах подобен случай; накрая го решиха, но бавно.",
+    "Приятел също се засече при същата фирма — {detail} е често.",
+    "При мен проработи друг подход; може да ти свърши работа.",
+    "Не е първи път — виждам подобни жалби за {brand}.",
+    "И при мен имаше «{snippet}», почти същата формулировка.",
   ],
 };
 
 const STYLE_MIDDLES: Record<Topic, string[]> = {
   withdrawal: [
-    "çekim onaylandı yazıp para gelmemesi çok can sıkıcı.",
-    "banka tarafında hareket yoksa panik oluyor insan.",
-    "günlerdir beklemek zorunda kalmak stresli.",
-    "limit düşürülmesi de ayrı tartışılır.",
-    "havale/Papara fark etmez, sonuç aynı.",
+    "пратката да е „доставена“, а да я няма, е много дразнещо.",
+    "без движение по проследяването човек се притеснява.",
+    "да чакаш дни наред е стресиращо.",
+    "закъснението без ясно обяснение е отделна тема.",
+    "куриер или склад — резултатът е един и същ.",
   ],
   deposit: [
-    "para çıktı hesaba girmedi mi gerçekten zor.",
-    "3D onaylandı ama bakiye yok tuhaflık.",
-    "yatırım askıda kalınca oyun da oynanmıyor.",
-    "referans numarasıyla takip şart.",
+    "парите да са излезли, а да няма потвърждение, е трудно.",
+    "плащането мина, а поръчката стои на изчакване.",
+    "без фактура проследяването е мъка.",
+    "с референтен номер е по-лесно да се търси.",
   ],
   bonus: [
-    "bonus şartları sonradan değişince güven kalmıyor.",
-    "çevrim tamam denip silinmesi çok görüyorum.",
-    "promosyon kodu geçersiz demeleri klasik.",
+    "когато условията се сменят после, доверието пада.",
+    "обещана отстъпка, после „невалидна“ — често го виждам.",
+    "връщането на сума да се бави е класика.",
   ],
   verification: [
-    "KYC uzayınca çekim de kilitleniyor.",
-    "aynı belgeyi tekrar istemeleri yorucu.",
-    "doğrulandı yazıp engel devam ediyor.",
+    "докато чакаш проверка, всичко друго спира.",
+    "да искат същия документ отново е изморително.",
+    "пише „потвърдено“, а блокировката остава.",
   ],
   support: [
-    "canlı destek kuyruğu saatler sürüyor.",
-    "her temsilci farklı story anlatıyor.",
-    "ticket kapatılıp çözüm yok.",
+    "опашката в чата трае часове.",
+    "всеки оператор разказва различна история.",
+    "тикетът се затваря, решение няма.",
   ],
   account: [
-    "hesap kilitlenince içerideki bakiye endişelendiriyor.",
-    "giriş döngüsü sinir bozucu.",
-    "SMS gelmemesi ayrı dert.",
+    "когато профилът се заключи, става тревожно.",
+    "цикълът с входа е нервиращ.",
+    "SMS-ът да не идва е отделен проблем.",
   ],
   technical: [
-    "oyun ortasında kopunca kazanç uçuyor.",
-    "mobil/web bakiye tutmuyorsa kimseye güven olmaz.",
-    "kupon donması can sıkıcı.",
+    "приложението да се срива точно при поръчка е зле.",
+    "ако сайтът и приложението показват различно, няма доверие.",
+    "закачането на плащането е много дразнещо.",
   ],
   general: [
-    "bu tür sorunların görünür olması iyi.",
-    "markadan net açıklama beklenir.",
-    "çözüm süreci şeffaf olmalı.",
+    "добре е такива проблеми да са видими.",
+    "от марката се очаква ясно обяснение.",
+    "процесът по решение трябва да е прозрачен.",
   ],
 };
 
 const STYLE_CLOSERS: Record<CommentStyle, string[]> = {
   empathy: [
-    "Umarım en kısa sürede hallolur.",
-    "Güncelleme paylaşırsan sevinirim.",
-    "Ben de seninle takip edeceğim.",
+    "Надявам се да се оправи възможно най-скоро.",
+    "Ако има нова информация, пиши.",
+    "И аз ще следя с теб.",
   ],
   frustrated: [
-    "Artık ciddi bir dönüş beklenir bence.",
-    "Bu kadar uzaması normal değil.",
-    "Sonuç çıkmazsa ben de yazacağım.",
+    "Вече се очаква сериозен отговор.",
+    "Толкова забавяне не е нормално.",
+    "Ако няма резултат, и аз ще пиша.",
   ],
   skeptical: [
-    "Resmi yanıtı görmeden yorum yapmayayım.",
-    "Bakalım ne diyecekler.",
-    "Geçmişte benzer vaatler boşa çıkmıştı.",
+    "Няма да коментирам преди официален отговор.",
+    "Да видим какво ще кажат.",
+    "Подобни обещания преди са оставали празни.",
   ],
   supportive: [
-    "Haklı taleplerini destekliyorum.",
-    "Görünür kal, pes etme.",
-    "Çözüm çıkarsa buradan da yaz lütfen.",
+    "Подкрепям справедливите ти искания.",
+    "Остани видим, не се отказвай.",
+    "Ако има решение, пиши тук.",
   ],
   question: [
-    "Merak ettim, haber verir misin?",
-    "Deneyimini paylaşırsan iyi olur.",
-    "Son durum ne oldu?",
+    "Любопитен съм, ще кажеш ли?",
+    "Ако споделиш опита, ще е полезно.",
+    "Какъв е последният статус?",
   ],
   tip: [
-    "Belki işine yarar diye yazdım.",
-    "Denersen sonucu merak ederim.",
-    "Kolay gelsin.",
+    "Пиша го, ако ти свърши работа.",
+    "Ако пробваш, кажи какъв е резултатът.",
+    "Успех.",
   ],
-  brief: [
-    "",
-    "Kolay gelsin.",
-    "Geçmiş olsun.",
-  ],
+  brief: ["", "Успех.", "Съчувствие."],
   experience: [
-    "Belki seninkinde daha hızlı olur.",
-    "Umarım sen daha erken çözersin.",
-    "Aynı hatayı tekrar etmesinler.",
+    "Може при теб да стане по-бързо.",
+    "Надявам се ти да го решиш по-рано.",
+    "Да не повтарят същата грешка.",
   ],
 };
 
 const LEGACY_TEMPLATES: Record<Topic, string[]> = {
   withdrawal: [
-    "Çekim tarafında {detail} bekliyorum; «{snippet}» başlığı birebir tanıdık.",
-    "Banka ekstresinde hareket yok, sitede tamamlandı görünüyor — aynı tablo.",
-    "{brand} çekiminde gecikme artık alışıldık oldu maalesef.",
-    "Onay mesajı geldi param yok; {detail} için ben de bekliyorum.",
-    "Finans birimi incelemede diyor, {days} gün oldu.",
+    "При доставката чакам {detail}; заглавието «{snippet}» ми е много познато.",
+    "Няма движение по проследяването, а пише завършено — същата картина.",
+    "Закъсненията при {brand} вече са почти навик, за съжаление.",
+    "Дойде известие, пратката я няма; и аз чакам за {detail}.",
+    "Казват, че е на проверка, минаха {days}.",
   ],
   deposit: [
-    "Yatırım hesaba geçmedi; {detail} ile denedim, olmadı.",
-    "Dekont var bakiye yok — «{snippet}» tam benim yaşadığım.",
-    "{brand} yatırımında sistem sık takılıyor gibi.",
-    "3D geçti, bakiye sıfır; sinir bozucu.",
+    "Плащането не се отрази; пробвах с {detail} — без резултат.",
+    "Имам документ, няма потвърждение — «{snippet}» е точно моят случай.",
+    "При {brand} системата често засича плащания.",
+    "Плащането мина, статусът е нула; много дразнещо.",
   ],
   bonus: [
-    "Bonus/çevrim konusu karışık; {detail} tarafında benzer sorun.",
-    "Kampanya şartları net değil dediğin gibi.",
-    "Promosyon silinmesi çok görüyorum {brand} için.",
+    "Темата с връщане/отстъпка е объркана; при {detail} е същото.",
+    "Условията на промоцията наистина не са ясни.",
+    "При {brand} често виждам отменени обещания.",
   ],
   verification: [
-    "KYC uzayınca her şey kilitleniyor; evrak yükledim yine bekliyorum.",
-    "Doğrulama bitmeyince çekim de yok — aynı döngü.",
-    "{brand} belge isteme konusunda aşırı.",
+    "Докато проверката тече, всичко спира; качих документи и пак чакам.",
+    "Без потвърждение няма движение — същият цикъл.",
+    "{brand} прекалява с искането на документи.",
   ],
   support: [
-    "Destek hattına ulaşmak ayrı mesele; saatler bekliyorsun.",
-    "Ticket kapanıyor çözüm yok — tanıdık.",
-    "WhatsApp'a yönlendirip cevap yok klasik.",
+    "Да стигнеш до поддръжка е отделна история; чакаш часове.",
+    "Тикетът се затваря, решение няма — познато.",
+    "Препращат към чат и после тишина.",
   ],
   account: [
-    "Hesap erişimi gidince panik oluyor; {detail} içeride kaldı mı?",
-    "Giriş döngüsü yaşadım, çok yorucu.",
-    "SMS doğrulama gelmeyince işlem yapılamıyor.",
+    "Когато достъпът до профила изчезне, става паника; {detail} остана ли вътре?",
+    "Имах цикъл при входа, много изморително.",
+    "Без SMS код не може да се направи нищо.",
   ],
   technical: [
-    "Oyun/bahis kopunca kazanç uçuyor; teknik taraf zayıf.",
-    "Uygulama çöküyor, web farklı — senkron yok.",
-    "Kupon donması can sıkıcı, {brand} tarafında da oldu.",
+    "Приложението се срива; техническата страна е слаба.",
+    "Приложението пада, сайтът показва друго — няма синхрон.",
+    "И при {brand} имах закачане на поръчката.",
   ],
   general: [
-    "Benzer mağduriyet yaşayanlar artıyor gibi.",
-    "Şeffaf çözüm bekliyoruz.",
-    "Gündeme gelmesi iyi olmuş.",
-    "Takip ediyorum, umarım sonuç alırsın.",
+    "Изглежда все повече хора имат подобен проблем.",
+    "Очакваме прозрачно решение.",
+    "Добре е темата да излезе наяве.",
+    "Следя случая, надявам се да има резултат.",
   ],
 };
 
@@ -261,17 +257,19 @@ function detectTopic(title: string, body: string, scenario?: string | null): Top
     casino_game: "technical",
     sports_betting: "technical",
     payment: "deposit",
+    delivery: "withdrawal",
+    refund: "bonus",
   };
   if (scenario && scenario in scenarioMap) return scenarioMap[scenario];
 
-  const t = `${title} ${body}`.toLocaleLowerCase("tr-TR");
-  if (/çekim|para çek|withdraw|ödeme al|havale.*gelmedi/i.test(t)) return "withdrawal";
-  if (/yatır|deposit|bakiye.*geç|havale.*att/i.test(t)) return "deposit";
-  if (/bonus|free spin|çevrim|promosyon|kampanya/i.test(t)) return "bonus";
-  if (/kimlik|doğrul|verification|evrak|selfie/i.test(t)) return "verification";
-  if (/destek|canlı|yanıt|müşteri hizmet|cevap yok/i.test(t)) return "support";
-  if (/hesap|giriş|askı|kısıt|ban/i.test(t)) return "account";
-  if (/oyun|bahis|kupon|bağlant|uygulama|teknik/i.test(t)) return "technical";
+  const t = `${title} ${body}`.toLocaleLowerCase("bg-BG");
+  if (/достав|пратк|куриер|закъсн|не пристиг|изгуб|delivery|kargo/i.test(t)) return "withdrawal";
+  if (/плащан|фактур|банков|карта|сума|deposit|havale/i.test(t)) return "deposit";
+  if (/връщане|отстъпк|промоц|refund|bonus|кампани/i.test(t)) return "bonus";
+  if (/документ|потвържд|верифик|verification|selfie/i.test(t)) return "verification";
+  if (/поддръжк|чат|отговор|обаждан|тикет|support/i.test(t)) return "support";
+  if (/профил|вход|акаунт|блокир|sms/i.test(t)) return "account";
+  if (/приложение|сайт|технич|срив|бъг|app/i.test(t)) return "technical";
   return "general";
 }
 
@@ -288,24 +286,24 @@ function extractContext(title: string, body: string, brandName: string): Comment
   const snippet =
     snippetRaw.length > 64 ? `${snippetRaw.slice(0, 61).trim()}…` : snippetRaw;
 
-  const amount = combined.match(/\d[\d.,]*\s*(?:tl|₺|lira|usd|usdt|dolar)/i)?.[0]?.trim();
+  const amount = combined.match(/\d[\d.,]*\s*(?:лв|bgn|eur|€|лева|usd)/i)?.[0]?.trim();
   const method = combined.match(
-    /(?:papara|payfix|havale|eft|fast|kripto|bitcoin|usdt|mefete|payco|tether|banka)/i,
+    /(?:наложен платеж|карта|revolut|paypal|банков превод|easypay|speedy|econt)/i,
   )?.[0]?.trim();
-  const daysMatch = combined.match(/(\d+)\s*(?:gün|saat|hafta)/i);
-  const days = daysMatch?.[0]?.trim() ?? `${3 + (hashSeed(combined) % 12)} gün`;
+  const daysMatch = combined.match(/(\d+)\s*(?:дни|ден|часа|час|седмиц)/i);
+  const days = daysMatch?.[0]?.trim() ?? `${3 + (hashSeed(combined) % 12)} дни`;
 
   const detailFallbacks = [
     amount ?? method ?? days,
-    method ? `${method} işlemi` : undefined,
-    amount ? `${amount} tutarında işlem` : undefined,
-    "çekim talebi",
-    "yatırım işlemi",
-    "bonus tanımı",
-    "doğrulama süreci",
+    method ? `${method}` : undefined,
+    amount ? `сума ${amount}` : undefined,
+    "доставката",
+    "плащането",
+    "връщането",
+    "проверката",
   ].filter(Boolean) as string[];
 
-  const detail = detailFallbacks[hashSeed(combined) % detailFallbacks.length] ?? "işlem";
+  const detail = detailFallbacks[hashSeed(combined) % detailFallbacks.length] ?? "поръчката";
 
   return { snippet, detail, days, brand: brandName };
 }
@@ -394,7 +392,7 @@ function pickBody(
   return attempts[0] ?? fillTemplate(legacyPool[0], ctx);
 }
 
-/** Şikayet detayında kademeli görünen topluluk yorumları. */
+/** Коментари на общността, които се появяват поетапно в детайла на жалбата. */
 export function generateScheduledPreviewComments(input: {
   complaintId: string;
   brandName: string;
@@ -460,7 +458,6 @@ export function generateScheduledPreviewComments(input: {
   return out;
 }
 
-/** Geriye dönük uyumluluk. */
 export function generateTalkedPreviewComments(input: {
   complaintId: string;
   brandName: string;

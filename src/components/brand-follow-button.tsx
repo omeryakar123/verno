@@ -32,7 +32,7 @@ export function BrandFollowButton({ brandSlug, brandName, className = "" }: Prop
 
   async function toggle() {
     if (!user) {
-      toast.info("Takip etmek için giriş yapın");
+      toast.info("Влезте, за да следите марката");
       return;
     }
     setBusy(true);
@@ -42,11 +42,11 @@ export function BrandFollowButton({ brandSlug, brandName, className = "" }: Prop
         credentials: "include",
       });
       const j = (await res.json()) as { following?: boolean; error?: string };
-      if (!res.ok) throw new Error(j.error ?? "İşlem başarısız");
+      if (!res.ok) throw new Error(j.error ?? "Операцията не бе успешна");
       setFollowing(!!j.following);
-      toast.success(j.following ? `${brandName} takip ediliyor` : "Takip bırakıldı");
+      toast.success(j.following ? `Следвате ${brandName}` : "Вече не следвате марката");
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Takip güncellenemedi");
+      toast.error(e instanceof Error ? e.message : "Следенето не можа да се обнови");
     } finally {
       setBusy(false);
     }
@@ -72,7 +72,7 @@ export function BrandFollowButton({ brandSlug, brandName, className = "" }: Prop
       } ${className}`}
     >
       {busy ? <Loader2 className="size-4 animate-spin" /> : following ? <BellOff className="size-4" /> : <Bell className="size-4" />}
-      {following ? "Takip ediliyor" : "Takip et"}
+      {following ? "Следвате" : "Следване"}
     </button>
   );
 }

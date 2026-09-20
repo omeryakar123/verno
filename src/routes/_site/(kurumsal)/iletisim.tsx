@@ -58,10 +58,10 @@ function Page() {
             <div className="mt-4 text-xs font-semibold uppercase tracking-widest text-navy-mid">Имейл</div>
             <div className="mt-1 break-all text-lg font-semibold text-ink">{SITE_CONTACT_EMAIL}</div>
           </a>
-          <div className="rounded-3xl bg-[#272635] p-6 text-white">
-            <ShieldCheck className="size-6 text-[#3ad08f]" />
+          <div className="rounded-3xl bg-primary p-6 text-white">
+            <ShieldCheck className="size-6 text-brand" />
             <h2 className="mt-3 text-lg font-semibold">Марки и партньорства</h2>
-            <p className="mt-2 text-sm leading-relaxed text-white/70">
+            <p className="mt-2 text-sm leading-relaxed text-white/80">
               За Pro членство, реклама и верификация използвайте същата форма — посочете темата ясно.
             </p>
           </div>

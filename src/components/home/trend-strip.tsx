@@ -95,14 +95,14 @@ export function TrendStrip({ items }: { items: TrendBrand[] }) {
                 <span className="grid size-8 place-items-center rounded-full bg-white text-[13px] font-bold text-navy">
                   {i + 1}
                 </span>
-                <div className="grid size-14 place-items-center rounded-2xl bg-white ring-1 ring-rule">
+                <div className="grid size-14 place-items-center overflow-hidden rounded-2xl bg-white ring-1 ring-rule">
                   <BrandListLogo
                     name={b.name}
                     slug={b.slug}
                     logoUrl={b.logoUrl}
                     website={b.website}
-                    size={44}
-                    className="size-10 object-contain"
+                    size={56}
+                    className="size-full object-contain"
                   />
                 </div>
               </div>

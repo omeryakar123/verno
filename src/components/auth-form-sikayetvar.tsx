@@ -46,18 +46,36 @@ export function SikayetvarAuthShell({
   const isLogin = mode === "login";
 
   return (
-    <div className="flex min-h-[100dvh] items-center justify-center bg-[#dfe2eb] px-4 py-10">
-      <div className="relative flex w-full max-w-[920px] overflow-hidden rounded-[28px] bg-white shadow-[0_24px_80px_rgba(39,38,53,0.18)]">
+    <div
+      data-theme="light"
+      className="flex min-h-[100dvh] items-center justify-center bg-[#F4F6FB] px-4 py-10"
+    >
+      <div className="relative flex w-full max-w-[920px] overflow-hidden rounded-[28px] bg-white shadow-[0_24px_80px_rgba(39,38,53,0.12)]">
         <Link
           to="/"
-          className="absolute right-4 top-4 z-20 grid size-9 place-items-center rounded-full bg-[#eef0f5] text-navy-mid transition hover:bg-[#e4e7f3]"
+          className="absolute right-4 top-4 z-20 grid size-9 place-items-center rounded-full bg-[#eef0f5] text-[#4a5168] transition hover:bg-[#e4e7f3]"
           aria-label="Затвори"
         >
           <X className="size-5" />
         </Link>
 
-        <aside className="relative hidden w-[38%] shrink-0 bg-[#eef0f5] md:block">
-          <SikayetvarPattern className="absolute inset-0 m-auto h-[88%] w-[88%]" />
+        <aside className="relative hidden w-[38%] shrink-0 overflow-hidden bg-primary md:block">
+          <div className="pointer-events-none absolute -left-8 -top-10 size-40 rounded-full bg-brand/45" />
+          <div className="pointer-events-none absolute right-[-28px] top-24 size-28 rounded-full bg-white/15" />
+          <div className="pointer-events-none absolute bottom-10 left-8 size-14 rounded-full bg-[#F5D76E]" />
+          <div className="relative z-10 flex h-full flex-col justify-between p-8">
+            <SiteLogoMark size={28} tone="on-dark" />
+            <div>
+              <p className="text-[22px] font-semibold leading-snug text-white">
+                Споделете опита си.
+                <br />
+                Получете официален отговор.
+              </p>
+              <p className="mt-3 text-[13px] leading-relaxed text-white/75">
+                Независимата българска платформа за клиентски опит.
+              </p>
+            </div>
+          </div>
         </aside>
 
         <div className="flex flex-1 flex-col px-6 py-8 sm:px-10 sm:py-10">
@@ -66,7 +84,7 @@ export function SikayetvarAuthShell({
           </div>
 
           <div className="mb-6 flex flex-wrap items-baseline justify-between gap-2">
-            <h1 className="text-[22px] font-bold tracking-tight text-ink">
+            <h1 className="text-[22px] font-bold tracking-tight text-[#10141F]">
               {isLogin ? "Вход" : "Регистрация"}
             </h1>
             <p className="text-[13px] text-navy-mid">
@@ -76,7 +94,7 @@ export function SikayetvarAuthShell({
                   <button
                     type="button"
                     onClick={() => setMode("register")}
-                    className="font-semibold text-ink underline underline-offset-2"
+                    className="font-semibold text-[#10141F] underline underline-offset-2"
                   >
                     Регистрирайте се.
                   </button>
@@ -87,7 +105,7 @@ export function SikayetvarAuthShell({
                   <button
                     type="button"
                     onClick={() => setMode("login")}
-                    className="font-semibold text-ink underline underline-offset-2"
+                    className="font-semibold text-[#10141F] underline underline-offset-2"
                   >
                     Влезте.
                   </button>
@@ -109,7 +127,14 @@ export function SikayetvarAuthShell({
 
           {oauthProviders.length > 0 && (
             <div className="mb-5 space-y-2.5">
-              <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+              <div
+                className={cn(
+                  "grid gap-2.5",
+                  oauthProviders.filter((p) => p !== "apple").length > 1
+                    ? "grid-cols-1 sm:grid-cols-2"
+                    : "mx-auto w-full max-w-[280px] grid-cols-1",
+                )}
+              >
                 {oauthProviders.includes("facebook") && (
                   <SocialBtn
                     provider="facebook"

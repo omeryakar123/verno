@@ -76,9 +76,9 @@ export interface Complaint {
 /** 0 / null = ölçüm yok; "0 dk" göstermek yanıltıcı olurdu. */
 export function formatResponseTime(minutes: number | null | undefined): string {
   if (!minutes || minutes <= 0) return "—";
-  if (minutes < 60) return `${minutes} dk`;
-  if (minutes < 60 * 24) return `${Math.round(minutes / 60)} s`;
-  return `${Math.round(minutes / 60 / 24)} g`;
+  if (minutes < 60) return `${minutes} мин`;
+  if (minutes < 60 * 24) return `${Math.round(minutes / 60)} ч`;
+  return `${Math.round(minutes / 60 / 24)} д`;
 }
 
 /**
@@ -96,6 +96,6 @@ export function formatRating(
 /** Binlik kısaltma yalnızca 1000'den büyük sayılarda (5 şikayet "0.0k" olmasın). */
 export function formatCompactCount(value: number | null | undefined): string {
   const n = Number(value ?? 0);
-  if (n < 1000) return n.toLocaleString("tr-TR");
+  if (n < 1000) return n.toLocaleString("bg-BG");
   return `${(n / 1000).toFixed(1)}k`;
 }
