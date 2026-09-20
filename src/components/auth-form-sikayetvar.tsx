@@ -60,18 +60,18 @@ export function SikayetvarAuthShell({
         </Link>
 
         <aside className="relative hidden w-[38%] shrink-0 overflow-hidden bg-primary md:block">
-          <div className="pointer-events-none absolute -left-8 -top-10 size-40 rounded-full bg-brand/45" />
-          <div className="pointer-events-none absolute right-[-28px] top-24 size-28 rounded-full bg-white/15" />
-          <div className="pointer-events-none absolute bottom-10 left-8 size-14 rounded-full bg-[#F5D76E]" />
-          <div className="relative z-10 flex h-full flex-col justify-between p-8">
+          <div className="pointer-events-none absolute -left-8 -top-10 size-36 rounded-full bg-brand/40" />
+          <div className="pointer-events-none absolute right-[-36px] bottom-8 size-28 rounded-full bg-white/15" />
+          <div className="pointer-events-none absolute -bottom-6 -left-4 size-16 rounded-full bg-[#F5D76E]" />
+          <div className="relative z-10 flex h-full flex-col p-8 pt-10">
             <SiteLogoMark size={28} tone="on-dark" />
-            <div>
-              <p className="text-[22px] font-semibold leading-snug text-white">
+            <div className="mt-14">
+              <p className="text-[22px] font-semibold leading-snug text-white drop-shadow-[0_1px_8px_rgb(0_0_0/0.18)]">
                 Споделете опита си.
                 <br />
                 Получете официален отговор.
               </p>
-              <p className="mt-3 text-[13px] leading-relaxed text-white/75">
+              <p className="mt-4 text-[14px] leading-relaxed text-white/90">
                 Независимата българска платформа за клиентски опит.
               </p>
             </div>
