@@ -8,8 +8,8 @@ import { syncManualBrandLogosToDb } from "@/lib/server/sync-manual-logos";
 import { HttpError, errorResponse, isStaff, optionalUser } from "@/lib/server/guard";
 
 /**
- * Prod bakım: migration patch + marka seed + cevap temizliği.
- *   curl -X POST https://tepkimvar.com/api/cron/maintenance \
+ * Prod bakım: migration patch + logo senkronu + oy senkronu + cevap temizliği.
+ *   curl -X POST https://verno.bg/api/cron/maintenance \
  *     -H "Authorization: Bearer $CRON_SECRET"
  */
 
@@ -59,16 +59,12 @@ export const Route = createFileRoute("/api/cron/maintenance")({
           const patches = await applyDbPatches(sql);
           await sql.end();
 
-          const seed = await runScript("seed-bilisim-brands-bulk.mjs");
-          const telegram = await runScript("sync-telegram-logos.mjs");
           const logos = await runScript("fix-brand-logos.mjs", ["--all"]);
           const manualLogos = await syncManualBrandLogosToDb();
           const votes = await runScript("sync-complaint-votes.mjs");
           const clear = await runScript("clear-synthetic-responses.mjs");
 
           const ok =
-            seed.code === 0 &&
-            telegram.code === 0 &&
             logos.code === 0 &&
             votes.code === 0 &&
             clear.code === 0;
@@ -76,8 +72,6 @@ export const Route = createFileRoute("/api/cron/maintenance")({
             {
               ok,
               patches,
-              seed: { code: seed.code, out: seed.stdout.trim(), err: seed.stderr.trim() },
-              telegram: { code: telegram.code, out: telegram.stdout.trim(), err: telegram.stderr.trim() },
               logos: { code: logos.code, out: logos.stdout.trim(), err: logos.stderr.trim() },
               manualLogos,
               votes: { code: votes.code, out: votes.stdout.trim(), err: votes.stderr.trim() },

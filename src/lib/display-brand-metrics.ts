@@ -35,5 +35,6 @@ export function formatResolutionRate(
 ): string {
   if (!totalComplaints || totalComplaints <= 0) return "—";
   if (rate == null || rate < 0) return "—";
-  return `%${Math.min(99, Math.round(rate))}`;
+  // Bulgarca yüzde biçimi sonektir: "87%" (Türkçedeki "%87" değil).
+  return `${Math.min(99, Math.round(rate))}%`;
 }

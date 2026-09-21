@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Plus, Search, ShieldCheck, Crown, Database } from "lucide-react";
+import { Plus, Search, ShieldCheck, Crown } from "lucide-react";
 import { toast } from "sonner";
 import { apiGet, apiSend, apiSendJson } from "@/lib/admin-api";
 import { Modal } from "@/components/ui/modal";
@@ -17,7 +17,6 @@ function AdminBrandsPage() {
   const [cats, setCats] = useState<Category[]>([]);
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
-  const [seeding, setSeeding] = useState(false);
 
   async function load() {
     const data = await apiGet<{ items: Brand[] }>("/api/admin/brands");
@@ -41,45 +40,6 @@ function AdminBrandsPage() {
     if (await apiSend("/api/admin/brands", "DELETE", { id })) { toast.success("Изтрито"); load(); }
   }
 
-  async function runBrandSeed() {
-    if (
-      !confirm(
-        "Ще бъдат добавени липсващите марки (вече регистрираните ще бъдат пропуснати). Продължаваме?",
-      )
-    ) {
-      return;
-    }
-    setSeeding(true);
-    const res = await apiSendJson<{
-      ok: boolean;
-      before: number;
-      after: number;
-      added: number;
-      message?: string;
-      seed: { added: number; skipped: number; addedNames: string[] };
-      logos?: { warnings?: string[] };
-    }>("/api/admin/brands-seed", "POST", {});
-    setSeeding(false);
-    if (!res) return;
-    if (res.ok) {
-      const names =
-        res.seed.addedNames.length > 0
-          ? res.seed.addedNames.slice(0, 8).join(", ") +
-            (res.seed.addedNames.length > 8 ? ` +${res.seed.addedNames.length - 8} още` : "")
-          : "";
-      toast.success(
-        `${res.message ?? "Готово"} (${res.before} → ${res.after})${names ? `: ${names}` : ""}`,
-      );
-      if (res.logos?.warnings?.length) {
-        toast.message("Синхронизацията на логата частично пропусната", {
-          description: res.logos.warnings.join(" · "),
-        });
-      }
-      load();
-    } else {
-      toast.error("Seed на марки неуспешен");
-    }
-  }
 
   return (
     <div className="px-6 lg:px-10 py-8 space-y-6">
@@ -89,15 +49,6 @@ function AdminBrandsPage() {
           <h1 className="mt-1 font-display text-3xl font-black tracking-tight text-ink">Марки</h1>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={() => void runBrandSeed()}
-            disabled={seeding}
-            className="inline-flex items-center gap-2 rounded-full ring-1 ring-rule bg-surface text-ink px-5 h-10 text-[13px] font-semibold hover:bg-surface/80 disabled:opacity-60"
-          >
-            <Database className="size-4" />
-            {seeding ? "Seed работи…" : "Масово добавяне"}
-          </button>
           <button onClick={() => setOpen(true)} className="inline-flex items-center gap-2 rounded-full bg-brand text-brand-foreground px-5 h-10 text-[13px] font-semibold hover:brightness-105">
             <Plus className="size-4" /> Нова марка
           </button>

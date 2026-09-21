@@ -9,6 +9,24 @@ export const SITE_URL =
   (import.meta.env?.VITE_SITE_URL as string | undefined) ||
   "https://verno.bg";
 
+/**
+ * Site geneli indeksleme kilidi.
+ *
+ * `SITE_NOINDEX=true` iken her sayfa `noindex, nofollow` alır, `robots.txt`
+ * tüm taramayı reddeder ve `sitemap.xml` boş döner. Şirket tescil edilene ve
+ * gerçek içerik yayına girene kadar açık tutulmalıdır: örnek (placeholder)
+ * içeriğin arama motorlarına indekslenmesi sonradan temizlenmesi zor bir iz
+ * bırakır.
+ *
+ * Canlıya çıkarken: Coolify'da `SITE_NOINDEX` değişkenini sil veya `false` yap.
+ */
+export const SITE_NOINDEX =
+  ((typeof process !== "undefined" ? process.env.SITE_NOINDEX : undefined) ||
+    (import.meta.env?.VITE_SITE_NOINDEX as string | undefined) ||
+    "")
+    .trim()
+    .toLowerCase() === "true";
+
 export const DEFAULT_OG_IMAGE = "/og-default.png";
 export const DEFAULT_OG_WIDTH = "1200";
 export const DEFAULT_OG_HEIGHT = "630";
@@ -87,7 +105,7 @@ export function seoHead(input: SeoInput) {
       content: input.modifiedTime,
     });
   }
-  if (input.noindex) {
+  if (input.noindex || SITE_NOINDEX) {
     meta.push({ name: "robots", content: "noindex, nofollow" });
   }
 

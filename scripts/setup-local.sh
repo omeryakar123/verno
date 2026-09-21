@@ -36,9 +36,9 @@ if ! (echo >/dev/tcp/localhost/5432) 2>/dev/null; then
   echo ""
   echo "  PostgreSQL is not running."
   echo "  Install Postgres.app (easiest on Mac): https://postgresapp.com/downloads.html"
-  echo "  After install: open Postgres.app → Initialize → create database 'tepkimvar':"
-  echo "    psql postgres -c \"CREATE DATABASE tepkimvar;\""
-  echo "  Default URL in .env: postgresql://postgres:postgres@localhost:5432/tepkimvar"
+  echo "  After install: open Postgres.app → Initialize → create database 'verno':"
+  echo "    psql postgres -c \"CREATE DATABASE verno;\""
+  echo "  Default URL in .env: postgresql://postgres:postgres@localhost:5432/verno"
   echo ""
   exit 1
 fi

@@ -5,26 +5,14 @@ import { MANUAL_BRAND_LOGOS } from "@/lib/manual-brand-logos";
 import { getObject, putObject } from "@/lib/server/storage";
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
-import { TELEGRAM_BRAND_CHANNELS } from "@/lib/telegram-brand-channels";
 
 const UA = { "user-agent": "Mozilla/5.0 Chrome/126 Safari/537.36" };
 
-const DOMAIN_OVERRIDES: Record<string, string> = {
-  jojobet: "jojobet.com",
-  matbet: "matbet.com",
-  holiganbet: "holiganbet.com",
-  casibom: "casibom.com",
-  meritking: "mrking.com",
-  grandpashabet: "grandpashabet.com",
-  marsbahis: "marsbahis.com",
-  kazansana: "kazansana.com",
-  bovbet: "bovbet.com",
-  bahsine: "bahsine.com",
-  betnano: "betnano.com",
-  tekelbet: "tekelbet.net",
-  trendyol: "trendyol.com",
-  hepsiburada: "hepsiburada.com",
-};
+/**
+ * Slug → domain istisnaları. Marka `website` alanından türetilemeyen
+ * durumlar için; boş bırakmak güvenlidir.
+ */
+const DOMAIN_OVERRIDES: Record<string, string> = {};
 
 const BAD = ["ui-avatars.com", "unavatar.io", "placeholder", "logo.clearbit.com", "superbonus14.pro"];
 
@@ -66,24 +54,6 @@ async function download(url: string, minBytes = 800): Promise<ResolvedLogo | nul
   }
 }
 
-async function fetchTelegram(slug: string): Promise<ResolvedLogo | null> {
-  const channel = TELEGRAM_BRAND_CHANNELS[slug];
-  if (!channel) return null;
-  try {
-    const r = await fetch(`https://t.me/${channel}`, { headers: UA, redirect: "follow", signal: AbortSignal.timeout(12000) });
-    if (!r.ok) return null;
-    const html = await r.text();
-    const m = html.match(/tgme_page_photo_image[^>]+src="([^"]+)"/i);
-    if (!m) return null;
-    const src = m[1].replace(/&amp;/g, "&");
-    if (src.startsWith("data:")) return null;
-    const hit = await download(src, 1000);
-    return hit ? { ...hit, src: "telegram" } : null;
-  } catch {
-    return null;
-  }
-}
-
 async function fetchSiteIcon(domain: string): Promise<ResolvedLogo | null> {
   for (const path of ["/apple-touch-icon.png", "/apple-touch-icon-precomposed.png"]) {
     const hit = await download(`https://${domain}${path}`, 1200);
@@ -95,7 +65,6 @@ async function fetchSiteIcon(domain: string): Promise<ResolvedLogo | null> {
 async function fetchBest(slug: string, website: string | null): Promise<ResolvedLogo | null> {
   const dom = domainFor(slug, website);
   return (
-    (await fetchTelegram(slug)) ??
     (await fetchSiteIcon(dom)) ??
     (await download(
       `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${encodeURIComponent(`https://${dom}`)}&size=256`,

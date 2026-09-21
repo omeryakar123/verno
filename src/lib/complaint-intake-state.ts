@@ -36,16 +36,6 @@ function stripTurkishSuffix(token: string): string {
 }
 
 function formatBrandToken(base: string): string {
-  const lower = base.toLowerCase();
-  if (lower.endsWith("bet")) {
-    const stem = lower.slice(0, -3);
-    if (!stem) return base;
-    return `${stem.charAt(0).toUpperCase()}${stem.slice(1)}Bet`;
-  }
-  if (lower.endsWith("casino")) {
-    const stem = lower.slice(0, -6);
-    return `${stem.charAt(0).toUpperCase()}${stem.slice(1)}Casino`;
-  }
   return base.charAt(0).toUpperCase() + base.slice(1).toLowerCase();
 }
 
@@ -95,17 +85,12 @@ function matchBrand(text: string, brands: BrandHint[]): string | null {
   return best;
 }
 
-/** Marka listesi yoksa metinden tahmin (fixbette → FixBet). */
-function extractBrandFallback(text: string): string | null {
-  const patterns = [
-    /\b([a-z0-9]{2,18}bet)(?:[''']?(?:te|ta|de|da|den|dan|ten|tan))?\b/i,
-    /\b([a-z0-9]{2,18}casino)(?:[''']?(?:te|ta|de|da))?\b/i,
-    /\b([a-z0-9]{2,24}(?:bet|casino))\b/i,
-  ];
-  for (const re of patterns) {
-    const m = text.match(re);
-    if (m?.[1]) return formatBrandToken(m[1]);
-  }
+/**
+ * Marka listesi yoksa metinden tahmin. Eski kurulum burada "…bet" / "…casino"
+ * son ekini arıyordu; genel tüketici platformunda böyle bir kalıp yok, bu yüzden
+ * marka yalnızca bilinen marka listesinden eşleşir.
+ */
+function extractBrandFallback(_text: string): string | null {
   return null;
 }
 
@@ -142,9 +127,6 @@ const TX_PATTERNS: { re: RegExp; type: string }[] = [
     type: "yatırım",
   },
   { re: /çekim|cekim|para çek|para cek|withdraw/i, type: "çekim" },
-  { re: /bonus|promosyon|freespin|free spin/i, type: "bonus" },
-  { re: /bahis|kupon|iddaa/i, type: "bahis" },
-  { re: /casino|slot|rulet|blackjack/i, type: "casino" },
   {
     re: /hesap|üyelik|uyelik|kapat|bloke|doğrulama|dogrulama|kimlik/i,
     type: "hesap",
@@ -643,8 +625,6 @@ const ASK_PATTERNS: { field: keyof ComplaintState; patterns: RegExp[] }[] = [
     patterns: [
       /hangi site/i,
       /hangi marka/i,
-      /hangi bahis/i,
-      /hangi casino/i,
       /site.*olduğunu/i,
     ],
   },

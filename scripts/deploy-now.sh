@@ -30,7 +30,7 @@ echo ""
 echo "HTTP $HTTP"
 
 if [ "$HTTP" = "200" ] || [ "$HTTP" = "201" ]; then
-  echo "OK — Coolify build bitince https://tepkimvar.com yenilenecek (2–5 dk)."
+  echo "OK — Coolify build bitince https://verno.bg yenilenecek (2–5 dk)."
 else
   echo "Hata — token yetkisi veya süresi kontrol edin."
   exit 1

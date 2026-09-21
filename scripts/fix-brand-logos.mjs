@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
  * Tüm marka logolarını yüksek çözünürlüğe yükseltir.
- * Öncelik: yerel static → superbonus PNG → site ikonu → gstatic 256
+ * Öncelik: yerel static → site ikonu → gstatic 256
  * S3 varsa MinIO'ya yükler (/api/files/brand-logos/seed/<slug>-hq.png).
  *
  *   bun scripts/fix-brand-logos.mjs --all --force
@@ -27,17 +27,9 @@ const BAD = [
   "porkbun-logo",
   "googleusercontent.com/a/default",
 ];
-const GAMBLING_RE = /bet|bahis|casino|slot|poker|rulet|kumar|gambling/i;
-
-const SUPERBONUS = new Set([
-  "kazansana", "evetabi", "betnano", "bovbet", "bahsine", "hadibet", "natobet", "exobet",
-  "mexiwin", "pulibet", "padisahbet", "galabet", "bahiscasino", "favoribahis", "meritwin",
-  "neredebahis", "yasalbahis", "tekelbet", "betmartin", "sanscasino", "marsbahis", "playbet",
-  "hizlicasino", "betsmove", "virusbet",
-]);
 
 const UA = { "user-agent": "Mozilla/5.0 Chrome/126 Safari/537.36" };
-const BUCKET = process.env.S3_BUCKET || "itirazvar";
+const BUCKET = process.env.S3_BUCKET || "verno";
 const useS3 = Boolean(process.env.S3_ENDPOINT && process.env.S3_ACCESS_KEY_ID && process.env.S3_SECRET_ACCESS_KEY);
 
 if (!process.env.DATABASE_URL) {
@@ -70,7 +62,7 @@ function isFaviconProxy(url) {
 function isLowResStored(url) {
   if (!(url ?? "").startsWith("/api/files/brand-logos/seed/")) return false;
   const u = url.toLowerCase();
-  return !u.includes("-hq.png") && !u.includes("-superbonus.png") && !u.includes("-v2.png") && !u.includes("-tg.png");
+  return !u.includes("-hq.png") && !u.includes("-v2.png") && !u.includes("-tg.png");
 }
 
 function isManualUpload(url) {
@@ -86,12 +78,7 @@ function isBad(url) {
   const u = url.toLowerCase();
   if (isFaviconProxy(u)) return true;
   if (isLowResStored(url)) return true;
-  if (u.includes("superbonus14.pro")) return true;
   return BAD.some((p) => u.includes(p));
-}
-
-function isGambling(slug, name) {
-  return GAMBLING_RE.test(slug) || GAMBLING_RE.test(name ?? "");
 }
 
 function domainFor(slug, website) {
@@ -171,13 +158,6 @@ async function bestLogo(slug, name, website) {
 
   const dd = await download(`https://icons.duckduckgo.com/ip3/${dom}.ico`, 400);
   if (dd) return { ...dd, src: "duckduckgo", url: `https://icons.duckduckgo.com/ip3/${dom}.ico` };
-
-  // superbonus14.pro çoğu markada 404 — son çare
-  const slugKey = slug.replace(/copy$/i, "");
-  if (SUPERBONUS.has(slug) || isGambling(slug, name)) {
-    const sb = await download(`https://superbonus14.pro/clients/logo/${slugKey}.png`, 800);
-    if (sb) return { ...sb, src: "superbonus", url: `https://superbonus14.pro/clients/logo/${slugKey}.png` };
-  }
 
   return null;
 }

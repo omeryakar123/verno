@@ -1,6 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { seoHead } from "@/lib/seo";
 import { SITE_CONTACT_EMAIL } from "@/lib/contact";
+import {
+  DATA_PROTECTION_AUTHORITY,
+  LEGAL_ENTITY_PENDING_NOTE,
+  legalEntityLines,
+} from "@/lib/legal-entity";
 
 const SECTIONS: { h: string; p: string[] }[] = [
   {
@@ -40,9 +45,14 @@ const SECTIONS: { h: string; p: string[] }[] = [
     ],
   },
   {
-    h: "7. Контакт",
+    h: "7. Оператор на платформата",
+    p: [...(legalEntityLines().length > 0 ? legalEntityLines() : [LEGAL_ENTITY_PENDING_NOTE])],
+  },
+  {
+    h: "8. Контакт и жалби",
     p: [
       `За въпроси относно поверителността: ${SITE_CONTACT_EMAIL}. Вижте също информацията за личните данни (GDPR) на /kvkk.`,
+      `Имате право на жалба до ${DATA_PROTECTION_AUTHORITY.name} — ${DATA_PROTECTION_AUTHORITY.website}.`,
     ],
   },
 ];

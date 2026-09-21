@@ -18,6 +18,8 @@ Bu dosya, projeyi **hiç görmemiş bir yapay zekanın** doğru yerden devam etm
 6. Eski ürün **tepkimvar.com** (Türkçe). Bu repo ondan ayrıldı. Kalan TR string / tepkimvar domain / `#272635` siyah kart = borç; yeni kod üretme.
 7. URL path’leri hâlâ Türkçe (`/sikayetler`, `/firma/$slug`, `/hakkimizda`). Değiştirme — SEO ve mevcut linkler kırılır. Sadece görünen yazı BG.
 8. Kod yorumları TR kalabilir. Kullanıcıya dönen her şey BG.
+9. **Gerçek şirket adına uydurma içerik üretme.** Placeholder, seed, demo veya bot — hiçbirinde gerçek marka adı, logosu, puanı veya "resmi yanıtı" olamaz. Örnek markalar `ph-` slug'lı ve `(пример)` etiketlidir (`src/lib/placeholder-complaints.ts`).
+10. **`SITE_NOINDEX=true`** — şirket tescil edilip gerçek içerik girene kadar açık kalır. Kapatma kararı kullanıcınındır.
 
 ---
 
@@ -95,6 +97,7 @@ verno/
 | SMS | Sempico |
 | AI bot | fal.ai / OpenRouter — sentetik şikayet (varsayılan gizli) |
 | iOS | Expo 57, RN 0.86, Expo Router, NativeWind **v3**, scheme `verno://` |
+| Test | Vitest (`npm test`) — saf mantık: rate limit, metrik, telefon, trusted origin |
 
 Lokal web: **`http://127.0.0.1:8083`**  
 `npm run dev -- --port 8083 --host 0.0.0.0`  
@@ -273,7 +276,7 @@ Drizzle: `src/db/schema.ts`. Önemli tablolar:
 
 Komutlar: `npm run db:generate` `db:migrate` `db:studio`
 
-Seed (`src/db/seed.ts`) hâlâ tepkimvar örnekleri taşır — körlemesine çalıştırma.
+Seed (`src/db/seed.ts`) artık **yalnızca Bulgarca kategori** ekler; hiçbir şey silmez ve uydurma marka/şikayet yazmaz. `SEED_CONFIRM=yes` olmadan çalışmaz. (Eski sürüm tüm şikayet/marka/kategori tablolarını silip Türkçe demo veri yazıyordu.)
 
 Sentetik bot şikayetleri varsayılan **gizli** (`SYNTHETIC_CONTENT_PUBLIC=false`).
 
@@ -385,6 +388,7 @@ Deploy: Coolify. Ayrıntı `DEPLOY.md`, `DEPLOY-SSH.md`.
 | Web | kök | `npm run dev -- --port 8083 --host 0.0.0.0` |
 | Build | kök | `npm run build` |
 | Lint / format | kök | `npm run lint` / `npm run format` |
+| Test | kök | `npm test` (50 test) |
 | DB | kök | `npm run db:migrate` / `db:studio` |
 | iOS | `appmobile/` | `npm run ios` |
 
@@ -404,7 +408,7 @@ Commit: kullanıcı isterse, hook atlama, force-push yok.
 8. **Siyah kurumsal kart** `#272635` bazı sayfalarda kalmış olabilir (`reklam-cozumleri`, corporate). Temaya çek.
 9. **Cover görseli** bazı markalarda hâlâ “tepkimvar” yazabilir — asset, copy değil.
 10. **Blog** menüde yok, rota duruyor.
-11. **Seed** TR içerik / `seed@tepkimvar.local`.
+11. **`.env` uzak veritabanını gösterebilir** — lokal sanılan komutlar canlı veriye yazar. `db:migrate` / seed öncesi `DATABASE_URL` host'unu doğrula.
 12. Shared port sabiti 8080 yanıltır.
 
 ---

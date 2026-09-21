@@ -29,6 +29,7 @@ import { HomeWordmark } from "@/components/home/home-wordmark";
 import { TrendStrip } from "@/components/home/trend-strip";
 import {
   brandsOrPlaceholders,
+  isPlaceholderBrandSlug,
   complaintsOrPlaceholders,
   trendOrPlaceholders,
 } from "@/lib/placeholder-complaints";
@@ -204,13 +205,22 @@ function Home() {
           <ul className="mt-10 space-y-3 lg:mt-12">
             {brandsOrPlaceholders(top).map((b, i) => {
               const rate = Math.min(100, Math.max(0, Math.round(b.resolutionRate)));
+              // Örnek marka gerçek bir profil sayfasına sahip değil — link verme.
+              const placeholder = isPlaceholderBrandSlug(b.slug);
+              const rowClass =
+                "flex items-center gap-3 rounded-2xl bg-white/95 px-3 py-3 shadow-[0_10px_28px_rgb(0_0_0/0.16)] transition hover:bg-white lg:gap-5 lg:rounded-3xl lg:px-5 lg:py-4";
+              const Row = placeholder
+                ? ({ children }: { children: React.ReactNode }) => (
+                    <div className={rowClass}>{children}</div>
+                  )
+                : ({ children }: { children: React.ReactNode }) => (
+                    <Link to="/firma/$slug" params={{ slug: b.slug }} className={rowClass}>
+                      {children}
+                    </Link>
+                  );
               return (
                 <li key={b.slug}>
-                  <Link
-                    to="/firma/$slug"
-                    params={{ slug: b.slug }}
-                    className="flex items-center gap-3 rounded-2xl bg-white/95 px-3 py-3 shadow-[0_10px_28px_rgb(0_0_0/0.16)] transition hover:bg-white lg:gap-5 lg:rounded-3xl lg:px-5 lg:py-4"
-                  >
+                  <Row>
                     <span
                       className={`grid size-10 shrink-0 place-items-center rounded-2xl text-[15px] font-bold lg:size-12 lg:text-lg ${
                         i === 0
@@ -252,7 +262,7 @@ function Home() {
                         решени
                       </div>
                     </div>
-                  </Link>
+                  </Row>
                 </li>
               );
             })}

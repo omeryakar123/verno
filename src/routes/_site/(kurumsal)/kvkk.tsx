@@ -1,12 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { seoHead } from "@/lib/seo";
 import { SITE_CONTACT_EMAIL } from "@/lib/contact";
+import {
+  DATA_PROTECTION_AUTHORITY,
+  LEGAL_ENTITY_PENDING_NOTE,
+  legalEntityLines,
+} from "@/lib/legal-entity";
 
 const SECTIONS: { h: string; p: string[] }[] = [
   {
     h: "1. Администратор на данни",
     p: [
-      "Съгласно GDPR и българското законодателство verno.bg (Платформата) обработва личните ви данни като администратор на данни в обхвата, описан по-долу.",
+      "Съгласно Общия регламент относно защитата на данните (ЕС) 2016/679 и Закона за защита на личните данни, verno.bg (Платформата) обработва личните ви данни като администратор в описания по-долу обхват.",
+      ...(legalEntityLines().length > 0 ? legalEntityLines() : [LEGAL_ENTITY_PENDING_NOTE]),
     ],
   },
   {
@@ -38,6 +44,13 @@ const SECTIONS: { h: string; p: string[] }[] = [
     p: [
       "Имате право на достъп, коригиране, изтриване, ограничаване на обработката, преносимост и възражение срещу автоматизирано профилиране.",
       `Заявки: ${SITE_CONTACT_EMAIL}. Отговор в срок до 30 дни без такса, освен при необосновани или повторни искания.`,
+    ],
+  },
+  {
+    h: "7. Право на жалба до надзорен орган",
+    p: [
+      `Ако смятате, че обработката на личните ви данни нарушава закона, имате право да подадете жалба до ${DATA_PROTECTION_AUTHORITY.name}.`,
+      `Адрес: ${DATA_PROTECTION_AUTHORITY.address}. Уебсайт: ${DATA_PROTECTION_AUTHORITY.website}.`,
     ],
   },
 ];

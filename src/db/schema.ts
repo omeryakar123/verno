@@ -520,7 +520,7 @@ export const complaints = pgTable("complaints", {
   isPublic: boolean("is_public").default(true).notNull(),
   isAnonymous: boolean("is_anonymous").default(false).notNull(),
   anonName: text("anon_name"),
-  /** Bahis/casino sitesindeki kullanıcı adı (şikayet formunda zorunlu). */
+  /** Şikayetçinin markadaki üyelik/müşteri numarası veya kullanıcı adı. */
   platformUsername: text("platform_username"),
   contactPhone: text("contact_phone"),
   city: text("city"),

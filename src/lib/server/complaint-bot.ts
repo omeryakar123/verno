@@ -384,7 +384,7 @@ export type GeneratedComplaint = {
   body: string;
   /** Herkese görünen yazar adı (Türk ismi). */
   displayName: string;
-  /** Bahis/casino sitesindeki kullanıcı adı. */
+  /** Şikayetçinin markadaki üyelik/müşteri numarası veya kullanıcı adı. */
   platformUsername: string;
   source: "ai" | "template";
 };

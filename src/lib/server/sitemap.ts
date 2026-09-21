@@ -1,4 +1,4 @@
-import { SITE_URL } from "@/lib/seo";
+import { SITE_NOINDEX, SITE_URL } from "@/lib/seo";
 
 const BASE_URL = SITE_URL.replace(/\/$/, "");
 
@@ -198,6 +198,16 @@ const SITEMAP_HEADERS = {
 
 /** Google Search Console için saf XML yanıtı — SSR/HTML fallback yok. */
 export async function sitemapResponse(method = "GET"): Promise<Response> {
+  // İndeksleme kilidi açıkken hiçbir URL bildirilmez.
+  if (SITE_NOINDEX) {
+    const empty =
+      '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>';
+    return new Response(method === "HEAD" ? null : empty, {
+      status: 200,
+      headers: SITEMAP_HEADERS,
+    });
+  }
+
   let xml = buildStaticSitemapXml();
   try {
     xml = await buildSitemapXml();

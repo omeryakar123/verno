@@ -38,7 +38,7 @@ export function ComplaintShareModal({ open, complaintId, title, onClose, onView 
   async function shareNative() {
     if (!shareUrl) return;
     const payload = {
-      title: "Şikayetim — tepkimvar",
+      title: "Моята жалба — verno",
       text: title ? `${title}\n\n` : "",
       url: shareUrl,
     };
@@ -56,7 +56,7 @@ export function ComplaintShareModal({ open, complaintId, title, onClose, onView 
   function shareWhatsApp() {
     if (!shareUrl) return;
     const text = encodeURIComponent(
-      `Şikayetimi tepkimvar'da paylaştım — destek olmak isterseniz:\n${shareUrl}`,
+      `Публикувах жалбата си във verno — подкрепете ме:\n${shareUrl}`,
     );
     window.open(`https://wa.me/?text=${text}`, "_blank", "noopener,noreferrer");
   }

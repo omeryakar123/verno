@@ -5,7 +5,7 @@ import { HttpError, errorResponse, isStaff, optionalUser } from "@/lib/server/gu
 
 // Anasayfa «Çok Konuşulanlar» + logo senkronu (30 dk'da bir).
 // Coolify Scheduled Task (her 30 dk):
-//   0,30 * * * * curl -fsS -X POST https://tepkimvar.com/api/cron/home-talked \
+//   0,30 * * * * curl -fsS -X POST https://verno.bg/api/cron/home-talked \
 //     -H "Authorization: Bearer $CRON_SECRET"
 
 function safeEqual(a: string, b: string): boolean {

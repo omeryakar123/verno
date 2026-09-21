@@ -9,6 +9,8 @@ import {
 } from "@/lib/server/brand-stats";
 
 function brandPriorityOrder() {
+  // Pin listesi boşken `CASE x ELSE 0 END` geçersiz SQL üretir — sabit dön.
+  if (PRIORITY_BRAND_SLUGS.length === 0) return sql.raw("0");
   const cases = PRIORITY_BRAND_SLUGS.map(
     (slug, i) => `WHEN '${slug.replace(/'/g, "''")}' THEN ${i}`,
   ).join(" ");

@@ -131,7 +131,6 @@ import { Route as ApiAdminComplaintAttachmentsRouteImport } from './routes/api/a
 import { Route as ApiAdminComplaintAssistantRouteImport } from './routes/api/admin/complaint-assistant'
 import { Route as ApiAdminCmsRouteImport } from './routes/api/admin/cms'
 import { Route as ApiAdminCategoriesRouteImport } from './routes/api/admin/categories'
-import { Route as ApiAdminBrandsSeedRouteImport } from './routes/api/admin/brands-seed'
 import { Route as ApiAdminBrandsRouteImport } from './routes/api/admin/brands'
 import { Route as ApiAdminBrandMembersRouteImport } from './routes/api/admin/brand-members'
 import { Route as ApiAdminBlogsRouteImport } from './routes/api/admin/blogs'
@@ -775,11 +774,6 @@ const ApiAdminCategoriesRoute = ApiAdminCategoriesRouteImport.update({
   path: '/api/admin/categories',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiAdminBrandsSeedRoute = ApiAdminBrandsSeedRouteImport.update({
-  id: '/api/admin/brands-seed',
-  path: '/api/admin/brands-seed',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiAdminBrandsRoute = ApiAdminBrandsRouteImport.update({
   id: '/api/admin/brands',
   path: '/api/admin/brands',
@@ -1036,7 +1030,6 @@ export interface FileRoutesByFullPath {
   '/api/admin/blogs': typeof ApiAdminBlogsRoute
   '/api/admin/brand-members': typeof ApiAdminBrandMembersRoute
   '/api/admin/brands': typeof ApiAdminBrandsRouteWithChildren
-  '/api/admin/brands-seed': typeof ApiAdminBrandsSeedRoute
   '/api/admin/categories': typeof ApiAdminCategoriesRoute
   '/api/admin/cms': typeof ApiAdminCmsRoute
   '/api/admin/complaint-assistant': typeof ApiAdminComplaintAssistantRoute
@@ -1188,7 +1181,6 @@ export interface FileRoutesByTo {
   '/api/admin/blogs': typeof ApiAdminBlogsRoute
   '/api/admin/brand-members': typeof ApiAdminBrandMembersRoute
   '/api/admin/brands': typeof ApiAdminBrandsRouteWithChildren
-  '/api/admin/brands-seed': typeof ApiAdminBrandsSeedRoute
   '/api/admin/categories': typeof ApiAdminCategoriesRoute
   '/api/admin/cms': typeof ApiAdminCmsRoute
   '/api/admin/complaint-assistant': typeof ApiAdminComplaintAssistantRoute
@@ -1345,7 +1337,6 @@ export interface FileRoutesById {
   '/api/admin/blogs': typeof ApiAdminBlogsRoute
   '/api/admin/brand-members': typeof ApiAdminBrandMembersRoute
   '/api/admin/brands': typeof ApiAdminBrandsRouteWithChildren
-  '/api/admin/brands-seed': typeof ApiAdminBrandsSeedRoute
   '/api/admin/categories': typeof ApiAdminCategoriesRoute
   '/api/admin/cms': typeof ApiAdminCmsRoute
   '/api/admin/complaint-assistant': typeof ApiAdminComplaintAssistantRoute
@@ -1501,7 +1492,6 @@ export interface FileRouteTypes {
     | '/api/admin/blogs'
     | '/api/admin/brand-members'
     | '/api/admin/brands'
-    | '/api/admin/brands-seed'
     | '/api/admin/categories'
     | '/api/admin/cms'
     | '/api/admin/complaint-assistant'
@@ -1653,7 +1643,6 @@ export interface FileRouteTypes {
     | '/api/admin/blogs'
     | '/api/admin/brand-members'
     | '/api/admin/brands'
-    | '/api/admin/brands-seed'
     | '/api/admin/categories'
     | '/api/admin/cms'
     | '/api/admin/complaint-assistant'
@@ -1809,7 +1798,6 @@ export interface FileRouteTypes {
     | '/api/admin/blogs'
     | '/api/admin/brand-members'
     | '/api/admin/brands'
-    | '/api/admin/brands-seed'
     | '/api/admin/categories'
     | '/api/admin/cms'
     | '/api/admin/complaint-assistant'
@@ -1914,7 +1902,6 @@ export interface RootRouteChildren {
   ApiAdminBlogsRoute: typeof ApiAdminBlogsRoute
   ApiAdminBrandMembersRoute: typeof ApiAdminBrandMembersRoute
   ApiAdminBrandsRoute: typeof ApiAdminBrandsRouteWithChildren
-  ApiAdminBrandsSeedRoute: typeof ApiAdminBrandsSeedRoute
   ApiAdminCategoriesRoute: typeof ApiAdminCategoriesRoute
   ApiAdminCmsRoute: typeof ApiAdminCmsRoute
   ApiAdminComplaintAssistantRoute: typeof ApiAdminComplaintAssistantRoute
@@ -2814,13 +2801,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminCategoriesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/admin/brands-seed': {
-      id: '/api/admin/brands-seed'
-      path: '/api/admin/brands-seed'
-      fullPath: '/api/admin/brands-seed'
-      preLoaderRoute: typeof ApiAdminBrandsSeedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/admin/brands': {
       id: '/api/admin/brands'
       path: '/api/admin/brands'
@@ -3333,7 +3313,6 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminBlogsRoute: ApiAdminBlogsRoute,
   ApiAdminBrandMembersRoute: ApiAdminBrandMembersRoute,
   ApiAdminBrandsRoute: ApiAdminBrandsRouteWithChildren,
-  ApiAdminBrandsSeedRoute: ApiAdminBrandsSeedRoute,
   ApiAdminCategoriesRoute: ApiAdminCategoriesRoute,
   ApiAdminCmsRoute: ApiAdminCmsRoute,
   ApiAdminComplaintAssistantRoute: ApiAdminComplaintAssistantRoute,

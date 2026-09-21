@@ -10,14 +10,10 @@ import { and, eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db, schema } from "@/db";
 import { isCurrentlyBanned } from "@/lib/server/sanctions";
+import { HttpError } from "@/lib/server/http";
 
-export class HttpError extends Error {
-  status: number;
-  constructor(status: number, message: string) {
-    super(message);
-    this.status = status;
-  }
-}
+// Saf HTTP yardımcıları http.ts'te; mevcut import'lar bozulmasın diye re-export.
+export { HttpError, clientIp, rateLimit } from "@/lib/server/http";
 
 export function errorResponse(e: unknown): Response {
   if (e instanceof HttpError) {
@@ -51,7 +47,9 @@ export async function requireUser(request: Request): Promise<SessionUser> {
 }
 
 /** Oturum + doğrulanmış e-posta zorunlu (şikayet vb.). */
-export async function requireVerifiedUser(request: Request): Promise<SessionUser> {
+export async function requireVerifiedUser(
+  request: Request,
+): Promise<SessionUser> {
   const u = await requireUser(request);
   const [row] = await db
     .select({ emailVerified: schema.user.emailVerified })
@@ -59,13 +57,18 @@ export async function requireVerifiedUser(request: Request): Promise<SessionUser
     .where(eq(schema.user.id, u.id))
     .limit(1);
   if (!row?.emailVerified) {
-    throw new HttpError(403, "Şikayet yazmak için e-posta adresinizi doğrulamanız gerekiyor.");
+    throw new HttpError(
+      403,
+      "Şikayet yazmak için e-posta adresinizi doğrulamanız gerekiyor.",
+    );
   }
   return u;
 }
 
 /** Oturum varsa döner, yoksa null (public uçlarda opsiyonel kullanıcı için). */
-export async function optionalUser(request: Request): Promise<SessionUser | null> {
+export async function optionalUser(
+  request: Request,
+): Promise<SessionUser | null> {
   const session = await auth.api.getSession({ headers: request.headers });
   if (!session?.user) return null;
   return { id: session.user.id, email: session.user.email };
@@ -91,11 +94,19 @@ export async function requireStaff(request: Request): Promise<SessionUser> {
 }
 
 /** Kullanıcı bu markanın temsilcisi mi? */
-export async function isBrandMember(userId: string, brandId: string): Promise<boolean> {
+export async function isBrandMember(
+  userId: string,
+  brandId: string,
+): Promise<boolean> {
   const [row] = await db
     .select({ id: schema.brandMembers.id })
     .from(schema.brandMembers)
-    .where(and(eq(schema.brandMembers.userId, userId), eq(schema.brandMembers.brandId, brandId)))
+    .where(
+      and(
+        eq(schema.brandMembers.userId, userId),
+        eq(schema.brandMembers.brandId, brandId),
+      ),
+    )
     .limit(1);
   return !!row;
 }
@@ -105,7 +116,10 @@ export async function isBrandMember(userId: string, brandId: string): Promise<bo
  * İstemciden gelen brandId ASLA doğrudan kullanılmaz; her /api/brand/* ucu
  * önce bunu çağırır. Üye değilse ve personel değilse 403.
  */
-export async function requireBrandAccess(userId: string, brandId: string): Promise<void> {
+export async function requireBrandAccess(
+  userId: string,
+  brandId: string,
+): Promise<void> {
   const ok = (await isBrandMember(userId, brandId)) || (await isStaff(userId));
   if (!ok) throw new HttpError(403, "Bu firmaya erişiminiz yok");
 }
@@ -113,33 +127,3 @@ export async function requireBrandAccess(userId: string, brandId: string): Promi
 /* --------------------------------- Rate limit ------------------------------ */
 // Basit in-memory sayaç. Tek sunucu için yeterli; Coolify'da birden fazla
 // replica çalıştırırsan Redis'e taşınmalı.
-const buckets = new Map<string, { count: number; resetAt: number }>();
-
-/** İstek IP'si (proxy arkasında x-forwarded-for / x-real-ip). */
-export function clientIp(request: Request): string {
-  return (
-    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    request.headers.get("x-real-ip")?.trim() ||
-    "unknown"
-  );
-}
-
-export function rateLimit(key: string, limit: number, windowMs: number): void {
-  const now = Date.now();
-  const b = buckets.get(key);
-  if (!b || now > b.resetAt) {
-    buckets.set(key, { count: 1, resetAt: now + windowMs });
-    return;
-  }
-  if (b.count >= limit) {
-    const secs = Math.ceil((b.resetAt - now) / 1000);
-    throw new HttpError(429, `Çok fazla istek. ${secs} saniye sonra tekrar deneyin.`);
-  }
-  b.count++;
-}
-
-// Bellek sızıntısını önle: süresi dolmuş kayıtları ara sıra temizle.
-setInterval(() => {
-  const now = Date.now();
-  for (const [k, v] of buckets) if (now > v.resetAt) buckets.delete(k);
-}, 60_000).unref?.();
